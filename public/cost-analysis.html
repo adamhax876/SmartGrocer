@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — Cost Analysis Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #059669;
+            --green-light: #d1fae5;
+            --green-dark: #047857;
+            --blue: #2563eb;
+            --blue-light: #dbeafe;
+            --purple: #7c3aed;
+            --purple-light: #ede9fe;
+            --orange: #d97706;
+            --orange-light: #fef3c7;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        /* ===================== PRINT CONTROLS ===================== */
+        .no-print {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .print-btn {
+            padding: 0.85rem 1.5rem;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(5, 150, 105, 0.5);
+        }
+
+        .print-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ===================== PAGE WRAPPER ===================== */
+        .page {
+            max-width: 1080px;
+            margin: 2rem auto;
+            background: white;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        /* ===================== COVER SECTION ===================== */
+        .cover {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f4c35 100%);
+            padding: 4rem 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 6px 16px;
+            border-radius: 50px;
+            background: rgba(5, 150, 105, 0.2);
+            border: 1px solid rgba(5, 150, 105, 0.4);
+            color: #34d399;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .cover-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+        }
+
+        .cover-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin-bottom: 2.5rem;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .meta-label {
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .cover-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .cover-kpi {
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .cover-kpi-val {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        .cover-kpi-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ===================== SECTION ===================== */
+        .section {
+            padding: 3rem 3.5rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .si-green {
+            background: var(--green-light);
+        }
+
+        .si-green svg {
+            stroke: var(--green);
+        }
+
+        .si-blue {
+            background: var(--blue-light);
+        }
+
+        .si-blue svg {
+            stroke: var(--blue);
+        }
+
+        .si-purple {
+            background: var(--purple-light);
+        }
+
+        .si-purple svg {
+            stroke: var(--purple);
+        }
+
+        .si-orange {
+            background: var(--orange-light);
+        }
+
+        .si-orange svg {
+            stroke: var(--orange);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--gray-900);
+        }
+
+        .section-desc {
+            font-size: 0.88rem;
+            color: var(--gray-600);
+            margin-top: 2px;
+        }
+
+        /* ===================== TABLE ===================== */
+        .cost-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .cost-table thead tr {
+            background: var(--gray-900);
+            color: white;
+        }
+
+        .cost-table th {
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .cost-table th:last-child {
+            text-align: right;
+        }
+
+        .cost-table td {
+            padding: 0.9rem 1.2rem;
+            vertical-align: top;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .cost-table td:last-child {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .cost-table tr:hover td {
+            background: var(--gray-50);
+        }
+
+        .cost-table .subtotal td {
+            background: var(--gray-50);
+            font-weight: 700;
+            border-top: 2px solid var(--gray-200);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .cost-table .grand-total td {
+            background: var(--gray-900);
+            color: white;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .badge-free {
+            background: var(--green-light);
+            color: var(--green-dark);
+        }
+
+        .badge-low {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .badge-mid {
+            background: var(--orange-light);
+            color: var(--orange);
+        }
+
+        .badge-high {
+            background: var(--red-light);
+            color: var(--red);
+        }
+
+        .badge-rec {
+            background: var(--purple-light);
+            color: var(--purple);
+        }
+
+        /* ===================== COMPARISON CARDS ===================== */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+
+        .plan-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .plan-card.recommended {
+            border-color: var(--green);
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.08);
+        }
+
+        .plan-card.recommended::before {
+            content: '★ RECOMMENDED';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--green);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            padding: 4px 12px;
+            border-bottom-left-radius: 10px;
+        }
+
+        .plan-provider {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .plan-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin: 0.3rem 0;
+        }
+
+        .plan-price-main {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--gray-900);
+            line-height: 1;
+        }
+
+        .plan-price-sub {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-bottom: 1.25rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+            color: var(--gray-600);
+        }
+
+        .check {
+            color: var(--green);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .plan-total {
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-100);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--gray-700);
+        }
+
+        /* ===================== SUMMARY BOX ===================== */
+        .summary-box {
+            border-radius: 18px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .summary-item {
+            padding: 1.25rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .summary-item-label {
+            font-size: 0.82rem;
+            color: var(--gray-400);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-item-value {
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        /* ===================== PHASE TIMELINE ===================== */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .timeline-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            width: 40px;
+        }
+
+        .timeline-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.82rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .timeline-line {
+            flex: 1;
+            width: 2px;
+            background: var(--gray-200);
+            margin: 4px 0;
+            min-height: 24px;
+        }
+
+        .timeline-content {
+            padding-bottom: 2rem;
+            flex: 1;
+        }
+
+        .timeline-content .tl-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-content .tl-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--gray-900);
+        }
+
+        .timeline-content .tl-period {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--gray-400);
+        }
+
+        .timeline-content .tl-desc {
+            font-size: 0.88rem;
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+
+        .tl-deliverables {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.75rem;
+        }
+
+        .tl-tag {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        /* ===================== ROI VISUAL ===================== */
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .roi-card {
+            padding: 1.5rem;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .roi-card .roi-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-card .roi-val {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.2rem;
+        }
+
+        .roi-card .roi-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        /* ===================== RISK TABLE ===================== */
+        .risk-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+            gap: 1rem;
+            padding: 0.9rem 1.2rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.88rem;
+            align-items: center;
+        }
+
+        .risk-header {
+            background: var(--gray-900);
+            color: white;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .risk-table-wrap {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* ===================== FOOTER ===================== */
+        .doc-footer {
+            background: var(--gray-900);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 2rem 3.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+        }
+
+        .doc-footer strong {
+            color: white;
+        }
+
+        /* ====== PRINT ====== */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .page {
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .cover {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .section {
+                padding: 2rem 2.5rem;
+            }
+
+            .plan-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cover-kpis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .roi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 2rem 1.5rem;
+            }
+
+            .cover {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .cover-title {
+                font-size: 2rem;
+            }
+
+            .risk-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Print Button -->
+    <div class="no-print">
+        <button class="print-btn" onclick="window.print()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Export as PDF
+        </button>
+    </div>
+
+    <div class="page">
+
+        <!-- ============================= COVER ============================= -->
+        <div class="cover">
+            <div class="cover-bg"></div>
+            <div class="cover-content">
+                <div class="cover-badge">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Cost Analysis Report 2025
+                </div>
+                <h1 class="cover-title">SmartGrocer<br>Back-Office System</h1>
+                <p class="cover-subtitle">Comprehensive Infrastructure & Deployment Cost Report</p>
+
+                <div class="cover-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Prepared For</div>
+                        <div class="meta-value">Dr. / Project Supervisor</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Project Type</div>
+                        <div class="meta-value">Full-Stack Web Application</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Tech Stack</div>
+                        <div class="meta-value">Node.js · MongoDB · Express</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Document Version</div>
+                        <div class="meta-value">v1.0 — February 2025</div>
+                    </div>
+                </div>
+
+                <div class="cover-kpis">
+                    <div class="cover-kpi">
+                        <div class="cover-kpi-val">$0</div>
+                        <div class="cover-kpi-label">Development Cost</div>
+                    </div>
+                    <div class="cover-kpi">
+                        <div class="cover-kpi-val">$0/mo</div>
+                        <div class="cover-kpi-label">Free Tier Hosting</div>
+                    </div>
+                    <div class="cover-kpi">
+                        <div class="cover-kpi-val">$19/mo</div>
+                        <div class="cover-kpi-label">Production Minimum</div>
+                    </div>
+                    <div class="cover-kpi">
+                        <div class="cover-kpi-val">~$57/mo</div>
+                        <div class="cover-kpi-label">Full Production</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================= 1. TECH STACK ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-blue">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Technology Stack Overview</div>
+                    <div class="section-desc">All technologies used and their individual licensing costs</div>
+                </div>
+            </div>
+
+            <table class="cost-table">
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Category</th>
+                        <th>Purpose</th>
+                        <th>License</th>
+                        <th>Monthly Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Node.js v20 LTS</strong></td>
+                        <td>Runtime</td>
+                        <td>Server-side JavaScript execution</td>
+                        <td><span class="badge badge-free">Open Source</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Express.js v4</strong></td>
+                        <td>Framework</td>
+                        <td>REST API & routing</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MongoDB Atlas</strong></td>
+                        <td>Database</td>
+                        <td>Document storage (products, users, sales)</td>
+                        <td><span class="badge badge-free">Free Tier M0</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mongoose ODM</strong></td>
+                        <td>Library</td>
+                        <td>MongoDB object modeling</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JSON Web Tokens (JWT)</strong></td>
+                        <td>Security</td>
+                        <td>Stateless authentication</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>bcryptjs</strong></td>
+                        <td>Security</td>
+                        <td>Password hashing</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nodemailer</strong></td>
+                        <td>Email</td>
+                        <td>Email verification & notifications</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SheetJS (xlsx)</strong></td>
+                        <td>Utility</td>
+                        <td>Excel import/export for products</td>
+                        <td><span class="badge badge-free">Apache 2.0</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multer</strong></td>
+                        <td>Middleware</td>
+                        <td>File upload handling</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Chart.js v4</strong></td>
+                        <td>Frontend</td>
+                        <td>Dashboard charts & analytics</td>
+                        <td><span class="badge badge-free">MIT License</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HTML5 / CSS3 / JavaScript</strong></td>
+                        <td>Frontend</td>
+                        <td>UI, dark mode, bilingual support</td>
+                        <td><span class="badge badge-free">Open Standard</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr class="subtotal">
+                        <td colspan="4"><strong>Total Software Licensing Cost</strong></td>
+                        <td>$0.00 / month</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ============================= 2. HOSTING PLANS ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-green">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M5 12H3l9-9 9 9h-2M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Hosting Plan Comparison</div>
+                    <div class="section-desc">Three deployment options from prototype to full production</div>
+                </div>
+            </div>
+
+            <div class="plan-grid" style="margin-bottom:2rem">
+                <!-- Starter -->
+                <div class="plan-card">
+                    <div class="plan-provider">Render.com</div>
+                    <div class="plan-name">🎓 Academic / Prototype</div>
+                    <div class="plan-price-main">$0</div>
+                    <div class="plan-price-sub">per month — Free Tier</div>
+                    <ul class="plan-features">
+                        <li><span class="check">✓</span> Render.com Free Web Service (spins down after 15 min idle)</li>
+                        <li><span class="check">✓</span> MongoDB Atlas M0 — 512MB free forever</li>
+                        <li><span class="check">✓</span> Custom domain (free subdomain)</li>
+                        <li><span class="check">✓</span> Automatic HTTPS / SSL</li>
+                        <li><span class="check">✓</span> GitHub auto-deploy</li>
+                        <li style="color:#9ca3af">✗ No SLA / may sleep</li>
+                        <li style="color:#9ca3af">✗ Limited to 512MB storage</li>
+                    </ul>
+                    <div class="plan-total">Annual Cost: <strong>$0.00</strong></div>
+                </div>
+
+                <!-- Starter Production -->
+                <div class="plan-card recommended">
+                    <div class="plan-provider">Render.com + Atlas</div>
+                    <div class="plan-name">🚀 Starter Production</div>
+                    <div class="plan-price-main">$19</div>
+                    <div class="plan-price-sub">per month — Best Value</div>
+                    <ul class="plan-features">
+                        <li><span class="check">✓</span> Render Starter Plan — always-on server</li>
+                        <li><span class="check">✓</span> 512MB RAM, 0.5 vCPU</li>
+                        <li><span class="check">✓</span> MongoDB Atlas M2 — 2GB ($9/mo)</li>
+                        <li><span class="check">✓</span> Auto-deploys from GitHub</li>
+                        <li><span class="check">✓</span> Free SSL certificate</li>
+                        <li><span class="check">✓</span> Supports up to ~50 concurrent users</li>
+                        <li><span class="check">✓</span> Zero cold starts</li>
+                    </ul>
+                    <div class="plan-total">Annual Cost: <strong>$228.00</strong></div>
+                </div>
+
+                <!-- Full Production -->
+                <div class="plan-card">
+                    <div class="plan-provider">Railway / AWS EC2</div>
+                    <div class="plan-name">🏢 Full Production</div>
+                    <div class="plan-price-main">$57</div>
+                    <div class="plan-price-sub">per month — Enterprise Ready</div>
+                    <ul class="plan-features">
+                        <li><span class="check">✓</span> Railway Pro ($25/mo) or EC2 t3.small</li>
+                        <li><span class="check">✓</span> MongoDB Atlas M10 ($57/mo) — dedicated</li>
+                        <li><span class="check">✓</span> 10GB storage, 2GB RAM dedicated</li>
+                        <li><span class="check">✓</span> Daily automated backups</li>
+                        <li><span class="check">✓</span> Replica sets for high availability</li>
+                        <li><span class="check">✓</span> Supports 500+ concurrent users</li>
+                        <li><span class="check">✓</span> Full Atlas monitoring & alerts</li>
+                    </ul>
+                    <div class="plan-total">Annual Cost: <strong>~$684.00</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================= 3. DETAILED COST BREAKDOWN ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-orange">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Detailed Monthly Cost Breakdown</div>
+                    <div class="section-desc">Starter Production plan — Recommended for initial deployment</div>
+                </div>
+            </div>
+
+            <table class="cost-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Provider</th>
+                        <th>Specification</th>
+                        <th>Tier</th>
+                        <th>Monthly Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>App Server (Node.js)</strong><br><small style="color:#6b7280">Express.js REST API +
+                                static file serving</small></td>
+                        <td>Render.com</td>
+                        <td>512MB RAM, 0.5 vCPU, always-on</td>
+                        <td><span class="badge badge-low">Starter</span></td>
+                        <td>$10.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MongoDB Database</strong><br><small style="color:#6b7280">Products, users, sales,
+                                sessions</small></td>
+                        <td>MongoDB Atlas</td>
+                        <td>2GB storage, shared vCPU/RAM</td>
+                        <td><span class="badge badge-low">M2 Shared</span></td>
+                        <td>$9.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SSL Certificate</strong><br><small style="color:#6b7280">HTTPS encryption for all
+                                traffic</small></td>
+                        <td>Let's Encrypt (via Render)</td>
+                        <td>Wildcard SSL, auto-renew</td>
+                        <td><span class="badge badge-free">Included</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Domain Name</strong><br><small style="color:#6b7280">yourstore.onrender.com (free)
+                                or custom</small></td>
+                        <td>Render / GoDaddy</td>
+                        <td>Custom .com domain (optional)</td>
+                        <td><span class="badge badge-low">Optional</span></td>
+                        <td>$0 – $1.25</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email Service (SMTP)</strong><br><small style="color:#6b7280">Nodemailer for
+                                verification emails</small></td>
+                        <td>Gmail API / Brevo</td>
+                        <td>Up to 300 emails/day free</td>
+                        <td><span class="badge badge-free">Free Tier</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>File Storage (Uploads)</strong><br><small style="color:#6b7280">Product images,
+                                Excel imports</small></td>
+                        <td>Render Disk</td>
+                        <td>Stored on server (1GB included)</td>
+                        <td><span class="badge badge-free">Included</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CDN / Static Assets</strong><br><small style="color:#6b7280">Chart.js, Google Fonts
+                                via CDN</small></td>
+                        <td>jsDelivr / Google CDN</td>
+                        <td>External CDN (no self-hosting)</td>
+                        <td><span class="badge badge-free">Free</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Monitoring &amp; Alerts</strong><br><small style="color:#6b7280">Atlas performance
+                                advisor + logs</small></td>
+                        <td>MongoDB Atlas</td>
+                        <td>Basic monitoring included in M2</td>
+                        <td><span class="badge badge-free">Included</span></td>
+                        <td>$0.00</td>
+                    </tr>
+                    <tr class="subtotal">
+                        <td colspan="4"><strong>Monthly Total (Starter Production)</strong></td>
+                        <td>$19.00</td>
+                    </tr>
+                    <tr class="subtotal">
+                        <td colspan="4"><strong>Annual Total</strong></td>
+                        <td>$228.00</td>
+                    </tr>
+                    <tr class="grand-total">
+                        <td colspan="4">💰 3-Year Total Cost of Ownership</td>
+                        <td>≈ $684.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ============================= 4. DEVELOPMENT TIMELINE ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-purple">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Development Timeline & Phases</div>
+                    <div class="section-desc">Estimated hours and deliverables per development phase</div>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot" style="background:#2563eb">1</div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="tl-header">
+                            <div class="tl-title">Phase 1 — Backend & Database Setup</div>
+                            <div class="tl-period">∼ 20 hours</div>
+                        </div>
+                        <div class="tl-desc">Setup Express.js server with MongoDB connection, create Mongoose models
+                            (User, Product, Sale), implement JWT authentication middleware, and build core REST API
+                            routes with CRUD operations.</div>
+                        <div class="tl-deliverables">
+                            <span class="tl-tag">server.js</span><span class="tl-tag">User.js model</span><span
+                                class="tl-tag">Product.js model</span>
+                            <span class="tl-tag">Sale.js model</span><span class="tl-tag">auth middleware</span><span
+                                class="tl-tag">4 route files</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot" style="background:#059669">2</div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="tl-header">
+                            <div class="tl-title">Phase 2 — Auth Pages (Login &amp; Signup)</div>
+                            <div class="tl-period">∼ 12 hours</div>
+                        </div>
+                        <div class="tl-desc">Design professional split-screen login and multi-step signup pages with
+                            dark mode, bilingual support, form validation, email verification flow, and password
+                            strength indicators.</div>
+                        <div class="tl-deliverables">
+                            <span class="tl-tag">login.html</span><span class="tl-tag">signup.html</span><span
+                                class="tl-tag">global.css</span>
+                            <span class="tl-tag">app.js utilities</span><span class="tl-tag">3-step wizard</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot" style="background:#7c3aed">3</div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="tl-header">
+                            <div class="tl-title">Phase 3 — Home Page (Marketing)</div>
+                            <div class="tl-period">∼ 8 hours</div>
+                        </div>
+                        <div class="tl-desc">Build a professional landing page with grocery-themed design, features
+                            showcase, step-by-step guide, bilingual persistence, and dark mode toggle.</div>
+                        <div class="tl-deliverables">
+                            <span class="tl-tag">index.html</span><span class="tl-tag">Features section</span>
+                            <span class="tl-tag">How it works</span><span class="tl-tag">CTA section</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot" style="background:#d97706">4</div>
+                        <div class="timeline-line"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="tl-header">
+                            <div class="tl-title">Phase 4 — Core Application Pages</div>
+                            <div class="tl-period">∼ 30 hours</div>
+                        </div>
+                        <div class="tl-desc">Develop 5 functional pages: Dashboard (Chart.js KPIs), Products (CRUD +
+                            Excel import), Sales (POS interface), Inventory (stock tracking), and Reports (4-chart
+                            analytics + print).</div>
+                        <div class="tl-deliverables">
+                            <span class="tl-tag">dashboard.html</span><span class="tl-tag">products.html</span><span
+                                class="tl-tag">sales.html</span>
+                            <span class="tl-tag">inventory.html</span><span class="tl-tag">reports.html</span><span
+                                class="tl-tag">Chart.js integration</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-left">
+                        <div class="timeline-dot" style="background:#dc2626">5</div>
+                        <div class="timeline-line" style="display:none"></div>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="tl-header">
+                            <div class="tl-title">Phase 5 — Deployment &amp; QA</div>
+                            <div class="tl-period">∼ 6 hours</div>
+                        </div>
+                        <div class="tl-desc">Deploy to Render.com, configure MongoDB Atlas, test all API endpoints, fix
+                            cross-browser issues, and finalize documentation.</div>
+                        <div class="tl-deliverables">
+                            <span class="tl-tag">Render deploy</span><span class="tl-tag">MongoDB Atlas setup</span>
+                            <span class="tl-tag">DNS / SSL</span><span class="tl-tag">End-to-end testing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display:flex;gap:2rem;margin-top:1rem;padding:1.25rem;background:var(--gray-50);border-radius:12px;border:1px solid var(--gray-200)">
+                <div>
+                    <div style="font-size:0.78rem;color:var(--gray-400);font-weight:700;text-transform:uppercase">Total
+                        Dev Hours</div>
+                    <div style="font-size:2rem;font-weight:900;color:var(--gray-900)">76 hrs</div>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:var(--gray-400);font-weight:700;text-transform:uppercase">
+                        Freelance Rate (est.)</div>
+                    <div style="font-size:2rem;font-weight:900;color:var(--gray-900)">$30/hr</div>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:var(--gray-400);font-weight:700;text-transform:uppercase">Market
+                        Development Cost</div>
+                    <div style="font-size:2rem;font-weight:900;color:var(--green)">$2,280</div>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:var(--gray-400);font-weight:700;text-transform:uppercase">Actual
+                        Dev Cost (Student)</div>
+                    <div style="font-size:2rem;font-weight:900;color:var(--green)">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================= 5. ROI ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-green">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Business Impact & ROI Estimate</div>
+                    <div class="section-desc">Expected value delivered to a typical grocery store</div>
+                </div>
+            </div>
+
+            <div class="roi-grid">
+                <div class="roi-card" style="background:#d1fae5">
+                    <div class="roi-icon">⏱️</div>
+                    <div class="roi-val" style="color:#059669">5 hrs/week</div>
+                    <div class="roi-label" style="color:#047857">Time Saved on Inventory</div>
+                </div>
+                <div class="roi-card" style="background:#dbeafe">
+                    <div class="roi-icon">📉</div>
+                    <div class="roi-val" style="color:#2563eb">30%</div>
+                    <div class="roi-label" style="color:#1d4ed8">Reduction in Waste / Expiry</div>
+                </div>
+                <div class="roi-card" style="background:#ede9fe">
+                    <div class="roi-icon">💰</div>
+                    <div class="roi-val" style="color:#7c3aed">$400+</div>
+                    <div class="roi-label" style="color:#6d28d9">Monthly Savings Estimate</div>
+                </div>
+                <div class="roi-card" style="background:#fef3c7">
+                    <div class="roi-icon">📊</div>
+                    <div class="roi-val" style="color:#d97706">Real-Time</div>
+                    <div class="roi-label" style="color:#b45309">Sales Insights vs. Manual</div>
+                </div>
+                <div class="roi-card" style="background:#fee2e2">
+                    <div class="roi-icon">🔐</div>
+                    <div class="roi-val" style="color:#dc2626">100%</div>
+                    <div class="roi-label" style="color:#b91c1c">Data Security (JWT + bcrypt)</div>
+                </div>
+                <div class="roi-card" style="background:#f0fdf4">
+                    <div class="roi-icon">📈</div>
+                    <div class="roi-val" style="color:#16a34a">2000%+</div>
+                    <div class="roi-label" style="color:#15803d">ROI vs. Hosting Cost</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================= 6. RISK ANALYSIS ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-orange">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Risk Analysis & Mitigation</div>
+                    <div class="section-desc">Identified technical and financial risks with strategies</div>
+                </div>
+            </div>
+
+            <div class="risk-table-wrap">
+                <div class="risk-row risk-header">
+                    <div>Risk</div>
+                    <div>Severity</div>
+                    <div>Likelihood</div>
+                    <div>Mitigation Strategy</div>
+                </div>
+                <div class="risk-row">
+                    <div><strong>MongoDB free tier full (512MB)</strong></div>
+                    <div><span class="badge badge-mid">Medium</span></div>
+                    <div><span class="badge badge-low">Low</span></div>
+                    <div>Upgrade to M2 ($9/mo) or archive old records</div>
+                </div>
+                <div class="risk-row">
+                    <div><strong>Render free tier sleeps (cold starts)</strong></div>
+                    <div><span class="badge badge-mid">Medium</span></div>
+                    <div><span class="badge badge-high">High</span></div>
+                    <div>Upgrade to Starter plan ($10/mo) for production</div>
+                </div>
+                <div class="risk-row">
+                    <div><strong>JWT secret key exposure</strong></div>
+                    <div><span class="badge badge-high">High</span></div>
+                    <div><span class="badge badge-low">Low</span></div>
+                    <div>Store in environment variables (.env), never in code</div>
+                </div>
+                <div class="risk-row">
+                    <div><strong>Database data loss</strong></div>
+                    <div><span class="badge badge-high">High</span></div>
+                    <div><span class="badge badge-low">Very Low</span></div>
+                    <div>Enable Atlas automated daily backups ($0.14/GB)</div>
+                </div>
+                <div class="risk-row" style="border:none">
+                    <div><strong>Price increase by provider</strong></div>
+                    <div><span class="badge badge-low">Low</span></div>
+                    <div><span class="badge badge-low">Low</span></div>
+                    <div>All code is portable — can migrate to any Node.js host</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================= 7. SUMMARY ============================= -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon si-green">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="section-title">Executive Summary</div>
+                    <div class="section-desc">Final cost assessment and recommendation</div>
+                </div>
+            </div>
+
+            <div class="summary-box" style="background:var(--gray-50);margin-bottom:1.5rem">
+                <div class="summary-item">
+                    <div class="summary-item-label">Software Licensing (All)</div>
+                    <div class="summary-item-value" style="color:var(--green)">$0 / month</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-item-label">Free Tier Hosting (Demo)</div>
+                    <div class="summary-item-value" style="color:var(--blue)">$0 / month</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-item-label">Starter Production (Recommended)</div>
+                    <div class="summary-item-value" style="color:var(--orange)">$19 / month</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-item-label">Full Production (Enterprise)</div>
+                    <div class="summary-item-value" style="color:var(--red)">$57+ / month</div>
+                </div>
+            </div>
+
+            <div
+                style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1px solid #86efac;border-radius:14px;padding:1.5rem">
+                <div style="font-weight:800;color:#15803d;font-size:1rem;margin-bottom:0.75rem">✅ Conclusion</div>
+                <p style="font-size:0.92rem;color:#166534;line-height:1.8">
+                    SmartGrocer Back-Office is built entirely on <strong>open-source, zero-licensing-cost</strong>
+                    technology.
+                    The entire stack (Node.js, Express, MongoDB, Chart.js) is free to use commercially with no royalty
+                    fees.
+                    For academic demonstration, the system can run at <strong>$0/month</strong> using free tiers.
+                    For a real grocery store deployment, the <strong>Starter Production plan at $19/month</strong>
+                    (Render.com + MongoDB Atlas M2)
+                    provides excellent value with always-on service, 2GB database storage, and SSL.
+                    This represents a <strong>95%+ cost saving</strong> versus traditional ERP systems which charge
+                    $200–$2,000/month.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="doc-footer">
+            <div><strong>SmartGrocer Back-Office System</strong> — Cost Analysis Report v1.0</div>
+            <div>Prepared: February 2025 &nbsp;|&nbsp; All prices in USD &nbsp;|&nbsp; Subject to provider changes</div>
+        </div>
+    </div>
+
+</body>
+
+</html>

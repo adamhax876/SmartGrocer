@@ -1,0 +1,275 @@
+const express = require('express');
+const router = express.Router();
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const auth = require('../middleware/auth');
+const crypto = require('crypto');
+const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/email');
+
+// Generate cryptographically secure token
+function generateResetToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            // Return success even if not found for security reasons
+            return res.json({ success: true, message: 'If the email is registered, a reset link was sent.' });
+        }
+
+        const resetToken = generateResetToken();
+        const resetPasswordExpire = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpire = resetPasswordExpire;
+        await user.save();
+
+        // Send Email
+        sendPasswordResetEmail(user.email, user.fullName, resetToken).catch(err => {
+            console.error('⚠️ Reset email failed:', err.message);
+            console.log(`📧 [FALLBACK] Reset token for ${email}: ${resetToken}`);
+        });
+
+        res.json({ success: true, message: 'If the email is registered, a reset link was sent.' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'حدث خطأ في الخادم', error: error.message });
+    }
+});
+
+// POST /api/auth/reset-password
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpire: { $gt: new Date() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'رابط استعادة كلمة المرور غير صالح أو منتهي الصلاحية' });
+        }
+
+        user.password = newPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+
+        res.json({ success: true, message: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'حدث خطأ في الخادم', error: error.message });
+    }
+});
+
+module.exports = router;
+
+// Generate JWT
+function generateToken(id) {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    });
+}
+
+// Generate 6-digit verification code
+function generateCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// POST /api/auth/signup
+router.post('/signup', async (req, res) => {
+    try {
+        const { storeName, storeType, fullName, email, password } = req.body;
+        console.log('📝 Signup attempt:', email);
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            if (existingUser.isVerified) {
+                // Already verified — don't allow re-registration
+                return res.status(400).json({ message: 'هذا البريد الإلكتروني مسجل بالفعل' });
+            }
+            // Not verified — delete the old record and let them re-register
+            await User.deleteOne({ _id: existingUser._id });
+            console.log('🗑️ Deleted old unverified account for:', email);
+        }
+
+        // Generate verification code
+        const verificationCode = generateCode();
+        const verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+        // Create user
+        const user = await User.create({
+            storeName,
+            storeType: storeType || 'supermarket',
+            fullName,
+            email,
+            password,
+            verificationCode,
+            verificationExpires
+        });
+
+        console.log('✅ User created:', user._id);
+
+        // Send verification email (non-blocking — don't hold up the response)
+        sendVerificationEmail(email, verificationCode, fullName).catch(emailErr => {
+            console.error('⚠️ Email send failed:', emailErr.message);
+            console.log(`📧 [FALLBACK] Verification code for ${email}: ${verificationCode}`);
+        });
+
+        console.log('📤 Sending response...');
+        res.status(201).json({
+            message: 'Account created! Please check your email for the verification code.',
+            userId: user._id
+        });
+        console.log('📤 Response sent!');
+        return;
+    } catch (error) {
+        console.error('❌ SIGNUP ERROR:', error.message);
+        return res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+    }
+});
+
+// DEV ONLY: Clear all users
+router.delete('/dev/clear-users', async (req, res) => {
+    const result = await User.deleteMany({});
+    console.log('🗑️ Cleared', result.deletedCount, 'users');
+    res.json({ cleared: result.deletedCount });
+});
+
+// POST /api/auth/verify
+router.post('/verify', async (req, res) => {
+    try {
+        const { userId, code } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'المستخدم غير موجود' });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({ message: 'الحساب مفعّل بالفعل' });
+        }
+
+        if (user.verificationCode !== code) {
+            return res.status(400).json({ message: 'كود التحقق غير صحيح' });
+        }
+
+        if (user.verificationExpires < new Date()) {
+            return res.status(400).json({ message: 'كود التحقق منتهي الصلاحية' });
+        }
+
+        user.isVerified = true;
+        user.verificationCode = undefined;
+        user.verificationExpires = undefined;
+        await user.save();
+
+        const token = generateToken(user._id);
+
+        // Send welcome email (non-blocking)
+        sendWelcomeEmail(user.email, user.fullName, user.storeName).catch(err =>
+            console.error('⚠️ Welcome email failed:', err.message)
+        );
+
+        res.json({
+            message: 'Account verified successfully! Welcome to SmartGrocer.',
+            token,
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                storeName: user.storeName,
+                language: user.language,
+                theme: user.theme
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+    }
+});
+
+// POST /api/auth/login
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Find user
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' });
+        }
+
+        // Check password
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' });
+        }
+
+        // Check if verified
+        if (!user.isVerified) {
+            // Resend verification code
+            const verificationCode = generateCode();
+            user.verificationCode = verificationCode;
+            user.verificationExpires = new Date(Date.now() + 10 * 60 * 1000);
+            await user.save();
+
+            // Send email (non-blocking)
+            sendVerificationEmail(email, verificationCode, user.fullName).catch(emailErr => {
+                console.error('⚠️ Resend email failed:', emailErr.message);
+                console.log(`📧 [FALLBACK] New code for ${email}: ${verificationCode}`);
+            });
+
+            return res.status(403).json({
+                message: 'Account not verified. A new verification code has been sent to your email.',
+                userId: user._id,
+                needsVerification: true,
+                verificationCode: verificationCode // Dev fallback
+            });
+        }
+
+        const token = generateToken(user._id);
+
+        res.json({
+            message: 'تم تسجيل الدخول بنجاح',
+            token,
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                storeName: user.storeName,
+                storeType: user.storeType,
+                language: user.language,
+                theme: user.theme,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+    }
+});
+
+// GET /api/auth/me — get current user
+router.get('/me', auth, async (req, res) => {
+    res.json({ user: req.user });
+});
+
+// PUT /api/auth/settings — update user settings
+router.put('/settings', auth, async (req, res) => {
+    try {
+        const { language, theme } = req.body;
+        const updates = {};
+        if (language) updates.language = language;
+        if (theme) updates.theme = theme;
+
+        const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password');
+        res.json({ user });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ', error: error.message });
+    }
+});
+
+module.exports = router;

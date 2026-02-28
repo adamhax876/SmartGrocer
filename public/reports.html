@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — التقارير الشاملة</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-inline-end: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            padding: 0 .5rem;
+        }
+
+        .sidebar-logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem .85rem;
+            border-radius: 10px;
+            font-size: .92rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-secondary);
+            color: var(--text);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .sidebar-link span:first-child {
+            font-size: 1.15rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .main {
+            flex: 1;
+            margin-inline-start: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .content {
+            padding: 2rem;
+            flex: 1;
+            background: var(--bg);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .kpi-card h3 {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        [dir="ltr"] table {
+            text-align: left;
+        }
+
+        th {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body class="light">
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" width="38" height="38"
+                    style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; padding: 6px;">
+                    <path fill="white"
+                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+                <div class="sidebar-logo-text">SmartGrocer</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
+                        data-i18n="nav_dashboard">لوحة التحكم</span></a>
+                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span
+                        data-i18n="nav_products">المنتجات</span></a>
+                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span
+                        data-i18n="nav_inventory">المخزون</span></a>
+                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
+                        البيع (POS)</span></a>
+                <a href="/sales.html" class="sidebar-link"><span class="icon">💰</span> <span
+                        data-i18n="nav_sales">المبيعات</span></a>
+                <a href="/reports.html" class="sidebar-link active"><span class="icon">📈</span> <span
+                        data-i18n="nav_reports">التقارير</span></a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button onclick="window.location.href='/'" class="btn btn-primary"
+                    style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
+                    الخروج</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="topbar-title" data-i18n="title_reports">التقارير التحليلية المتقدمة</h1>
+                <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
+                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
+                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                    <button class="btn btn-outline" onclick="window.print()" data-i18n="btn_print">🖨️ طباعة
+                        التقرير</button>
+                </div>
+            </header>
+
+            <div class="content" id="reportContent">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <h3 data-i18n="kpi_profit">صافي الربح التقديري</h3>
+                        <div id="stat-profit" class="kpi-value" style="color: #10b981;">0.00</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 data-i18n="kpi_revenue">إجمالي إيرادات المبيعات</h3>
+                        <div id="stat-revenue" class="kpi-value">0.00</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 data-i18n="kpi_cost">تكلفة البضاعة المباعة</h3>
+                        <div id="stat-cost" class="kpi-value" style="color: #ef4444;">0.00</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 data-i18n="kpi_margin">هامش الربح %</h3>
+                        <div id="stat-margin" class="kpi-value" style="color: #8b5cf6;">0%</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h2 data-i18n="chart_trend">اتجاه المبيعات والأرباح (آخر 30 يوم)</h2>
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h2 data-i18n="chart_top">أكثر المنتجات مبيعاً</h2>
+                        <div style="position: relative; height: 250px; width: 100%;">
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <h2 style="margin-bottom: 1rem; color: var(--text);" data-i18n="table_summary">ملخص الأداء المالي
+                        للفئات</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="th_cat">الفئة</th>
+                                <th data-i18n="th_qty">الكمية المباعة</th>
+                                <th data-i18n="th_rev">الإيرادات</th>
+                                <th data-i18n="th_profit">الربح الصافي</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        const translations = {
+            en: {
+                nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports",
+                btn_theme: "Theme", btn_logout: "Logout",
+                title_reports: "Advanced Analytical Reports", btn_print: "Print Report",
+                kpi_profit: "Estimated Net Profit", kpi_revenue: "Total Sales Revenue", kpi_cost: "Cost of Goods Sold", kpi_margin: "Profit Margin %",
+                chart_trend: "Sales & Profit Trend", chart_top: "Top Selling Products",
+                table_summary: "Category Financial Summary",
+                th_cat: "Category", th_qty: "Qty Sold", th_rev: "Revenue", th_profit: "Net Profit"
+            },
+            ar: {
+                nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير",
+                btn_theme: "المظهر", btn_logout: "تسجيل الخروج",
+                title_reports: "التقارير التحليلية المتقدمة", btn_print: "طباعة التقرير",
+                kpi_profit: "صافي الربح التقديري", kpi_revenue: "إجمالي إيرادات المبيعات", kpi_cost: "تكلفة البضاعة المباعة", kpi_margin: "هامش الربح %",
+                chart_trend: "اتجاه المبيعات والأرباح (آخر 30 يوم)", chart_top: "أكثر المنتجات مبيعاً",
+                table_summary: "ملخص الأداء المالي للفئات",
+                th_cat: "الفئة", th_qty: "الكمية المباعة", th_rev: "الإيرادات", th_profit: "الربح الصافي"
+            }
+        };
+
+        const savedTheme = localStorage.getItem('sg_theme') || 'light';
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = currentLang;
+        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+        document.body.className = savedTheme;
+
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+        }
+        updateTexts();
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('sg_lang', currentLang);
+            updateTexts();
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!getToken()) { window.location.href = '/login.html'; return; }
+
+            try {
+                // Fetch full sales & products to compute advanced reports internally
+                const [salesRes, productsRes] = await Promise.all([
+                    api('/api/sales'),
+                    api('/api/products')
+                ]);
+
+                const sales = salesRes.sales;
+                const products = productsRes.products;
+
+                let totalRevenue = 0;
+                let totalCost = 0;
+                const catStats = {};
+                const prodStats = {};
+                const dailyStats = {};
+
+                // Process Sales History
+                sales.forEach(sale => {
+                    totalRevenue += sale.totalAmount;
+                    const dateStr = sale.createdAt.split('T')[0];
+                    if (!dailyStats[dateStr]) dailyStats[dateStr] = { revenue: 0, cost: 0, profit: 0 };
+                    dailyStats[dateStr].revenue += sale.totalAmount;
+
+                    sale.items.forEach(item => {
+                        // Find original product to get Cost
+                        const prod = products.find(p => p._id === (item.product ? item.product._id : item.product));
+                        const itemCost = prod ? prod.cost : (item.price * 0.7); // Guess 70% cost if deleted
+                        const itemProfit = (item.price - itemCost) * item.quantity;
+                        const cat = prod ? prod.category : 'other';
+                        const pName = prod ? prod.name : 'Unknown';
+
+                        totalCost += (itemCost * item.quantity);
+                        dailyStats[dateStr].cost += (itemCost * item.quantity);
+                        dailyStats[dateStr].profit += itemProfit;
+
+                        // Category Stats accumulation
+                        if (!catStats[cat]) catStats[cat] = { qty: 0, rev: 0, profit: 0 };
+                        catStats[cat].qty += item.quantity;
+                        catStats[cat].rev += (item.price * item.quantity);
+                        catStats[cat].profit += itemProfit;
+
+                        // Product Stats accumulation
+                        if (!prodStats[pName]) prodStats[pName] = { qty: 0, rev: 0 };
+                        prodStats[pName].qty += item.quantity;
+                        prodStats[pName].rev += (item.price * item.quantity);
+                    });
+                });
+
+                const totalProfit = totalRevenue - totalCost;
+                const margin = totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : 0;
+
+                // Update KPIs
+                document.getElementById('stat-profit').textContent = totalProfit.toFixed(2);
+                document.getElementById('stat-revenue').textContent = totalRevenue.toFixed(2);
+                document.getElementById('stat-cost').textContent = totalCost.toFixed(2);
+                document.getElementById('stat-margin').textContent = margin + '%';
+
+                // Render Table
+                const tbody = document.getElementById('categoryTableBody');
+                if (Object.keys(catStats).length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">لا توجد مبيعات مسجلة للتحليل</td></tr>`;
+                } else {
+                    tbody.innerHTML = Object.entries(catStats).map(([cat, stat]) => `
+                        <tr>
+                            <td><strong>${cat}</strong></td>
+                            <td>${stat.qty}</td>
+                            <td style="color: var(--primary); font-weight: bold;">${stat.rev.toFixed(2)}</td>
+                            <td style="color: #10b981;">${stat.profit.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Render Charts
+                Chart.defaults.color = savedTheme === 'dark' ? '#94a3b8' : '#64748b';
+                Chart.defaults.borderColor = savedTheme === 'dark' ? '#334155' : '#e2e8f0';
+
+                // Chart 1: Trend
+                const dates = Object.keys(dailyStats).sort();
+                const revData = dates.map(d => dailyStats[d].revenue);
+                const profData = dates.map(d => dailyStats[d].profit);
+
+                new Chart(document.getElementById('trendChart'), {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [
+                            { label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue', data: revData, borderColor: '#4F46E5', backgroundColor: 'rgba(79, 70, 229, 0.1)', fill: true, tension: 0.4 },
+                            { label: currentLang === 'ar' ? 'الربح' : 'Profit', data: profData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                // Chart 2: Top Products
+                const topProducts = Object.entries(prodStats).sort((a, b) => b[1].qty - a[1].qty).slice(0, 5);
+
+                new Chart(document.getElementById('topProductsChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: topProducts.map(p => p[0]),
+                        datasets: [{
+                            label: currentLang === 'ar' ? 'الكمية المباعة' : 'Qty Sold',
+                            data: topProducts.map(p => p[1].qty),
+                            backgroundColor: '#8b5cf6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+            } catch (e) { console.error("Report generation failed:", e); }
+        });
+    </script>
+</body>
+
+</html>

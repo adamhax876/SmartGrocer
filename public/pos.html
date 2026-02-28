@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — نقطة البيع السريعة (POS)</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        /* Prevent global scroll for POS */
+        .pos-container {
+            display: flex;
+            height: 100vh;
+            background: var(--bg);
+        }
+
+        /* Left Panel - Cart */
+        .pos-cart {
+            width: 35%;
+            background: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            border-inline-end: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .cart-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .cart-item-info {
+            flex: 1;
+            margin-inline-end: 1rem;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .cart-item-price {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            border-radius: 4px;
+            padding: 2px;
+        }
+
+        .cart-item-remove {
+            color: var(--error);
+            cursor: pointer;
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            font-size: 1.2rem;
+        }
+
+        /* Summary & Pay */
+        .cart-summary {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text);
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.2rem;
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pay-btn small {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+
+        /* Right Panel - Products */
+        .pos-products {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            overflow: hidden;
+        }
+
+        .topbar {
+            padding: 1rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            display: flex;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 1rem;
+            color: var(--text-secondary);
+        }
+
+        [dir="ltr"] .search-icon {
+            right: auto;
+            left: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-lg);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        [dir="ltr"] .search-input {
+            padding: 0.8rem 2.5rem 0.8rem 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .categories-scroll {
+            padding: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .categories-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .cat-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .products-grid {
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            overflow-y: auto;
+            flex: 1;
+            align-content: flex-start;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:active {
+            transform: scale(0.95);
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-name {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.8em;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .product-stock {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            grid-column: 1 / -1;
+        }
+
+        /* Receipt Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .receipt-card {
+            background: #fff;
+            width: 350px;
+            padding: 2rem;
+            border-radius: 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            color: #000;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 1rem;
+        }
+
+        .receipt-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .receipt-items {
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .r-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .r-total-sec {
+            border-top: 2px dashed #ccc;
+            padding-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .r-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .receipt-card,
+            .receipt-card * {
+                visibility: visible;
+            }
+
+            .receipt-card {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="light">
+    <div class="pos-container">
+
+        <!-- RIGHT PANEL (Cart Details) -->
+        <div class="pos-cart">
+            <div class="cart-header">
+                <h2>🛒 <span data-i18n="cart_title">سلة المشتريات</span></h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-outline" onclick="clearCart()" style="padding: 0.5rem;"
+                        title="حذف الكل">🗑️</button>
+                    <a href="/dashboard.html" class="btn btn-outline" style="padding: 0.5rem;" title="رجوع للوحة">🔙</a>
+                </div>
+            </div>
+
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items injected here -->
+                <div class="no-data" style="margin: auto;" data-i18n="cart_empty">السلة فارغة. ابدأ بإضافة المنتجات.
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span data-i18n="sum_subtotal">المجموع الفرعي</span>
+                    <span id="subTotal">0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span data-i18n="sum_tax">الضريبة (14%)</span>
+                    <span id="taxAmount">0.00</span>
+                </div>
+                <div class="summary-total">
+                    <span data-i18n="sum_total">الإجمالي المطلوب</span>
+                    <span id="finalTotal">0.00 ج.م</span>
+                </div>
+                <button class="btn btn-primary pay-btn" onclick="processPayment()" id="payBtn" disabled>
+                    <div>
+                        <span data-i18n="btn_pay">دفع وإصدار الفاتورة</span><br>
+                        <small data-i18n="pay_hint">اضغط F8 للدفع السريع</small>
+                    </div>
+                    <span>💸</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- LEFT PANEL (Products & Search) -->
+        <div class="pos-products">
+            <div class="topbar">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="barcodeInput"
+                        placeholder=" ابحث بالاسم أو امسح الباركود المباشر..." autofocus autocomplete="off">
+                </div>
+                <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                    style="white-space: nowrap;">English</button>
+                <button onclick="toggleTheme()" class="btn btn-outline" style="white-space: nowrap;">🌓</button>
+            </div>
+
+            <div class="categories-scroll" id="catContainer">
+                <button class="cat-btn active" onclick="filterCat('all')">الكل</button>
+                <button class="cat-btn" onclick="filterCat('groceries')">بقالة</button>
+                <button class="cat-btn" onclick="filterCat('dairy')">ألبان</button>
+                <button class="cat-btn" onclick="filterCat('beverages')">مشروبات</button>
+                <button class="cat-btn" onclick="filterCat('snacks')">تسالي</button>
+            </div>
+
+            <div class="products-grid" id="productsGrid">
+                <!-- Products injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal" id="receiptModal">
+        <div class="receipt-card" id="printableReceipt">
+            <button class="close-btn no-print" onclick="closeReceipt()"
+                style="position: absolute; right: 10px; top: 10px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;">&times;</button>
+
+            <div class="receipt-header">
+                <h2 id="rStoreName">Smart Grocer POS</h2>
+                <div style="font-size: 0.8rem; color: #555;">
+                    مبيعات تجزئة - فاتورة ضريبية مبسطة<br>
+                    التاريخ: <span id="rDate"></span>
+                </div>
+            </div>
+
+            <div class="receipt-items" id="rItemsList">
+                <!-- Items list -->
+            </div>
+
+            <div class="r-total-sec">
+                <div class="r-item" style="color: #666; font-size: 0.85rem;">
+                    <span>المجموع قبل الضريبة:</span>
+                    <span id="rSub">0.00</span>
+                </div>
+                <div class="r-item" style="color: #666; font-size: 0.85rem;">
+                    <span>الضريبة (14%):</span>
+                    <span id="rTax">0.00</span>
+                </div>
+                <div class="r-total-row" style="margin-top: 0.5rem;">
+                    <span>الإجمالي (شامل الضريبة):</span>
+                    <span id="rTotal">0.00</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;">
+                شكراً لزيارتكم! 🌟<br>
+                النظام مدعوم بواسطة SmartGrocer
+            </div>
+
+            <button class="btn btn-primary no-print" onclick="window.print()"
+                style="width: 100%; margin-top: 2rem; padding: 1rem;">🖨️ طباعة الفاتورة</button>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        // Core POS Logic
+        let allProducts = [];
+        let cart = [];
+        const TAX_RATE = 0.14;
+
+        // I18n Setup
+        const translations = {
+            en: {
+                cart_title: "Shopping Cart", cart_empty: "Cart is empty. Add products to start.",
+                sum_subtotal: "Subtotal", sum_tax: "Tax (14%)", sum_total: "Total Due",
+                btn_pay: "Pay & Print Receipt", pay_hint: "Press F8 for quick pay",
+                search_placeholder: "Search by name or scan barcode..."
+            },
+            ar: {
+                cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
+                sum_subtotal: "المجموع الفرعي", sum_tax: "الضريبة (14%)", sum_total: "الإجمالي المطلوب",
+                btn_pay: "دفع وإصدار الفاتورة", pay_hint: "اضغط F8 للدفع السريع",
+                search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = currentLang;
+        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+        document.body.className = localStorage.getItem('sg_theme') || 'light';
+
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+            document.getElementById('barcodeInput').placeholder = translations[currentLang].search_placeholder;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('sg_lang', currentLang);
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+            document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+            updateTexts();
+            renderCart(); // Re-render cart elements
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!getToken()) { window.location.href = '/login.html'; return; }
+            updateTexts();
+            await fetchProducts();
+
+            // Global Hotkeys
+            document.addEventListener('keydown', (e) => {
+                // Focus scanner input on any keypress (if not in input)
+                if (document.activeElement.tagName !== 'INPUT' && e.key.length === 1) {
+                    document.getElementById('barcodeInput').focus();
+                }
+
+                // F8 for quick checkout
+                if (e.key === 'F8') {
+                    e.preventDefault();
+                    if (cart.length > 0) processPayment();
+                }
+            });
+
+            // Search Barcode Listener
+            document.getElementById('barcodeInput').addEventListener('keyup', (e) => {
+                const term = e.target.value.toLowerCase();
+                if (e.key === 'Enter' && term.trim() !== '') {
+                    // Try exact match first for barcode scanner emulation
+                    const exact = allProducts.find(p => p.name.toLowerCase() === term || (p._id && p._id.endsWith(term)));
+                    if (exact) { addToCart(exact); e.target.value = ''; return; }
+                }
+                renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(term)));
+            });
+        });
+
+        async function fetchProducts() {
+            try {
+                const res = await api('/api/products');
+                allProducts = res.products.filter(p => p.quantity > 0); // Only show in-stock items
+                renderProducts(allProducts);
+            } catch (e) { console.error("Error loading POS products", e); }
+        }
+
+        function filterCat(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            if (cat === 'all') renderProducts(allProducts);
+            else renderProducts(allProducts.filter(p => p.category === cat));
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            if (products.length === 0) {
+                grid.innerHTML = `<div class="no-data">لا توجد منتجات متطابقة</div>`;
+                return;
+            }
+            grid.innerHTML = products.map(p => `
+                <div class="product-card" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-price">${p.price.toFixed(2)}</div>
+                    <div class="product-stock">متبقي: ${p.quantity}</div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Management
+        function addToCart(product) {
+            const existing = cart.find(item => item._id === product._id);
+            if (existing) {
+                if (existing.cartQty < product.quantity) existing.cartQty++;
+                else alert('أقصى كمية متوفرة في المخزون');
+            } else {
+                cart.push({ ...product, cartQty: 1 });
+            }
+            renderCart();
+            // Beep sound (Optional enhancement for POS feel)
+        }
+
+        function updateItemQty(id, delta) {
+            const item = cart.find(i => i._id === id);
+            if (!item) return;
+            item.cartQty += delta;
+            if (item.cartQty <= 0) cart = cart.filter(i => i._id !== id);
+            else if (item.cartQty > item.quantity) {
+                item.cartQty = item.quantity;
+                alert('الكمية المطلوبة غير متوفرة بالكامل');
+            }
+            renderCart();
+        }
+
+        function setItemQty(id, val) {
+            const qty = parseInt(val);
+            if (isNaN(qty) || qty <= 0) {
+                cart = cart.filter(i => i._id !== id);
+            } else {
+                const item = cart.find(i => i._id === id);
+                if (qty > item.quantity) { item.cartQty = item.quantity; alert('تجاوزت المتوفر'); }
+                else item.cartQty = qty;
+            }
+            renderCart();
+        }
+
+        function removeItem(id) {
+            cart = cart.filter(i => i._id !== id);
+            renderCart();
+        }
+
+        function clearCart() {
+            if (confirm('تأكيد مسح السلة؟')) { cart = []; renderCart(); }
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            const btnPay = document.getElementById('payBtn');
+            let subT = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="no-data" style="margin: auto;" data-i18n="cart_empty">${translations[currentLang].cart_empty}</div>`;
+                document.getElementById('subTotal').textContent = '0.00';
+                document.getElementById('taxAmount').textContent = '0.00';
+                document.getElementById('finalTotal').innerHTML = formatMoney(0);
+                btnPay.disabled = true;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => {
+                const itemTotal = item.price * item.cartQty;
+                subT += itemTotal;
+                return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">${item.price.toFixed(2)}</div>
+                    </div>
+                    <div class="cart-item-qty">
+                        <button class="qty-btn" onclick="updateItemQty('${item._id}', 1)">+</button>
+                        <input type="text" class="qty-input" value="${item.cartQty}" onchange="setItemQty('${item._id}', this.value)">
+                        <button class="qty-btn" onclick="updateItemQty('${item._id}', -1)">−</button>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeItem('${item._id}')">×</button>
+                </div>
+                `;
+            }).join('');
+
+            const tax = subT * TAX_RATE;
+            const total = subT + tax;
+
+            document.getElementById('subTotal').textContent = subT.toFixed(2);
+            document.getElementById('taxAmount').textContent = tax.toFixed(2);
+            document.getElementById('finalTotal').innerHTML = formatMoney(total);
+            btnPay.disabled = false;
+        }
+
+        // Checkout & Printing
+        async function processPayment() {
+            if (cart.length === 0) return;
+            const btnPayload = cart.map(item => ({
+                product: item._id,
+                quantity: item.cartQty,
+                price: item.price
+            }));
+
+            const totalAmount = parseFloat(document.getElementById('finalTotal').textContent);
+
+            try {
+                document.getElementById('payBtn').disabled = true;
+
+                // Real-world: This calls the Sales API
+                const res = await api('/api/sales', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        items: btnPayload,
+                        totalAmount: totalAmount,
+                        paymentMethod: 'cash'
+                    })
+                });
+
+                // Generate Receipt
+                generateReceipt(cart, res.sale);
+
+                // Clear state
+                cart = [];
+                renderCart();
+                fetchProducts(); // Refresh stock locally
+
+            } catch (e) {
+                alert('فشلت عملية البيع: ' + e.message);
+                document.getElementById('payBtn').disabled = false;
+            }
+        }
+
+        function generateReceipt(items, saleData) {
+            const user = getUser();
+            document.getElementById('rStoreName').textContent = user.storeName || 'SmartGrocer POS';
+            document.getElementById('rDate').textContent = new Date().toLocaleString('ar-EG');
+
+            const rList = document.getElementById('rItemsList');
+            rList.innerHTML = items.map(i => `
+                <div class="r-item">
+                    <span style="flex:1;">${i.name}</span>
+                    <span style="width:30px;text-align:center;">${i.cartQty}</span>
+                    <span style="width:60px;text-align:left;">${(i.price * i.cartQty).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('rSub').textContent = document.getElementById('subTotal').textContent;
+            document.getElementById('rTax').textContent = document.getElementById('taxAmount').textContent;
+            document.getElementById('rTotal').textContent = document.getElementById('finalTotal').textContent;
+
+            document.getElementById('receiptModal').classList.add('active');
+        }
+
+        function closeReceipt() {
+            document.getElementById('receiptModal').classList.remove('active');
+        }
+    </script>
+</body>
+
+</html>

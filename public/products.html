@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — المنتجات</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-inline-end: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            padding: 0 .5rem;
+        }
+
+        .sidebar-logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem .85rem;
+            border-radius: 10px;
+            font-size: .92rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-secondary);
+            color: var(--text);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .sidebar-link span:first-child {
+            font-size: 1.15rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .main {
+            flex: 1;
+            margin-inline-start: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .content {
+            padding: 2rem;
+            flex: 1;
+            background: var(--bg);
+        }
+
+        .table-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        [dir="ltr"] table {
+            text-align: left;
+        }
+
+        th {
+            padding: 1.2rem 1.5rem;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 500px;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        [dir="ltr"] .close-btn {
+            right: auto;
+            left: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+
+<body class="light">
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" width="38" height="38"
+                    style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; padding: 6px;">
+                    <path fill="white"
+                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+                <div class="sidebar-logo-text">SmartGrocer</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
+                        data-i18n="nav_dashboard">لوحة التحكم</span></a>
+                <a href="/products.html" class="sidebar-link active"><span class="icon">📦</span> <span
+                        data-i18n="nav_products">المنتجات</span></a>
+                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
+                        البيع (POS)</span></a>
+                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span
+                        data-i18n="nav_reports">التقارير</span></a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button onclick="window.location.href='/'" class="btn btn-primary"
+                    style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
+                    الخروج</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="topbar-title" data-i18n="title_products">قائمة المنتجات</h1>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
+                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('excelUpload').click()"
+                        data-i18n="btn_import_excel">استيراد من إكسيل 📊</button>
+                    <input type="file" id="excelUpload" accept=".xlsx, .xls" style="display: none;"
+                        onchange="importExcel(event)">
+                    <button class="btn btn-primary" onclick="openModal()" data-i18n="btn_add_product">إضافة منتج
+                        +</button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="th_name">اسم المنتج</th>
+                                <th data-i18n="th_category">الفئة</th>
+                                <th data-i18n="th_price">سعر البيع</th>
+                                <th data-i18n="th_cost">التكلفة</th>
+                                <th data-i18n="th_qty">الكمية بالمخزون</th>
+                                <th data-i18n="th_status">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 class="modal-title" data-i18n="modal_title">إضافة منتج جديد</h2>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <div class="form-group">
+                    <label data-i18n="label_pname">اسم المنتج</label>
+                    <input type="text" class="form-control" id="p_name" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_pcat">الفئة</label>
+                    <select class="form-control" id="p_cat" required>
+                        <option value="groceries">بقالة عادية</option>
+                        <option value="dairy">ألبان وأجبان</option>
+                        <option value="meat">لحوم ومجمدات</option>
+                        <option value="beverages">مشروبات وعصائر</option>
+                        <option value="snacks">تسالي وحلويات</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label data-i18n="label_pcost">التكلفة</label>
+                        <input type="number" class="form-control" id="p_cost" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="label_pprice">سعر البيع</label>
+                        <input type="number" class="form-control" id="p_price" step="0.01" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label data-i18n="label_pqty">الكمية الابتدائية</label>
+                        <input type="number" class="form-control" id="p_qty" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="label_punit">الوحدة</label>
+                        <select class="form-control" id="p_unit">
+                            <option value="piece" data-i18n="unit_piece">قطعة</option>
+                            <option value="kg" data-i18n="unit_kg">كيلو</option>
+                            <option value="liter" data-i18n="unit_liter">لتر</option>
+                            <option value="box" data-i18n="unit_box">كرتونة</option>
+                            <option value="pack" data-i18n="unit_pack">عبوة</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="label_pbarcode">الباركود (اختياري)</label>
+                    <input type="text" class="form-control" id="p_barcode" placeholder="امسح الباركود هنا...">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"
+                    data-i18n="btn_save">حفظ المنتج</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        const translations = {
+            en: {
+                nav_dashboard: "Dashboard", nav_products: "Products", nav_pos: "POS System", nav_reports: "Reports",
+                btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home",
+                title_products: "Products Inventory", btn_add_product: "Add Product +", btn_import_excel: "Import Excel 📊",
+                th_name: "Product Name", th_category: "Category", th_price: "Selling Price", th_cost: "Cost Price", th_qty: "Stock Qty", th_status: "Status",
+                modal_title: "Add New Product", label_pname: "Product Name", label_pcat: "Category", label_pcost: "Cost Price", label_pprice: "Selling Price", label_pqty: "Initial Quantity", btn_save: "Save Product",
+                label_punit: "Unit", unit_piece: "Piece", unit_kg: "Kg", unit_liter: "Liter", unit_box: "Box", unit_pack: "Pack", label_pbarcode: "Barcode (Optional)"
+            },
+            ar: {
+                nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_pos: "نقطة البيع (POS)", nav_reports: "التقارير",
+                btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية",
+                title_products: "قائمة المنتجات", btn_add_product: "إضافة منتج +", btn_import_excel: "استيراد من إكسيل 📊",
+                th_name: "اسم المنتج", th_category: "الفئة", th_price: "سعر البيع", th_cost: "التكلفة", th_qty: "الكمية بالمخزون", th_status: "الحالة",
+                modal_title: "إضافة منتج جديد", label_pname: "اسم المنتج", label_pcat: "الفئة", label_pcost: "التكلفة", label_pprice: "سعر البيع", label_pqty: "الكمية الابتدائية", btn_save: "حفظ المنتج",
+                label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)"
+            }
+        };
+
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = currentLang;
+        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+        document.body.className = localStorage.getItem('sg_theme') || 'light';
+
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+        }
+        updateTexts();
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('sg_lang', currentLang);
+            updateTexts();
+            location.reload();
+        }
+
+        function openModal() { document.getElementById('addProductModal').classList.add('active'); }
+        function closeModal() { document.getElementById('addProductModal').classList.remove('active'); document.getElementById('productForm').reset(); }
+
+        async function loadProducts() {
+            try {
+                const res = await api('/api/products');
+                const tbody = document.getElementById('productsTableBody');
+
+                if (res.products.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">لا توجد منتجات حالياً. أضف منتجك الأول!</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = res.products.map(p => {
+                    let statusHtml = '';
+                    if (p.quantity === 0) statusHtml = `<span class="badge badge-error">نفذت الكمية</span>`;
+                    else if (p.quantity <= 10) statusHtml = `<span class="badge badge-warning">قاربت على النفاذ</span>`;
+                    else statusHtml = `<span class="badge badge-success">متوفر</span>`;
+
+                    return `
+                        <tr>
+                            <td><strong>${p.name}</strong></td>
+                            <td style="color: var(--text-secondary);">${p.category}</td>
+                            <td style="color: var(--primary); font-weight: bold;">${p.price.toFixed(2)}</td>
+                            <td>${(p.costPrice || 0).toFixed(2)}</td>
+                            <td>${p.quantity}</td>
+                            <td>${statusHtml}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                await api('/api/products', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: document.getElementById('p_name').value,
+                        category: document.getElementById('p_cat').value,
+                        costPrice: parseFloat(document.getElementById('p_cost').value),
+                        price: parseFloat(document.getElementById('p_price').value),
+                        quantity: parseInt(document.getElementById('p_qty').value),
+                        unit: document.getElementById('p_unit').value,
+                        barcode: document.getElementById('p_barcode').value
+                    })
+                });
+                closeModal();
+                loadProducts();
+            } catch (e) {
+                alert('خطأ في إضافة المنتج');
+            }
+            btn.disabled = false;
+        }
+
+        async function importExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const token = getToken();
+            try {
+                const res = await fetch('/api/products/import', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Error importing Excel');
+
+                alert(data.message);
+                loadProducts();
+            } catch (err) {
+                alert(err.message);
+            }
+
+            // reset file input
+            event.target.value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!getToken()) window.location.href = '/login.html';
+            else loadProducts();
+        });
+    </script>
+</body>
+
+</html>

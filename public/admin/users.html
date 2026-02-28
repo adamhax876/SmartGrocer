@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المتاجر | Smart Grocer Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 for nice alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+        <div class="h-16 flex items-center justify-center border-b border-gray-800">
+            <h1 class="text-xl font-bold"><i class="fas fa-bolt text-yellow-400 mr-2"></i> SmartGrocer SaaS</h1>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-2 px-3">
+                <li>
+                    <a href="/admin/dashboard.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>الرئيسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/users.html"
+                        class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white">
+                        <i class="fas fa-store"></i>
+                        <span>المتاجر المشتركة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/plans.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fas fa-layer-group"></i>
+                        <span>باقات الاشتراك</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/settings.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
+                        <i class="fas fa-cogs"></i>
+                        <span>إعدادات النظام</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="p-4 border-t border-gray-800">
+            <button onclick="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>تسجيل خروج</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-6">
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-semibold text-gray-800">إدارة المتاجر (المشتركين)</h2>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <!-- Search & Filter -->
+                <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+                    <div class="relative w-full md:w-96">
+                        <input type="text" id="searchInput" placeholder="ابحث باسم المتجر..."
+                            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div>
+                        <button onclick="openMessageModal('all')"
+                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold shadow-sm flex items-center gap-2">
+                            <i class="fas fa-paper-plane"></i> إرسال إشعار للجميع
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm text-gray-700">
+                        <thead class="text-xs text-gray-600 uppercase bg-gray-50 border-b">
+                            <tr>
+                                <th class="px-4 py-3">المتجر / المالك</th>
+                                <th class="px-4 py-3">البريد الإلكتروني</th>
+                                <th class="px-4 py-3">النوع</th>
+                                <th class="px-4 py-3">تاريخ الانضمام</th>
+                                <th class="px-4 py-3">الحالة</th>
+                                <th class="px-4 py-3 text-center">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Edit Modal Overlay -->
+        <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex-col items-center justify-center z-50">
+            <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
+                <button onclick="closeEditModal()" class="absolute top-4 left-4 text-gray-500 hover:text-gray-800">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <div class="mb-4 border-b pb-3">
+                    <h3 class="text-xl font-bold text-gray-900">إدارة تفاصيل المتجر</h3>
+                    <p class="text-sm text-gray-500" id="modalStoreName"></p>
+                </div>
+
+                <div id="modalContent" class="space-y-4">
+                    <!-- Loaded dynamically -->
+                    <div class="text-center py-8"><i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i></div>
+                </div>
+
+                <div class="mt-6 flex gap-3 justify-end pt-4 border-t hidden" id="modalFooter">
+                    <button onclick="closeEditModal()"
+                        class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">إلغاء</button>
+                    <button onclick="saveStoreChanges()" id="saveBtn"
+                        class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                        حفظ التعديلات
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Modal Overlay -->
+        <div id="msgModal" class="fixed inset-0 bg-black/50 hidden flex-col items-center justify-center z-50">
+            <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 relative">
+                <button onclick="closeMessageModal()" class="absolute top-4 left-4 text-gray-500 hover:text-gray-800">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <div class="mb-4 border-b pb-3">
+                    <h3 class="text-xl font-bold text-gray-900">إرسال إشعار</h3>
+                    <p class="text-sm text-gray-500" id="msgTargetName">إلى جميع المتاجر</p>
+                </div>
+                <div class="space-y-4">
+                    <input type="hidden" id="msgReceiverId">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">عنوان الرسالة</label>
+                        <input type="text" id="msgTitle"
+                            class="w-full border-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">محتوى الرسالة</label>
+                        <textarea id="msgContent" rows="4"
+                            class="w-full border-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">رابط صورة (اختياري)</label>
+                        <input type="url" id="msgImage" placeholder="https://..."
+                            class="w-full border-gray-300 rounded-lg shadow-sm focus:border-purple-500 focus:ring-purple-500 p-2 border">
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3 justify-end pt-4 border-t">
+                    <button onclick="closeMessageModal()"
+                        class="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">إلغاء</button>
+                    <button onclick="sendMessage()" id="sendMsgBtn"
+                        class="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 flex items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> إرسال
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '/admin/login.html';
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login.html';
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    renderTable(data.data);
+                } else {
+                    Swal.fire('خطأ', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('usersTable');
+            tbody.innerHTML = users.map(user => `
+                <tr class="border-b hover:bg-gray-50 transition">
+                    <td class="px-4 py-4">
+                        <p class="font-bold text-gray-900">${user.storeName}</p>
+                        <p class="text-xs text-gray-500">${user.fullName}</p>
+                    </td>
+                    <td class="px-4 py-4">${user.email}</td>
+                    <td class="px-4 py-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                            ${user.storeType}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</td>
+                    <td class="px-4 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                            ${user.status === 'active' ? 'نشط' : 'موقوف'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 flex justify-center gap-2">
+                        ${user.status === 'active'
+                    ? `<button onclick="toggleUserStatus('${user._id}', 'suspend')" class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 text-xs" title="إيقاف"><i class="fas fa-ban"></i></button>`
+                    : `<button onclick="toggleUserStatus('${user._id}', 'activate')" class="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs" title="تفعيل"><i class="fas fa-check"></i></button>`
+                }
+                        <button onclick="openEditModal('${user._id}')" class="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs" title="إدارة/تعديل المتجر">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="openMessageModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200 text-xs" title="إرسال رسالة">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        <button onclick="deleteUser('${user._id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs" title="حذف بالكامل">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function toggleUserStatus(id, action) {
+            try {
+                const res = await fetch(`/api/admin/users/${id}/${action}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        title: 'تم بنجاح',
+                        text: data.message,
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                    fetchUsers(); // Refresh
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function deleteUser(id) {
+            const confirmed = await Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "لن تتمكن من استعادة هذا المتجر!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء'
+            });
+
+            if (confirmed.isConfirmed) {
+                try {
+                    const res = await fetch(`/api/admin/users/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        Swal.fire('تم الحذف!', data.message, 'success');
+                        fetchUsers();
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        }
+
+        let currentEditingUserId = null;
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.getElementById('editModal').classList.remove('flex');
+            currentEditingUserId = null;
+        }
+
+        async function openEditModal(userId) {
+            currentEditingUserId = userId;
+            const modal = document.getElementById('editModal');
+            const content = document.getElementById('modalContent');
+            const footer = document.getElementById('modalFooter');
+            const storeNameHeader = document.getElementById('modalStoreName');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            content.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i></div>';
+            footer.classList.add('hidden');
+            storeNameHeader.textContent = 'جار التحميل...';
+
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    content.innerHTML = `<div class="text-red-500 text-center">${data.message}</div>`;
+                    return;
+                }
+
+                const { user, subscription, plans } = data.data;
+                storeNameHeader.textContent = user.storeName + ' (' + user.email + ')';
+
+                const currentPlanId = subscription && subscription.plan ? subscription.plan._id.toString() : '';
+
+                const plansOptions = plans.map(p =>
+                    `<option value="${p._id}" ${currentPlanId === p._id.toString() ? 'selected' : ''}>${p.name} - (المنتجات: ${p.features.maxProducts})</option>`
+                ).join('');
+
+                content.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg border">
+                            <span class="block text-xs text-gray-500 mb-1">الاسم الكامل</span>
+                            <span class="font-semibold">${user.fullName}</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg border">
+                            <span class="block text-xs text-gray-500 mb-1">تاريخ التسجيل</span>
+                            <span class="font-semibold">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الباقة الحالية وتغييرها</label>
+                        <select id="planSelect" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                            <option value="">-- اختر الباقة --</option>
+                            ${plansOptions}
+                        </select>
+                        <p class="text-xs text-gray-500 mt-2"><i class="fas fa-info-circle"></i> تغيير الباقة سيتم تطبيقه فوراً وسيعيد تعيين حدود المتجر بناءً على الباقة المختارة.</p>
+                    </div>
+                `;
+
+                footer.classList.remove('hidden');
+            } catch (e) {
+                content.innerHTML = `<div class="text-red-500 text-center">حدث خطأ في جلب البيانات</div>`;
+            }
+        }
+
+        async function saveStoreChanges() {
+            const planId = document.getElementById('planSelect').value;
+            if (!planId) {
+                Swal.fire('خطأ', 'الرجاء اختيار باقة', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+            try {
+                const res = await fetch(`/api/admin/users/${currentEditingUserId}/subscription`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ planId })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({ title: 'تم', text: data.message, icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                    closeEditModal();
+                    fetchUsers();
+                } else {
+                    Swal.fire('خطأ', data.message, 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('خطأ', 'حدث خطأ غير متوقع', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'حفظ التعديلات';
+            }
+        }
+
+        // Messaging functions
+        function closeMessageModal() {
+            document.getElementById('msgModal').classList.add('hidden');
+            document.getElementById('msgModal').classList.remove('flex');
+            document.getElementById('msgTitle').value = '';
+            document.getElementById('msgContent').value = '';
+            document.getElementById('msgImage').value = '';
+        }
+
+        function openMessageModal(targetId, targetName) {
+            document.getElementById('msgModal').classList.remove('hidden');
+            document.getElementById('msgModal').classList.add('flex');
+
+            if (targetId === 'all') {
+                document.getElementById('msgTargetName').textContent = 'إرسال إلى جميع المتاجر';
+                document.getElementById('msgReceiverId').value = '';
+            } else {
+                document.getElementById('msgTargetName').textContent = 'إرسال إلى: ' + targetName;
+                document.getElementById('msgReceiverId').value = targetId;
+            }
+        }
+
+        async function sendMessage() {
+            const title = document.getElementById('msgTitle').value;
+            const content = document.getElementById('msgContent').value;
+            const receiverId = document.getElementById('msgReceiverId').value;
+            const image = document.getElementById('msgImage').value;
+
+            if (!title || !content) {
+                Swal.fire('تنبيه', 'يرجى إدخال عنوان ومحتوى الرسالة', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('sendMsgBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+            try {
+                const res = await fetch('/api/admin/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ receiverId, title, content, image })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({ title: 'تم', text: 'تم إرسال الرسالة بنجاح', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                    closeMessageModal();
+                } else {
+                    Swal.fire('خطأ', data.message, 'error');
+                }
+            } catch (e) {
+                Swal.fire('خطأ', 'حدث خطأ، حاول مرة أخرى', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال';
+            }
+        }
+
+        // Initialize
+        fetchUsers();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartGrocer — النظام الذكي لإدارة المتاجر</title>
+  <!-- We still have global.css perfectly intact -->
+  <link rel="stylesheet" href="/css/global.css">
+  <style>
+    /* Home page specific styles */
+    .hero {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+    }
+
+    .hero-content {
+      max-width: 800px;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 5%;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Features */
+    .features {
+      padding: 5rem 5%;
+      background: var(--bg);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      padding: 2.5rem;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      background: var(--primary-light);
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      border-radius: 50%;
+      color: white;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body class="light">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" width="38" height="38"
+        style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; padding: 6px;">
+        <path fill="white"
+          d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+      </svg>
+      SmartGrocer
+    </div>
+    <div class="nav-links">
+      <button onclick="toggleTheme()" class="btn btn-outline" style="padding: 0.5rem; border-radius: 50%;">🌓</button>
+      <button onclick="toggleLanguage()" class="btn btn-outline" id="lang-text">English</button>
+      <a href="/login.html" class="btn btn-outline" data-i18n="nav_login">تسجيل الدخول</a>
+      <a href="/signup.html" class="btn btn-primary" data-i18n="nav_signup">حساب جديد</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 data-i18n="hero_title">أدر متجرك بذكاء واحترافية</h1>
+      <p data-i18n="hero_subtitle">منظومة متكاملة لنقاط البيع، إدارة المخزون، والتقارير التحليلية. صُممت لزيادة أرباحك
+        وتسهيل عملك اليومي.</p>
+      <div class="hero-btns">
+        <a href="/signup.html" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;"
+          data-i18n="hero_btn_start">ابدأ تجربتك المجانية</a>
+        <a href="#features" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.1rem;"
+          data-i18n="hero_btn_learn">تعرف على المزيد</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+      <h2 style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--text);" data-i18n="feat_title">كل ما تحتاجه للنجاح
+      </h2>
+      <p style="color: var(--text-secondary); font-size: 1.1rem;" data-i18n="feat_subtitle">أدوات قوية وسهلة الاستخدام
+        تغطي كافة جوانب إدارة متجرك</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="card feature-card">
+        <div class="feature-icon">💻</div>
+        <h3 data-i18n="feat_1_title">نقاط بيع سريعة (POS)</h3>
+        <p data-i18n="feat_1_desc">واجهة كاشير سريعة جداً تدعم الباركود واللمس لتسريع عملية المحاسبة وخدمة العملاء.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">📦</div>
+        <h3 data-i18n="feat_2_title">إدارة مخزون دقيقة</h3>
+        <p data-i18n="feat_2_desc">تتبع كميات المنتجات، إشعارات النواقص، وتاريخ الصلاحية لحظة بلحظة لتجنب الخسائر.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 data-i18n="feat_3_title">تقارير وتحليلات شاملة</h3>
+        <p data-i18n="feat_3_desc">لوحة تحكم ذكية تعرض لك الأرباح، المبيعات اليومية، وأكثر المنتجات مبيعاً لاتخاذ قرارات
+          أفضل.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer
+    style="text-align: center; padding: 3rem; background: var(--bg-card); border-top: 1px solid var(--border); color: var(--text-secondary);">
+    <p>© 2026 SmartGrocer. All rights reserved.</p>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  <script>
+    // Dictionary for translation
+    const translations = {
+      en: {
+        nav_login: "Login",
+        nav_signup: "Register",
+        hero_title: "Manage Your Store Intelligently",
+        hero_subtitle: "An all-in-one POS, inventory management, and analytics platform. Designed to grow your profits.",
+        hero_btn_start: "Start Free Trial",
+        hero_btn_learn: "Learn More",
+        feat_title: "Everything You Need to Succeed",
+        feat_subtitle: "Powerful and easy-to-use tools covering every aspect of your business.",
+        feat_1_title: "Fast POS System",
+        feat_1_desc: "Lightning-fast cashier interface supporting barcode and touch for rapid checkouts.",
+        feat_2_title: "Precise Inventory",
+        feat_2_desc: "Track stock levels, low stock alerts, and expiry dates in real-time.",
+        feat_3_title: "Analytics & Reports",
+        feat_3_desc: "Smart dashboard showing profits, daily sales, and best-selling products."
+      },
+      ar: {
+        nav_login: "تسجيل الدخول",
+        nav_signup: "حساب جديد",
+        hero_title: "أدر متجرك بذكاء واحترافية",
+        hero_subtitle: "منظومة متكاملة لنقاط البيع، إدارة المخزون، والتقارير التحليلية. صُممت لزيادة أرباحك وتسهيل عملك اليومي.",
+        hero_btn_start: "ابدأ تجربتك المجانية",
+        hero_btn_learn: "تعرف على المزيد",
+        feat_title: "كل ما تحتاجه للنجاح",
+        feat_subtitle: "أدوات قوية وسهلة الاستخدام تغطي كافة جوانب إدارة متجرك",
+        feat_1_title: "نقاط بيع سريعة (POS)",
+        feat_1_desc: "واجهة كاشير سريعة جداً تدعم الباركود واللمس لتسريع عملية المحاسبة وخدمة العملاء.",
+        feat_2_title: "إدارة مخزون دقيقة",
+        feat_2_desc: "تتبع كميات المنتجات، إشعارات النواقص، وتاريخ الصلاحية لحظة بلحظة لتجنب الخسائر.",
+        feat_3_title: "تقارير وتحليلات شاملة",
+        feat_3_desc: "لوحة تحكم ذكية تعرض لك الأرباح، المبيعات اليومية، وأكثر المنتجات مبيعاً لاتخاذ قرارات أفضل."
+      }
+    };
+
+    let currentLang = localStorage.getItem('sg_lang') || 'ar';
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = currentLang;
+    document.getElementById('lang-text').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+
+    function updateTexts() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang] && translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+    }
+    updateTexts();
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'ar' : 'en';
+      localStorage.setItem('sg_lang', currentLang);
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = currentLang;
+      document.getElementById('lang-text').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+      updateTexts();
+    }
+
+    // Apply theme from app.js standard
+    const savedTheme = localStorage.getItem('sg_theme') || 'light';
+    document.body.className = savedTheme;
+
+    // Handle authenticated state
+    document.addEventListener('DOMContentLoaded', () => {
+      // getToken() is available from app.js
+      if (typeof getToken === 'function' && getToken()) {
+        const loginBtn = document.querySelector('a[href="/login.html"]');
+        const signupBtn = document.querySelector('.nav-links a[href="/signup.html"]');
+        const heroSignupBtn = document.querySelector('.hero-btns a[href="/signup.html"]');
+
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (signupBtn) {
+          signupBtn.href = '/dashboard.html';
+          signupBtn.setAttribute('data-i18n', 'nav_dashboard');
+          translations.ar.nav_dashboard = "لوحة التحكم";
+          translations.en.nav_dashboard = "Dashboard";
+        }
+        if (heroSignupBtn) {
+          heroSignupBtn.href = '/dashboard.html';
+          heroSignupBtn.setAttribute('data-i18n', 'hero_btn_dashboard');
+          translations.ar.hero_btn_dashboard = "الذهاب للوحة التحكم";
+          translations.en.hero_btn_dashboard = "Go to Dashboard";
+        }
+
+        // Re-run text update for the new dynamic buttons
+        updateTexts();
+      }
+    });
+  </script>
+</body>
+
+</html>

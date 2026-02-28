@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الباقات والاشتراكات | Smart Grocer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Navigation (Simple for Dashboard) -->
+    <nav class="bg-white shadow relative z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center gap-2">
+                        <i class="fas fa-shopping-basket text-blue-600 text-2xl"></i>
+                        <span class="font-bold text-xl text-gray-800">Smart Grocer</span>
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="/products.html" class="text-gray-600 hover:text-blue-600 transition">لوحة التحكم</a>
+                    <button id="logoutBtn"
+                        class="text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition">
+                        تسجيل الخروج <i class="fas fa-sign-out-alt ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">باقات الاشتراك</h1>
+            <p class="text-gray-600 text-lg">اختر الباقة المناسبة لحجم تجارتك وانطلق نحو النجاح</p>
+        </div>
+
+        <!-- Current Subscription Status -->
+        <div id="currentSubscriptionBox"
+            class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white mb-12 shadow-lg hidden">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <p class="text-blue-100 text-sm mb-1">باقتك الحالية</p>
+                    <h2 class="text-2xl font-bold" id="currentPlanName">جاري التحميل...</h2>
+                    <p class="text-sm mt-2 opacity-90"><i class="fas fa-calendar-alt ml-1"></i> تنتهي في: <span
+                            id="currentPlanExpiry">-</span></p>
+                </div>
+                <div class="text-center md:text-left">
+                    <span
+                        class="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm border border-white/30">
+                        <i class="fas fa-check-circle text-green-300 ml-1"></i> باقة نشطة
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Cards Container -->
+        <div id="plansContainer" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Plans will be rendered here dynamically -->
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t py-6 text-center text-gray-500 text-sm">
+        <p>© 2026 Smart Grocer. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/signin.html';
+        }
+
+        // Handle Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/signin.html';
+        });
+
+        // Load Current Subscription
+        async function loadCurrentSubscription() {
+            try {
+                const res = await fetch('/api/payments/my-subscription', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success && data.data) {
+                    const subBox = document.getElementById('currentSubscriptionBox');
+                    subBox.classList.remove('hidden');
+                    document.getElementById('currentPlanName').textContent = data.data.plan.name;
+                    document.getElementById('currentPlanExpiry').textContent = new Date(data.data.endDate).toLocaleDateString('ar-EG');
+                }
+            } catch (err) {
+                console.error('Error loading subscription', err);
+            }
+        }
+
+        // Load Available Plans
+        async function loadPlans() {
+            try {
+                const res = await fetch('/api/payments/plans', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success && data.data.length > 0) {
+                    const container = document.getElementById('plansContainer');
+                    container.innerHTML = data.data.map(plan => `
+                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col relative ${plan.name === 'Pro' ? 'ring-2 ring-blue-500 scale-105 z-10' : ''}">
+                            ${plan.name === 'Pro' ? '<div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">الأكثر طلباً</div>' : ''}
+                            
+                            <div class="p-8 text-center border-b border-gray-100 bg-gray-50/50">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">${plan.name}</h3>
+                                <div class="text-4xl font-extrabold text-blue-600 mb-1">
+                                    ${plan.price} <span class="text-base font-normal text-gray-500">ج.م/شهرياً</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-8 flex-1">
+                                <ul class="space-y-4 mb-8">
+                                    ${plan.features.map(f => `
+                                        <li class="flex items-center text-gray-600">
+                                            <i class="fas fa-check text-green-500 ml-3 shrink-0"></i>
+                                            <span class="text-sm">${f}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                                
+                                <button onclick="subscribe('${plan._id}', '${plan.name}')" class="w-full mt-auto ${plan.name === 'Pro' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-blue-50 hover:bg-blue-100 text-blue-700'} font-semibold py-3 px-6 rounded-xl transition duration-300">
+                                    ${plan.price === 0 ? 'ابدأ مجاناً' : 'اشترك الآن'}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Handle Subscribe Click
+        async function subscribe(planId, planName) {
+            try {
+                // Show loading state
+                Swal.fire({
+                    title: 'جاري التوجيه...',
+                    text: 'يتم تجهيز بوابة الدفع (Stripe)',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                const res = await fetch('/api/payments/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ planId })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Redirect to the simulated Stripe url (or real stripe checkout URL)
+                    window.location.href = data.url;
+                } else {
+                    Swal.fire('خطأ', data.message || 'حدث خطأ أثناء إعداد عملية الدفع', 'error');
+                }
+            } catch (err) {
+                Swal.fire('خطأ', 'تعذر الاتصال بالخادم', 'error');
+            }
+        }
+
+        // Check if successfully returned from payment
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            Swal.fire({
+                title: 'اكتملت العملية',
+                text: 'تم تفعيل اشتراكك بنجاح!',
+                icon: 'success',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            // Clean url
+            window.history.replaceState({}, document.title, "/billing.html");
+        }
+
+        // Init
+        loadCurrentSubscription();
+        loadPlans();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — المبيعات</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-inline-end: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            padding: 0 .5rem;
+        }
+
+        .sidebar-logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem .85rem;
+            border-radius: 10px;
+            font-size: .92rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-secondary);
+            color: var(--text);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .sidebar-link span:first-child {
+            font-size: 1.15rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .main {
+            flex: 1;
+            margin-inline-start: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .content {
+            padding: 2rem;
+            flex: 1;
+            background: var(--bg);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            outline: none;
+            flex: 1;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .table-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        [dir="ltr"] table {
+            text-align: left;
+        }
+
+        th {
+            padding: 1.2rem 1.5rem;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        tr:hover td {
+            background: var(--bg-secondary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .items-list-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .items-list-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 500px;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        [dir="ltr"] .close-btn {
+            right: auto;
+            left: 1.5rem;
+        }
+
+        .modal-items-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .modal-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .modal-item-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .modal-item-meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body class="light">
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" width="38" height="38"
+                    style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; padding: 6px;">
+                    <path fill="white"
+                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+                <div class="sidebar-logo-text">SmartGrocer</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
+                        data-i18n="nav_dashboard">لوحة التحكم</span></a>
+                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span
+                        data-i18n="nav_products">المنتجات</span></a>
+                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span
+                        data-i18n="nav_inventory">المخزون</span></a>
+                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
+                        البيع (POS)</span></a>
+                <a href="/sales.html" class="sidebar-link active"><span class="icon">💰</span> <span
+                        data-i18n="nav_sales">المبيعات</span></a>
+                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span
+                        data-i18n="nav_reports">التقارير</span></a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button onclick="window.location.href='/'" class="btn btn-primary"
+                    style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
+                    الخروج</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 class="topbar-title" data-i18n="title_sales">سجل المبيعات والفواتير</h1>
+                <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
+                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
+                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="filters">
+                    <input type="date" class="form-control" id="dateFilter" onchange="filterSales()">
+                    <button class="btn btn-outline" onclick="loadSales()" data-i18n="btn_refresh">تحديث السجل
+                        🔄</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="th_invoice">رقم الفاتورة</th>
+                                <th data-i18n="th_date">التاريخ والوقت</th>
+                                <th data-i18n="th_items">عدد العناصر</th>
+                                <th data-i18n="th_total">الإجمالي (ج.م)</th>
+                                <th data-i18n="th_method">طريقة الدفع</th>
+                                <th data-i18n="th_details">تفاصيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem;">جاري التحميل...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Details Modal -->
+    <div class="items-list-modal" id="detailsModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeDetails()">&times;</button>
+            <h2 class="modal-title" id="modalTitle">تفاصيل الفاتورة</h2>
+            <div class="modal-items-container" id="modalItems">
+                <!-- Injected details -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        const translations = {
+            en: {
+                nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports",
+                btn_theme: "Theme", btn_logout: "Logout",
+                title_sales: "Sales & Invoices History", btn_refresh: "Refresh Data 🔄",
+                th_invoice: "Invoice ID", th_date: "Date & Time", th_items: "Items Count", th_total: "Total Amount", th_method: "Payment", th_details: "Action"
+            },
+            ar: {
+                nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير",
+                btn_theme: "المظهر", btn_logout: "تسجيل الخروج",
+                title_sales: "سجل المبيعات والفواتير", btn_refresh: "تحديث السجل 🔄",
+                th_invoice: "رقم الفاتورة", th_date: "التاريخ والوقت", th_items: "عدد العناصر", th_total: "الإجمالي (ج.م)", th_method: "طريقة الدفع", th_details: "تفاصيل"
+            }
+        };
+
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = currentLang;
+        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+        document.body.className = localStorage.getItem('sg_theme') || 'light';
+
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+        }
+        updateTexts();
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('sg_lang', currentLang);
+            updateTexts();
+            location.reload();
+        }
+
+        let allSales = [];
+
+        async function loadSales() {
+            try {
+                const res = await api('/api/sales');
+                allSales = res.sales.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                renderSales(allSales);
+            } catch (e) { console.error(e); }
+        }
+
+        function filterSales() {
+            const dateVal = document.getElementById('dateFilter').value;
+            if (!dateVal) return renderSales(allSales);
+
+            const filtered = allSales.filter(s => s.createdAt.startsWith(dateVal));
+            renderSales(filtered);
+        }
+
+        function renderSales(data) {
+            const tbody = document.getElementById('salesTableBody');
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">لا توجد مبيعات في هذا التاريخ.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(sale => {
+                const d = new Date(sale.createdAt);
+                const itemsCount = sale.items.reduce((sum, item) => sum + item.quantity, 0);
+                // Safe JSON serialization for button onclick
+                const saleStr = JSON.stringify(sale).replace(/"/g, '&quot;');
+
+                return `
+                    <tr>
+                        <td style="font-family: monospace; color: var(--text-secondary);">#${sale._id.substring(18)}</td>
+                        <td>${d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')} - ${d.toLocaleTimeString()}</td>
+                        <td>${itemsCount}</td>
+                        <td style="color: var(--primary); font-weight: bold;">${sale.totalAmount.toFixed(2)}</td>
+                        <td><span class="badge badge-success">${sale.paymentMethod === 'cash' ? 'نقدي' : sale.paymentMethod}</span></td>
+                        <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;" onclick="showDetails('${saleStr}')">استعراض</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        window.showDetails = function (saleObjStr) {
+            const sale = JSON.parse(saleObjStr);
+            const rData = document.getElementById('modalItems');
+            document.getElementById('modalTitle').textContent = `الفاتورة #${sale._id.substring(18)}`;
+
+            rData.innerHTML = sale.items.map(i => `
+                <div class="modal-item-row">
+                    <div>
+                        <div class="modal-item-name">${i.product ? i.product.name : 'منتج محذوف'}</div>
+                        <div class="modal-item-meta">${i.quantity} x ${i.price.toFixed(2)}</div>
+                    </div>
+                    <div style="font-weight: bold; color: var(--text);">${(i.quantity * i.price).toFixed(2)}</div>
+                </div>
+            `).join('');
+
+            rData.innerHTML += `
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: var(--primary);">
+                    <span>الإجمالي</span>
+                    <span>${sale.totalAmount.toFixed(2)}</span>
+                </div>
+            `;
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        function closeDetails() { document.getElementById('detailsModal').classList.remove('active'); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!getToken()) window.location.href = '/login.html';
+            else loadSales();
+        });
+    </script>
+</body>
+
+</html>

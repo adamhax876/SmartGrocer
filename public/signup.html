@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — إنشاء حساب جديد</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cairo:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #09090b;
+            color: #f8fafc;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Premium Animated Background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 85% 50%, rgba(79, 70, 229, 0.15), transparent 30%),
+                radial-gradient(circle at 15% 30%, rgba(16, 185, 129, 0.15), transparent 30%);
+            z-index: 0;
+            filter: blur(40px);
+            animation: pulseBg 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 550px;
+            margin: 2rem;
+            padding: 3rem;
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        /* Stepper */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 2rem;
+            right: 2rem;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #18181b;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #94a3b8;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step.active .step-num {
+            border-color: #4f46e5;
+            background: #4f46e5;
+            color: white;
+            box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
+            transform: scale(1.1);
+        }
+
+        .step.completed .step-num {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            transition: color 0.3s;
+        }
+
+        .step.active .step-label {
+            color: #f8fafc;
+        }
+
+        .step.completed .step-label {
+            color: #cbd5e1;
+        }
+
+        /* Forms */
+        .step-form {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .step-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.02em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1rem center;
+            padding-left: 3rem;
+        }
+
+        [dir="ltr"] select.form-input {
+            background-position: right 1rem center;
+            padding-right: 3rem;
+            padding-left: 1.2rem;
+        }
+
+        select.form-input option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .form-actions {
+            display: flex;
+            margin-top: 2.5rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .auth-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .auth-link {
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .auth-link:hover {
+            color: #a5b4fc;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            display: none;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            text-align: center;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            display: none;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            text-align: center;
+        }
+
+        /* Verification Code Styling */
+        .otp-input {
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 12px;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            padding: 1.5rem;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .top-nav {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 20;
+        }
+
+        [dir="rtl"] .top-nav {
+            right: auto;
+            left: 2rem;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-gradient"></div>
+
+    <div class="top-nav">
+        <button onclick="toggleLanguage()" class="lang-btn" id="langToggle">English</button>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo">🛒</div>
+            <h1 data-i18n="signup_title">إنشاء حساب جديد</h1>
+            <p data-i18n="signup_desc">خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك</p>
+        </div>
+
+        <div class="stepper" id="stepper">
+            <div class="step active" id="st-1">
+                <div class="step-num">1</div>
+                <div class="step-label" data-i18n="step_1">البيانات</div>
+            </div>
+            <div class="step" id="st-2">
+                <div class="step-num">2</div>
+                <div class="step-label" data-i18n="step_2">المتجر</div>
+            </div>
+            <div class="step" id="st-3">
+                <div class="step-num">3</div>
+                <div class="step-label" data-i18n="step_3">المرور</div>
+            </div>
+            <div class="step" id="st-4" style="display: none;">
+                <div class="step-num">4</div>
+                <div class="step-label" data-i18n="step_4">التحقق</div>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorBox"></div>
+        <div class="success-message" id="successBox"></div>
+
+        <!-- Step 1: Personal Info -->
+        <div class="step-form active" id="form-1">
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_name">الاسم الكامل</label>
+                <input type="text" class="form-input" id="u-name" required placeholder="أحمد محمد">
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_email">البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="u-email" required placeholder="ahmed@example.com">
+            </div>
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="nextStepUI(2)" data-i18n="btn_next">متابعة ➝</button>
+            </div>
+            <div class="auth-footer">
+                <span data-i18n="has_acc">لديك حساب فعلاً؟</span> <a href="/login.html" class="auth-link"
+                    data-i18n="btn_login">دخول</a>
+            </div>
+        </div>
+
+        <!-- Step 2: Store Info -->
+        <div class="step-form" id="form-2">
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_store_name">اسم المتجر</label>
+                <input type="text" class="form-input" id="s-name" required placeholder="سوبر ماركت السعادة">
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_store_type">نشاط المتجر</label>
+                <select class="form-input" id="s-type">
+                    <option value="supermarket" data-i18n="type_supermarket">سوبر ماركت</option>
+                    <option value="grocery" data-i18n="type_grocery">بقالة</option>
+                    <option value="minimarket" data-i18n="type_minimarket">ميني ماركت</option>
+                    <option value="wholesale" data-i18n="type_wholesale">جملة (Wholesale)</option>
+                    <option value="other" data-i18n="type_other">نشاط آخر</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-outline" onclick="nextStepUI(1)" data-i18n="btn_back">تراجع</button>
+                <button class="btn btn-primary" onclick="nextStepUI(3)" data-i18n="btn_next">متابعة ➝</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Security & Call API Signup -->
+        <div class="step-form" id="form-3">
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_password">كلمة المرور الآمنة</label>
+                <input type="password" class="form-input" id="u-pass" required placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_confirm">تأكيد كلمة المرور</label>
+                <input type="password" class="form-input" id="u-pass-confirm" required placeholder="••••••••">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-outline" onclick="nextStepUI(2)" data-i18n="btn_back">تراجع</button>
+                <button class="btn btn-primary" onclick="submitRegistration()" id="btnSubmit"
+                    data-i18n="btn_finish">إتمام وإنشاء الحساب</button>
+            </div>
+        </div>
+
+        <!-- Step 4: OTP Verification -->
+        <div class="step-form" id="form-4">
+            <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+                <p style="margin-bottom: 1.5rem; color: #94a3b8; line-height: 1.6;" data-i18n="verify_msg">أرسلنا كود
+                    التأكيد للبريد الخاص بك. يرجى إدخال الأرقام الستة أدناه للمتابعة.</p>
+                <input type="text" class="form-input otp-input" id="u-otp" placeholder="000000" maxlength="6">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" onclick="verifyOTP()" id="btnVerify" data-i18n="btn_verify">تأكيد الرمز
+                    والدخول</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
+    <script>
+        const translations = {
+            en: {
+                signup_title: "Create your Account", signup_desc: "One step away from professional management",
+                step_1: "Personal", step_2: "Store", step_3: "Security", step_4: "Verify",
+                label_name: "Full Name", label_email: "Email Address",
+                btn_next: "Continue ➝", has_acc: "Already registered?", btn_login: "Sign In",
+                verify_msg: "We've sent a code to your email. Enter the 6 digits below to verify your identity.",
+                btn_back: "Back", btn_verify: "Verify Code & Login",
+                label_store_name: "Store Name", label_store_type: "Business Type",
+                type_supermarket: "Supermarket", type_grocery: "Grocery Store", type_minimarket: "Mini Market", type_wholesale: "Wholesale", type_other: "Other",
+                label_password: "Secure Password", label_confirm: "Confirm Password",
+                btn_finish: "Complete Registration", btn_creating: "Creating..."
+            },
+            ar: {
+                signup_title: "إنشاء حساب جديد", signup_desc: "خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك",
+                step_1: "البيانات", step_2: "المتجر", step_3: "المرور", step_4: "التحقق",
+                label_name: "الاسم الكامل", label_email: "البريد الإلكتروني",
+                btn_next: "متابعة ➝", has_acc: "لديك حساب فعلاً؟", btn_login: "تسجيل الدخول",
+                verify_msg: "أرسلنا كود التأكيد للبريد الخاص بك. يرجى إدخال الأرقام الستة أدناه للمتابعة.",
+                btn_back: "تراجع", btn_verify: "تأكيد الرمز والدخول",
+                label_store_name: "اسم المتجر", label_store_type: "نشاط المتجر",
+                type_supermarket: "سوبر ماركت", type_grocery: "بقالة", type_minimarket: "ميني ماركت", type_wholesale: "جملة (Wholesale)", type_other: "نشاط آخر",
+                label_password: "كلمة المرور الآمنة", label_confirm: "تأكيد كلمة المرور",
+                btn_finish: "إتمام وإنشاء الحساب", btn_creating: "جاري الإنشاء..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = currentLang;
+        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                    if (el.tagName === 'INPUT') el.placeholder = translations[currentLang][key];
+                }
+            });
+        }
+        updateTexts();
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('sg_lang', currentLang);
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+            document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+            updateTexts();
+        }
+
+        // Form Logic
+        let currentStep = 1;
+        let registeredUserId = null;
+
+        function showError(msg) {
+            const box = document.getElementById('errorBox');
+            box.textContent = msg;
+            box.style.display = 'block';
+            setTimeout(() => box.style.display = 'none', 5000);
+        }
+
+        function showSuccess(msg) {
+            const box = document.getElementById('successBox');
+            box.textContent = msg;
+            box.style.display = 'block';
+            setTimeout(() => box.style.display = 'none', 5000);
+        }
+
+        function nextStepUI(target) {
+            // Basic UI Validation
+            if (target === 2) {
+                const name = document.getElementById('u-name').value;
+                const email = document.getElementById('u-email').value;
+                if (!name || !email) {
+                    showError(currentLang === 'ar' ? 'الرجاء ملء جميع الحقول!' : 'Please fill all fields!');
+                    return;
+                }
+            } else if (target === 3) {
+                const sName = document.getElementById('s-name').value;
+                if (!sName) {
+                    showError(currentLang === 'ar' ? 'يرجى إدخال اسم المتجر' : 'Please enter store name');
+                    return;
+                }
+            }
+
+            document.querySelectorAll('.step-form').forEach(el => el.classList.remove('active'));
+            document.getElementById(`form-${target}`).classList.add('active');
+
+            for (let i = 1; i <= Math.max(3, target); i++) {
+                const stepEl = document.getElementById(`st-${i}`);
+                if (stepEl) {
+                    if (i < target) {
+                        stepEl.classList.add('completed'); stepEl.classList.remove('active');
+                    } else if (i === target) {
+                        stepEl.classList.add('active'); stepEl.classList.remove('completed');
+                    } else {
+                        stepEl.classList.remove('active', 'completed');
+                    }
+                }
+            }
+            currentStep = target;
+        }
+
+        // 1. Submit Registration API
+        async function submitRegistration() {
+            const fullName = document.getElementById('u-name').value;
+            const email = document.getElementById('u-email').value;
+            const storeName = document.getElementById('s-name').value;
+            const storeType = document.getElementById('s-type').value;
+            const password = document.getElementById('u-pass').value;
+            const confirm = document.getElementById('u-pass-confirm').value;
+
+            if (password.length < 6) {
+                showError(currentLang === 'ar' ? 'يجب أن تكون كلمة المرور 6 أحرف على الأقل' : 'Password must be at least 6 characters');
+                return;
+            }
+            if (password !== confirm) {
+                showError(currentLang === 'ar' ? 'كلمات المرور غير متطابقة' : 'Passwords do not match');
+                return;
+            }
+
+            try {
+                const btn = document.getElementById('btnSubmit');
+                btn.disabled = true;
+                btn.innerHTML = translations[currentLang].btn_creating;
+
+                // CALLING THE BACKEND SIGNUP ROUTE
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, email, storeName, storeType, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.message || 'Registration failed');
+
+                // Success! Save ID and move to OTP screen
+                registeredUserId = data.userId;
+
+                // Show Step 4 explicitly
+                document.getElementById('st-4').style.display = 'flex';
+                nextStepUI(4);
+                showSuccess(data.message || (currentLang === 'ar' ? 'تم إنشاء الحساب! افحص بريدك الإلكتروني للحصول على الرمز.' : 'Account created! Check your email for code.'));
+
+            } catch (err) {
+                showError(err.message);
+                const btn = document.getElementById('btnSubmit');
+                btn.disabled = false;
+                btn.innerHTML = translations[currentLang].btn_finish;
+            }
+        }
+
+        // 2. Verify OTP API
+        async function verifyOTP() {
+            const otp = document.getElementById('u-otp').value;
+            if (!otp || otp.length < 4) {
+                showError(currentLang === 'ar' ? 'رمز غير صالح' : 'Invalid code');
+                return;
+            }
+
+            try {
+                const btn = document.getElementById('btnVerify');
+                const ogText = btn.textContent;
+                btn.textContent = '...'; btn.disabled = true;
+
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: registeredUserId, code: otp })
+                });
+
+                const data = await res.json();
+                btn.disabled = false; btn.textContent = ogText;
+
+                if (!res.ok) throw new Error(data.message || 'Invalid code');
+
+                // OTP Valid! Log them in.
+                localStorage.setItem('sg_token', data.token);
+                localStorage.setItem('sg_user', JSON.stringify(data.user));
+                window.location.href = '/dashboard.html';
+
+            } catch (err) { showError(err.message); }
+        }
+    </script>
+</body>
+
+</html>
