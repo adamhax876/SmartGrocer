@@ -5,7 +5,7 @@ const targetDir = path.join(__dirname, 'public');
 const files = fs.readdirSync(targetDir).filter(f => f.endsWith('.html'));
 
 const regex = /<img src="\/images\/logo\.png"\s+style="[^"]+"[^>]*>/g;
-const replacement = '<img src="/images/logo.png" style="height: 85px; width: auto; max-width: 220px; object-fit: contain; margin: -10px 0;" alt="Logo">';
+const replacement = '<img src="/images/logo.png" style="height: 110px; width: auto; max-width: 260px; object-fit: contain; margin: -20px 0;" alt="Logo">';
 
 files.forEach(file => {
     const filePath = path.join(targetDir, file);
