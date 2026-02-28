@@ -739,7 +739,7 @@
         async function processPayment() {
             if (cart.length === 0) return;
             const btnPayload = cart.map(item => ({
-                product: item._id,
+                productId: item._id,
                 quantity: item.cartQty,
                 price: item.price
             }));

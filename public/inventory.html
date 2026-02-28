@@ -205,7 +205,7 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="/images/logo.png" style="width: 100%; max-height: 100px; object-fit: contain;" alt="Logo">
-                
+
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
@@ -363,9 +363,6 @@
             const newQty = currentQty + amount;
             if (newQty < 0) return;
             try {
-                // To maintain full API correctness, we use what was likely a PUT or PATCH.
-                // Depending on the exact Phase 6 code, the user did product updates using PUT.
-                const product = await api(`/api/products/${id}`); // Assuming a GET to fetch product data first if needed, or straight PUT.
                 // Assuming standard REST PUT `/api/products/:id` with payload
                 await api(`/api/products/${id}`, {
                     method: 'PUT',
