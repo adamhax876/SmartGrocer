@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طرق الدفع | Smart Grocer Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+        <div class="h-16 flex items-center justify-center border-b border-gray-800">
+            <h1 class="text-xl font-bold"><i class="fas fa-bolt text-yellow-400 mr-2"></i> SmartGrocer SaaS</h1>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-2 px-3">
+                <li><a href="/admin/dashboard.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
+                            class="fas fa-tachometer-alt"></i><span>الرئيسية</span></a></li>
+                <li><a href="/admin/users.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
+                            class="fas fa-store"></i><span>المتاجر المشتركة</span></a></li>
+                <li><a href="/admin/payments.html"
+                        class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white"><i
+                            class="fas fa-money-check-alt"></i><span>طرق الدفع</span></a></li>
+                <li><a href="/admin/settings.html"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
+                            class="fas fa-cogs"></i><span>إعدادات النظام</span></a></li>
+            </ul>
+        </nav>
+        <div class="p-4 border-t border-gray-800">
+            <button onclick="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
+                    class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-6">
+            <h2 class="text-xl font-semibold text-gray-800">إدارة طرق الدفع</h2>
+            <button onclick="addPaymentMethod()"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
+                <i class="fas fa-plus mr-1"></i> إضافة طريقة جديدة
+            </button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="paymentsContainer">
+                    <div class="col-span-full text-center py-10 text-gray-500"><i
+                            class="fas fa-spinner fa-spin text-2xl"></i> جاري التحميل...</div>
+                </div>
+            </div>
+
+            <div class="mt-8 max-w-4xl mx-auto flex justify-end">
+                <button onclick="savePaymentMethods()" id="saveBtn" style="display: none;"
+                    class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold flex items-center gap-2 transition shadow-lg">
+                    <i class="fas fa-save"></i> حفظ جميع التعديلات
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = '/admin/login.html';
+
+        function logout() { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; }
+
+        let paymentMethods = [];
+
+        async function fetchSettings() {
+            try {
+                const res = await fetch('/api/admin/settings', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+
+                if (data.success && data.data) {
+                    const settingsMap = data.data.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
+
+                    if (settingsMap.paymentMethods) {
+                        try {
+                            paymentMethods = typeof settingsMap.paymentMethods === 'string' ? JSON.parse(settingsMap.paymentMethods) : settingsMap.paymentMethods;
+                        } catch (e) { paymentMethods = []; }
+                    } else {
+                        // Default fallback
+                        paymentMethods = [
+                            { name: 'فودافون كاش (مصر)', details: '010XXXXXXXX', icon: 'fas fa-mobile-alt', color: 'text-red-500' },
+                            { name: 'إنستاباي InstaPay', details: 'smartgrocer@instapay', icon: 'fas fa-bolt', color: 'text-purple-600' }
+                        ];
+                    }
+                    renderMethods();
+                    document.getElementById('saveBtn').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error fetching settings:', error);
+                Swal.fire('خطأ', 'تعذر جلب طرق الدفع', 'error');
+            }
+        }
+
+        function renderMethods() {
+            const container = document.getElementById('paymentsContainer');
+            if (paymentMethods.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 bg-white rounded-xl border border-dashed">لا توجد طرق دفع مضافة. اضغط على أضف طريقة جديدة.</div>';
+                return;
+            }
+
+            container.innerHTML = paymentMethods.map((method, idx) => `
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative group">
+                    <div class="absolute top-3 left-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="editPaymentMethod(${idx})" class="text-blue-500 hover:text-blue-700 bg-blue-50 w-8 h-8 rounded"><i class="fas fa-edit"></i></button>
+                        <button onclick="deletePaymentMethod(${idx})" class="text-red-500 hover:text-red-700 bg-red-50 w-8 h-8 rounded"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="font-bold text-gray-800 text-lg mb-2 pl-16"><i class="${method.icon || 'fas fa-wallet'} ${method.color || 'text-gray-600'} ml-2 text-xl"></i> ${method.name}</div>
+                    <div class="text-gray-600 bg-gray-50 p-3 rounded font-mono text-left" dir="ltr">${method.details}</div>
+                </div>
+            `).join('');
+        }
+
+        async function addPaymentMethod() {
+            const { value: formValues } = await Swal.fire({
+                title: 'إضافة طريقة دفع',
+                html:
+                    '<input id="swal-input1" class="swal2-input" placeholder="اسم الطريقة (مثال: فودافون كاش)">' +
+                    '<input id="swal-input2" class="swal2-input" placeholder="تفاصيل الدفع (الرقم أو الإيميل)">' +
+                    '<input id="swal-input3" class="swal2-input" placeholder="أيقونة FontAwesome (مثال: fas fa-mobile-alt)">' +
+                    '<input id="swal-input4" class="swal2-input" placeholder="لون الأيقونة Tailwind (مثال: text-blue-500)">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'إضافة',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input1').value,
+                        document.getElementById('swal-input2').value,
+                        document.getElementById('swal-input3').value,
+                        document.getElementById('swal-input4').value
+                    ]
+                }
+            });
+
+            if (formValues && formValues[0] && formValues[1]) {
+                paymentMethods.push({
+                    name: formValues[0],
+                    details: formValues[1],
+                    icon: formValues[2] || 'fas fa-wallet',
+                    color: formValues[3] || 'text-gray-600'
+                });
+                renderMethods();
+            }
+        }
+
+        async function editPaymentMethod(idx) {
+            const method = paymentMethods[idx];
+            const { value: formValues } = await Swal.fire({
+                title: 'تعديل طريقة دفع',
+                html:
+                    `<input id="swal-input1" class="swal2-input" value="${method.name}">` +
+                    `<input id="swal-input2" class="swal2-input" value="${method.details}">` +
+                    `<input id="swal-input3" class="swal2-input" value="${method.icon || ''}">` +
+                    `<input id="swal-input4" class="swal2-input" value="${method.color || ''}">`,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'حفظ',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input1').value,
+                        document.getElementById('swal-input2').value,
+                        document.getElementById('swal-input3').value,
+                        document.getElementById('swal-input4').value
+                    ]
+                }
+            });
+
+            if (formValues && formValues[0] && formValues[1]) {
+                paymentMethods[idx] = {
+                    name: formValues[0],
+                    details: formValues[1],
+                    icon: formValues[2] || 'fas fa-wallet',
+                    color: formValues[3] || 'text-gray-600'
+                };
+                renderMethods();
+            }
+        }
+
+        function deletePaymentMethod(idx) {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم إزالة الطريقة من واجهة المستخدمين!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    paymentMethods.splice(idx, 1);
+                    renderMethods();
+                }
+            });
+        }
+
+        async function savePaymentMethods() {
+            const btn = document.getElementById('saveBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            btn.disabled = true;
+
+            try {
+                const payload = { settings: [{ key: 'paymentMethods', value: paymentMethods }] };
+                const res = await fetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire('تم', 'تم حفظ طرق الدفع بنجاح!', 'success');
+                } else { throw new Error(data.message); }
+            } catch (err) {
+                Swal.fire('خطأ', err.message || 'حدث خطأ أثناء الحفظ', 'error');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-save"></i> حفظ جميع التعديلات';
+                btn.disabled = false;
+            }
+        }
+
+        fetchSettings();
+    </script>
+</body>
+
+</html>

@@ -6,7 +6,10 @@ const Message = require('../models/Message');
 // Get messages for the logged-in user
 router.get('/', auth, async (req, res) => {
     try {
+        const userDate = req.user.createdAt || new Date(); // Fallback just in case
+
         const messages = await Message.find({
+            createdAt: { $gte: userDate },
             $or: [
                 { isGlobal: true },
                 { receiver: req.user._id }

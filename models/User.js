@@ -15,8 +15,16 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'store_owner'],
+        enum: ['admin', 'store_owner', 'cashier'],
         default: 'store_owner'
+    },
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    branchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Branch'
     },
     // User info
     fullName: {
@@ -61,6 +69,37 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['light', 'dark'],
         default: 'light'
+    },
+    // SaaS Subscription Data
+    walletBalance: {
+        type: Number,
+        default: 0
+    },
+    subscriptionPlan: {
+        type: String,
+        enum: ['Free Trial', 'Basic Plan', 'Pro Plan'],
+        default: 'Free Trial'
+    },
+    subscriptionEndDate: {
+        type: Date,
+        // Default sets to 14 days from creation for new users
+        default: () => new Date(+new Date() + 14 * 24 * 60 * 60 * 1000)
+    },
+    country: {
+        type: String,
+        default: 'Egypt'
+    },
+    hasSent3DayWarning: {
+        type: Boolean,
+        default: false
+    },
+    hasSent12HourWarning: {
+        type: Boolean,
+        default: false
+    },
+    lastIpAddress: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

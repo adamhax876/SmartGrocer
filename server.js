@@ -28,7 +28,8 @@ app.get('/api/settings/public', async (req, res) => {
   res.json({
     success: true,
     currency: settings.currency || '$',
-    siteName: settings.site_name || 'Smart Grocer'
+    siteName: settings.site_name || 'Smart Grocer',
+    paymentMethods: settings.paymentMethods || null
   });
 });
 
@@ -57,13 +58,21 @@ app.get('/api/stats/public', async (req, res) => {
 const { setupSSE } = require('./utils/sse');
 setupSSE(app);
 
+// Initialize Cron Jobs
+require('./cron/subscriptionCron');
+require('./cron/backupCron');
+require('./cron/aiReporterCron');
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/sales', require('./routes/sales'));
+app.use('/api/customers', require('./routes/customers'));
+app.use('/api/branches', require('./routes/branches'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/payments', require('./routes/payments'));
+app.use('/api/subscription', require('./routes/subscription'));
 
 // Serve frontend for any non-API route
 app.get('*', (req, res) => {

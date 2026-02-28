@@ -17,13 +17,17 @@ router.get('/stats', isAdmin, async (req, res) => {
     try {
         const totalUsers = await User.countDocuments({ role: 'store_owner' });
         const totalPlans = await Plan.countDocuments();
-        const activeSubscriptions = await Subscription.countDocuments({ status: 'active' });
+        const activeSubscriptions = await User.countDocuments({
+            role: 'store_owner',
+            subscriptionPlan: { $ne: 'Free Trial' },
+            subscriptionEndDate: { $gt: new Date() }
+        });
 
-        // Calculate subscription growth for the last 6 months
+        // Calculate subscription growth for the last 6 months (by new users)
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        const growthData = await Subscription.aggregate([
-            { $match: { createdAt: { $gte: sixMonthsAgo } } },
+        const growthData = await User.aggregate([
+            { $match: { role: 'store_owner', createdAt: { $gte: sixMonthsAgo } } },
             {
                 $group: {
                     _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
@@ -108,35 +112,25 @@ router.get('/users/:id', isAdmin, async (req, res) => {
     }
 });
 
-// 7. Update User Subscription Plan
-router.patch('/users/:id/subscription', isAdmin, async (req, res) => {
+// 7. Update User Profile (Admin manual edit)
+router.patch('/users/:id/profile', isAdmin, async (req, res) => {
     try {
-        const { planId } = req.body;
+        const { storeName, password } = req.body;
 
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-        const newPlan = await Plan.findById(planId);
-        if (!newPlan) return res.status(404).json({ success: false, message: 'Plan not found' });
-
-        let subscription = await Subscription.findOne({ user: user._id, status: 'active' });
-
-        if (subscription) {
-            subscription.plan = newPlan._id;
-            await subscription.save();
-        } else {
-            // Create new if none exists
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 1);
-            subscription = await Subscription.create({
-                user: user._id,
-                plan: newPlan._id,
-                status: 'active',
-                endDate: endDate
-            });
+        if (storeName && storeName.trim() !== '') {
+            user.storeName = storeName.trim();
         }
 
-        res.json({ success: true, message: 'Store subscription updated successfully', data: subscription });
+        if (password && password.trim() !== '') {
+            user.password = password.trim();
+        }
+
+        await user.save();
+
+        res.json({ success: true, message: 'Store profile updated successfully', data: user });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }
@@ -210,6 +204,48 @@ router.get('/messages', isAdmin, async (req, res) => {
         const messages = await Message.find({ sender: req.admin._id }).sort({ createdAt: -1 });
         res.json({ success: true, data: messages });
     } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
+// 13. Assign Subscription Directly (SaaS Feature)
+router.post('/users/:id/assign-subscription', isAdmin, async (req, res) => {
+    try {
+        const { planName, endDate } = req.body;
+        if (!planName || !endDate) {
+            return res.status(400).json({ success: false, message: 'Invalid data' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        user.subscriptionPlan = planName;
+
+        let exactEndDate = new Date(endDate);
+        if (planName === 'Free Trial') {
+            exactEndDate = new Date();
+            exactEndDate.setDate(exactEndDate.getDate() + 14);
+        }
+        // Use exact date from picker, set to end of that day
+        exactEndDate.setHours(23, 59, 59, 999);
+
+        user.subscriptionEndDate = exactEndDate;
+        user.hasSent3DayWarning = false;
+        user.hasSent12HourWarning = false;
+
+        await user.save();
+
+        const { sendSubscriptionActivatedEmail } = require('../utils/email');
+        const startDate = new Date().toLocaleDateString('ar-EG');
+        const endDateStr = exactEndDate.toLocaleDateString('ar-EG');
+        sendSubscriptionActivatedEmail(user.email, user.fullName, planName, startDate, endDateStr)
+            .catch(err => console.error("Activation Email Error:", err));
+
+        res.json({ success: true, message: `Subscription assigned: ${planName}`, data: user });
+    } catch (error) {
+        console.error('Assign Subscription Error:', error);
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }
 });

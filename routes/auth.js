@@ -83,7 +83,7 @@ function generateCode() {
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
     try {
-        const { storeName, storeType, fullName, email, password } = req.body;
+        const { storeName, storeType, fullName, email, password, country, language } = req.body;
         console.log('📝 Signup attempt:', email);
 
         // Check if user already exists
@@ -109,6 +109,8 @@ router.post('/signup', async (req, res) => {
             fullName,
             email,
             password,
+            country: country || 'Egypt',
+            language: language || 'ar',
             verificationCode,
             verificationExpires
         });
@@ -230,6 +232,16 @@ router.post('/login', async (req, res) => {
                 verificationCode: verificationCode // Dev fallback
             });
         }
+
+        let clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+        let cleanIp = clientIp ? clientIp.split(',')[0].trim() : '';
+
+        if (cleanIp === '::1' || cleanIp === '::ffff:127.0.0.1') {
+            cleanIp = '127.0.0.1 (Localhost)';
+        }
+
+        user.lastIpAddress = cleanIp;
+        await user.save();
 
         const token = generateToken(user._id);
 

@@ -31,28 +31,27 @@
                     <a href="/admin/dashboard.html"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span>الرئيسية</span>
+                        <span data-translate="nav_dashboard">الرئيسية</span>
                     </a>
                 </li>
                 <li>
                     <a href="/admin/users.html"
                         class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white">
                         <i class="fas fa-store"></i>
-                        <span>المتاجر المشتركة</span>
+                        <span data-translate="nav_stores">المتاجر المشتركة</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/plans.html"
+                    <a href="/admin/payments.html"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
-                        <i class="fas fa-layer-group"></i>
-                        <span>باقات الاشتراك</span>
+                        <i class="fas fa-money-check-alt"></i><span data-translate="nav_payments">طرق الدفع</span>
                     </a>
                 </li>
                 <li>
                     <a href="/admin/settings.html"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
                         <i class="fas fa-cogs"></i>
-                        <span>إعدادات النظام</span>
+                        <span data-translate="nav_settings">إعدادات النظام</span>
                     </a>
                 </li>
             </ul>
@@ -61,7 +60,7 @@
             <button onclick="logout()"
                 class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>تسجيل خروج</span>
+                <span data-translate="nav_logout">تسجيل خروج</span>
             </button>
         </div>
     </aside>
@@ -71,7 +70,23 @@
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-6">
             <div class="flex items-center gap-4">
-                <h2 class="text-xl font-semibold text-gray-800">إدارة المتاجر (المشتركين)</h2>
+                <button class="md:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-xl font-semibold text-gray-800" data-translate="users">المتاجر المشتركة</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminLang()" id="adminLangBtn"
+                    class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition border">English</button>
+                <button onclick="openMessageModal('all')"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                    <i class="fas fa-paper-plane"></i> إرسال إشعار للجميع
+                </button>
+                <div class="relative w-full md:w-96">
+                    <input type="text" id="searchInput" placeholder="ابحث باسم المتجر..."
+                        class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
             </div>
         </header>
 
@@ -81,11 +96,6 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <!-- Search & Filter -->
                 <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
-                    <div class="relative w-full md:w-96">
-                        <input type="text" id="searchInput" placeholder="ابحث باسم المتجر..."
-                            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                    </div>
                     <div>
                         <button onclick="openMessageModal('all')"
                             class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold shadow-sm flex items-center gap-2">
@@ -99,12 +109,14 @@
                     <table class="w-full text-right text-sm text-gray-700">
                         <thead class="text-xs text-gray-600 uppercase bg-gray-50 border-b">
                             <tr>
-                                <th class="px-4 py-3">المتجر / المالك</th>
-                                <th class="px-4 py-3">البريد الإلكتروني</th>
-                                <th class="px-4 py-3">النوع</th>
-                                <th class="px-4 py-3">تاريخ الانضمام</th>
-                                <th class="px-4 py-3">الحالة</th>
-                                <th class="px-4 py-3 text-center">إجراءات</th>
+                                <th class="px-4 py-3" data-translate="th_store">المتجر / المالك</th>
+                                <th class="px-4 py-3" data-translate="th_email">البريد الإلكتروني</th>
+                                <th class="px-4 py-3" data-translate="th_type">النوع</th>
+                                <th class="px-4 py-3" data-translate="th_join">تاريخ الانضمام</th>
+                                <th class="px-4 py-3" data-translate="th_plan">الباقة وانتهاء الصلاحية</th>
+                                <th class="px-4 py-3" data-translate="th_ip">IP الدخول</th>
+                                <th class="px-4 py-3" data-translate="th_status">الحالة</th>
+                                <th class="px-4 py-3 text-center" data-translate="th_action">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="usersTable">
@@ -188,6 +200,59 @@
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
 
+        // Basic Localization Logic
+        let adminLang = localStorage.getItem('sg_admin_lang') || 'ar';
+        const dict = {
+            ar: {
+                langBtn: 'English', dir: 'rtl', users: 'المتاجر المشتركة',
+                nav_dashboard: 'الرئيسية', nav_stores: 'المتاجر المشتركة', nav_payments: 'طرق الدفع', nav_settings: 'إعدادات النظام', nav_logout: 'تسجيل خروج',
+                th_store: 'المتجر / المالك', th_email: 'البريد الإلكتروني', th_type: 'النوع', th_join: 'تاريخ الانضمام', th_plan: 'الباقة وانتهاء الصلاحية', th_ip: 'IP الدخول', th_status: 'الحالة', th_action: 'إجراءات',
+                search_placeholder: 'ابحث باسم المتجر...'
+            },
+            en: {
+                langBtn: 'عربي', dir: 'ltr', users: 'Stores',
+                nav_dashboard: 'Dashboard', nav_stores: 'Stores', nav_payments: 'Payments', nav_settings: 'Settings', nav_logout: 'Logout',
+                th_store: 'Store / Owner', th_email: 'Email', th_type: 'Type', th_join: 'Joined At', th_plan: 'Plan & Expiry', th_ip: 'Login IP', th_status: 'Status', th_action: 'Actions',
+                search_placeholder: 'Search by store name...'
+            }
+        };
+
+        function applyAdminLang() {
+            document.documentElement.dir = dict[adminLang].dir;
+            document.getElementById('adminLangBtn').textContent = dict[adminLang].langBtn;
+
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (dict[adminLang][key]) {
+                    el.textContent = dict[adminLang][key];
+                }
+            });
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.placeholder = dict[adminLang].search_placeholder;
+
+            // Fix text alignment for LTR
+            if (adminLang === 'en') {
+                document.querySelectorAll('.text-right').forEach(el => {
+                    el.classList.remove('text-right');
+                    el.classList.add('text-left');
+                });
+            } else {
+                document.querySelectorAll('.text-left').forEach(el => {
+                    el.classList.remove('text-left');
+                    el.classList.add('text-right');
+                });
+            }
+        }
+
+        function toggleAdminLang() {
+            adminLang = adminLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('sg_admin_lang', adminLang);
+            applyAdminLang();
+            window.location.reload();
+        }
+
+        applyAdminLang();
+
         function logout() {
             localStorage.removeItem('adminToken');
             window.location.href = '/admin/login.html';
@@ -216,7 +281,7 @@
                 <tr class="border-b hover:bg-gray-50 transition">
                     <td class="px-4 py-4">
                         <p class="font-bold text-gray-900">${user.storeName}</p>
-                        <p class="text-xs text-gray-500">${user.fullName}</p>
+                        <p class="text-xs text-gray-500">${user.fullName} | ${user.country || 'N/A'}</p>
                     </td>
                     <td class="px-4 py-4">${user.email}</td>
                     <td class="px-4 py-4">
@@ -224,29 +289,97 @@
                             ${user.storeType}
                         </span>
                     </td>
-                    <td class="px-4 py-4">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</td>
+                    <td class="px-4 py-4 text-sm">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</td>
+                    <td class="px-4 py-4">
+                        <p class="font-semibold text-purple-700 text-sm">${user.subscriptionPlan || 'Free Trial'}</p>
+                        <p class="text-xs font-bold text-gray-500 mt-1">
+                            ينتهي: ${user.subscriptionEndDate ? new Date(user.subscriptionEndDate).toLocaleDateString('ar-EG') : 'غير محدد'}
+                        </p>
+                    </td>
+                    <td class="px-4 py-4 font-mono text-xs text-blue-600 font-bold" dir="ltr">${user.lastIpAddress || '-'}</td>
                     <td class="px-4 py-4">
                         <span class="px-2 py-1 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
                             ${user.status === 'active' ? 'نشط' : 'موقوف'}
                         </span>
                     </td>
                     <td class="px-4 py-4 flex justify-center gap-2">
+                        <button onclick="assignSubscriptionModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs" title="تفعيل / تجديد الباقة">
+                            <i class="fas fa-crown"></i>
+                        </button>
                         ${user.status === 'active'
                     ? `<button onclick="toggleUserStatus('${user._id}', 'suspend')" class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 text-xs" title="إيقاف"><i class="fas fa-ban"></i></button>`
-                    : `<button onclick="toggleUserStatus('${user._id}', 'activate')" class="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs" title="تفعيل"><i class="fas fa-check"></i></button>`
+                    : `<button onclick="toggleUserStatus('${user._id}', 'activate')" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-xs" title="تفعيل"><i class="fas fa-check"></i></button>`
                 }
-                        <button onclick="openEditModal('${user._id}')" class="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs" title="إدارة/تعديل المتجر">
+                        <button onclick="openEditModal('${user._id}')" class="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs" title="تعديل">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="openMessageModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200 text-xs" title="إرسال رسالة">
+                        <button onclick="openMessageModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200 text-xs" title="رسالة">
                             <i class="fas fa-envelope"></i>
                         </button>
-                        <button onclick="deleteUser('${user._id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs" title="حذف بالكامل">
+                        <button onclick="deleteUser('${user._id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs" title="حذف">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </td>
                 </tr>
             `).join('');
+        }
+
+        async function assignSubscriptionModal(userId, storeName) {
+            // Default +1 month
+            const defaultDate = new Date();
+            defaultDate.setMonth(defaultDate.getMonth() + 1);
+            const defaultDateStr = defaultDate.toISOString().split('T')[0];
+
+            const { value: formValues } = await Swal.fire({
+                title: 'تحديد باقة الاشتراك',
+                html: `
+                    <p class="mb-4 text-sm text-gray-600">اختر الباقة وتاريخ الانتهاء الدقيق لمتجر ${storeName}</p>
+                    <select id="swal-plan" class="w-full border p-2 rounded mb-3 text-right" style="direction: rtl;">
+                        <option value="Basic Plan">الباقة الأساسية (Basic)</option>
+                        <option value="Pro Plan">الباقة الاحترافية (Pro)</option>
+                        <option value="Free Trial">نسخة تجريبية (Free)</option>
+                    </select>
+                    <label class="block text-sm text-gray-500 mb-1 text-right">ينتهي الاشتراك في يوم:</label>
+                    <input type="date" id="swal-endDate" class="w-full border p-2 rounded text-right" value="${defaultDateStr}" style="direction: rtl;">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'حفظ وتفعيل',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    const plan = document.getElementById('swal-plan').value;
+                    const endDate = document.getElementById('swal-endDate').value;
+                    if (!plan || !endDate) {
+                        Swal.showValidationMessage('يرجى تحديد الباقة وتاريخ الانتهاء السليم');
+                    }
+                    return { plan, endDate };
+                }
+            });
+
+            if (formValues) {
+                try {
+                    const res = await fetch(`/api/admin/users/${userId}/assign-subscription`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            planName: formValues.plan,
+                            endDate: formValues.endDate
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        Swal.fire('تم التفعيل!', data.message, 'success');
+                        fetchUsers(); // Refresh table
+                    } else {
+                        Swal.fire('خطأ', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('خطأ', 'حدث خطأ في الاتصال بالسيرفر.', 'error');
+                }
+            }
         }
 
         async function toggleUserStatus(id, action) {
@@ -332,18 +465,12 @@
                 const data = await res.json();
 
                 if (!data.success) {
-                    content.innerHTML = `<div class="text-red-500 text-center">${data.message}</div>`;
+                    content.innerHTML = `< div class= "text-red-500 text-center" > ${data.message}</div > `;
                     return;
                 }
 
-                const { user, subscription, plans } = data.data;
+                const { user } = data.data;
                 storeNameHeader.textContent = user.storeName + ' (' + user.email + ')';
-
-                const currentPlanId = subscription && subscription.plan ? subscription.plan._id.toString() : '';
-
-                const plansOptions = plans.map(p =>
-                    `<option value="${p._id}" ${currentPlanId === p._id.toString() ? 'selected' : ''}>${p.name} - (المنتجات: ${p.features.maxProducts})</option>`
-                ).join('');
 
                 content.innerHTML = `
                     <div class="grid grid-cols-2 gap-4">
@@ -356,26 +483,29 @@
                             <span class="font-semibold">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</span>
                         </div>
                     </div>
+                    <div class="mt-4 border-t pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">اسم المتجر</label>
+                        <input type="text" id="editStoreName" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border outline-none focus:border-blue-500" value="${user.storeName}">
+                    </div>
                     <div class="mt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الباقة الحالية وتغييرها</label>
-                        <select id="planSelect" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
-                            <option value="">-- اختر الباقة --</option>
-                            ${plansOptions}
-                        </select>
-                        <p class="text-xs text-gray-500 mt-2"><i class="fas fa-info-circle"></i> تغيير الباقة سيتم تطبيقه فوراً وسيعيد تعيين حدود المتجر بناءً على الباقة المختارة.</p>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">كلمة مرور جديدة (اختياري)</label>
+                        <input type="text" id="editPassword" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border outline-none focus:border-blue-500" placeholder="اتركه فارغاً إذا لم ترد التغيير للمتجر">
+                        <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> يمكنك تعيين كلمة سر جديدة هنا ونسخها وإرسالها للمستخدم.</p>
                     </div>
                 `;
 
                 footer.classList.remove('hidden');
             } catch (e) {
-                content.innerHTML = `<div class="text-red-500 text-center">حدث خطأ في جلب البيانات</div>`;
+                content.innerHTML = `< div class="text-red-500 text-center" > حدث خطأ في جلب البيانات</div > `;
             }
         }
 
         async function saveStoreChanges() {
-            const planId = document.getElementById('planSelect').value;
-            if (!planId) {
-                Swal.fire('خطأ', 'الرجاء اختيار باقة', 'error');
+            const storeName = document.getElementById('editStoreName').value;
+            const password = document.getElementById('editPassword').value;
+
+            if (!storeName) {
+                Swal.fire('خطأ', 'اسم المتجر مطلوب', 'error');
                 return;
             }
 
@@ -384,13 +514,13 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
 
             try {
-                const res = await fetch(`/api/admin/users/${currentEditingUserId}/subscription`, {
+                const res = await fetch(`/api/admin/users/${currentEditingUserId}/profile`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ planId })
+                    body: JSON.stringify({ storeName, password })
                 });
                 const data = await res.json();
 

@@ -2,14 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
+const Customer = require('../models/Customer');
 const auth = require('../middleware/auth');
+const { enforceLockout, enforceLimits } = require('../middleware/subscription');
 
 router.use(auth);
+router.use(enforceLockout);
 
 // POST /api/sales — record a new sale
-router.post('/', async (req, res) => {
+router.post('/', enforceLimits('sales'), async (req, res) => {
     try {
-        const { items, discount, paymentMethod, customerName } = req.body;
+        const { items, discount, paymentMethod, customerName, customerPhone, usePoints } = req.body;
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'يجب إضافة منتج واحد على الأقل' });
@@ -43,17 +46,64 @@ router.post('/', async (req, res) => {
             await product.save();
         }
 
+        let finalDiscount = discount || 0;
+        let finalTotal = subtotal - finalDiscount;
+        let appliedLoyalty = false;
+
+        // --- CUSTOMER LOYALTY LOGIC (Pro Plan) ---
+        const plan = req.user.subscriptionPlan || 'Free Trial';
+        let customer = null;
+
+        if (plan === 'Pro Plan' && customerPhone) {
+            customer = await Customer.findOne({ userId: req.user._id, phone: customerPhone });
+            if (!customer) {
+                customer = new Customer({
+                    userId: req.user._id,
+                    phone: customerPhone,
+                    name: customerName || 'عميل محترم',
+                });
+            }
+
+            if (usePoints && customer.points > 0) {
+                // Redeem Points: 10 points = 1 EGP discount
+                const pointsValue = customer.points / 10;
+
+                if (pointsValue >= finalTotal) {
+                    // Points cover the whole bill
+                    const pointsUsed = finalTotal * 10;
+                    finalDiscount += finalTotal;
+                    finalTotal = 0;
+                    customer.points -= pointsUsed;
+                } else {
+                    // Points cover part of the bill
+                    finalDiscount += pointsValue;
+                    finalTotal -= pointsValue;
+                    customer.points = 0;
+                }
+                appliedLoyalty = true;
+            }
+
+            // Accumulate Points for final total paid (1 point for every 10 EGP spent)
+            if (finalTotal > 0) {
+                const earnedPoints = Math.floor(finalTotal / 10);
+                customer.points += earnedPoints;
+            }
+
+            customer.totalSpent += finalTotal;
+            await customer.save();
+        }
+
         const sale = await Sale.create({
             items: saleItems,
             subtotal,
-            discount: discount || 0,
-            total: subtotal - (discount || 0),
+            discount: finalDiscount,
+            total: finalTotal,
             paymentMethod: paymentMethod || 'cash',
-            customerName: customerName || 'عميل',
+            customerName: customer ? customer.name : (customerName || 'عميل'),
             userId: req.user._id
         });
 
-        res.status(201).json({ sale });
+        res.status(201).json({ sale, customerPoints: customer ? customer.points : 0, appliedLoyalty });
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ', error: error.message });
     }

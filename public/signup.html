@@ -453,6 +453,21 @@
                     <option value="other" data-i18n="type_other">نشاط آخر</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label class="form-label" data-i18n="label_country">الدولة / Country</label>
+                <select class="form-input" id="u-country" required>
+                    <option value="Egypt">مصر - Egypt</option>
+                    <option value="Saudi Arabia">السعودية - Saudi Arabia</option>
+                    <option value="UAE">الإمارات - UAE</option>
+                    <option value="Kuwait">الكويت - Kuwait</option>
+                    <option value="Qatar">قطر - Qatar</option>
+                    <option value="Oman">عمان - Oman</option>
+                    <option value="Jordan">الأردن - Jordan</option>
+                    <option value="USA">الولايات المتحدة - USA</option>
+                    <option value="UK">المملكة المتحدة - UK</option>
+                    <option value="Other">دولة أخرى - Other</option>
+                </select>
+            </div>
             <div class="form-actions">
                 <button class="btn btn-outline" onclick="nextStepUI(1)" data-i18n="btn_back">تراجع</button>
                 <button class="btn btn-primary" onclick="nextStepUI(3)" data-i18n="btn_next">متابعة ➝</button>
@@ -517,7 +532,8 @@
                 label_store_name: "اسم المتجر", label_store_type: "نشاط المتجر",
                 type_supermarket: "سوبر ماركت", type_grocery: "بقالة", type_minimarket: "ميني ماركت", type_wholesale: "جملة (Wholesale)", type_other: "نشاط آخر",
                 label_password: "كلمة المرور الآمنة", label_confirm: "تأكيد كلمة المرور",
-                btn_finish: "إتمام وإنشاء الحساب", btn_creating: "جاري الإنشاء..."
+                btn_finish: "إتمام وإنشاء الحساب", btn_creating: "جاري الإنشاء...",
+                label_country: "الدولة"
             }
         };
 
@@ -605,6 +621,7 @@
             const email = document.getElementById('u-email').value;
             const storeName = document.getElementById('s-name').value;
             const storeType = document.getElementById('s-type').value;
+            const country = document.getElementById('u-country').value;
             const password = document.getElementById('u-pass').value;
             const confirm = document.getElementById('u-pass-confirm').value;
 
@@ -626,7 +643,7 @@
                 const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fullName, email, storeName, storeType, password })
+                    body: JSON.stringify({ fullName, email, storeName, storeType, password, country, language: currentLang })
                 });
 
                 const data = await res.json();

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrocer — نقطة البيع السريعة (POS)</title>
     <link rel="stylesheet" href="/css/global.css">
+    <!-- SweetAlert2 & FontAwesome -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             overflow: hidden;
@@ -433,6 +436,18 @@
                     <span data-i18n="sum_total">الإجمالي المطلوب</span>
                     <span id="finalTotal">0.00 ج.م</span>
                 </div>
+
+                <div
+                    style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4);">
+                    <input type="tel" id="customerPhone" placeholder="رقم هاتف العميل (نظام الولاء)"
+                        style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                    <label
+                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
+                        <input type="checkbox" id="usePoints">
+                        استبدال النقاط المتاحة بخصم
+                    </label>
+                </div>
+
                 <button class="btn btn-primary pay-btn" onclick="processPayment()" id="payBtn" disabled>
                     <div>
                         <span data-i18n="btn_pay">دفع وإصدار الفاتورة</span><br>
@@ -508,8 +523,16 @@
                 النظام مدعوم بواسطة SmartGrocer
             </div>
 
-            <button class="btn btn-primary no-print" onclick="window.print()"
-                style="width: 100%; margin-top: 2rem; padding: 1rem;">🖨️ طباعة الفاتورة</button>
+            <div class="no-print" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn btn-primary" onclick="window.print()" style="width: 100%; padding: 1rem;">
+                    🖨️ طباعة الفاتورة
+                </button>
+                <button class="btn"
+                    style="background-color: #25D366; color: white; width: 100%; padding: 1rem; border: none; font-weight: bold; border-radius: var(--radius);"
+                    onclick="sendWhatsAppReceipt()">
+                    <i class="fab fa-whatsapp"></i> إرسال عبر واتساب (Pro)
+                </button>
+            </div>
         </div>
     </div>
 
@@ -726,21 +749,28 @@
             try {
                 document.getElementById('payBtn').disabled = true;
 
+                const customerPhone = document.getElementById('customerPhone').value.trim();
+                const usePoints = document.getElementById('usePoints').checked;
+
                 // Real-world: This calls the Sales API
                 const res = await api('/api/sales', {
                     method: 'POST',
                     body: JSON.stringify({
                         items: btnPayload,
                         totalAmount: totalAmount,
-                        paymentMethod: 'cash'
+                        paymentMethod: 'cash',
+                        customerPhone: customerPhone || undefined,
+                        usePoints: usePoints
                     })
                 });
 
                 // Generate Receipt
-                generateReceipt(cart, res.sale);
+                generateReceipt(cart, res);
 
                 // Clear state
                 cart = [];
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('usePoints').checked = false;
                 renderCart();
                 fetchProducts(); // Refresh stock locally
 
@@ -750,7 +780,8 @@
             }
         }
 
-        function generateReceipt(items, saleData) {
+        function generateReceipt(items, resData) {
+            const saleData = resData.sale;
             const user = getUser();
             document.getElementById('rStoreName').textContent = user.storeName || 'SmartGrocer POS';
             document.getElementById('rDate').textContent = new Date().toLocaleString('ar-EG');
@@ -764,15 +795,96 @@
                 </div>
             `).join('');
 
-            document.getElementById('rSub').textContent = document.getElementById('subTotal').textContent;
-            document.getElementById('rTax').textContent = document.getElementById('taxAmount').textContent;
-            document.getElementById('rTotal').textContent = document.getElementById('finalTotal').textContent;
+            document.getElementById('rSub').textContent = saleData.subtotal.toFixed(2);
+            document.getElementById('rTax').textContent = (saleData.subtotal * TAX_RATE).toFixed(2);
+            document.getElementById('rTotal').textContent = saleData.total.toFixed(2);
+
+            let extraInfo = '';
+            if (saleData.discount > 0 && resData.appliedLoyalty) {
+                extraInfo += `<div style="color: #16a34a; font-weight: bold; margin-bottom: 5px;">خصم النقاط: ${saleData.discount.toFixed(2)}- ج.م</div>`;
+            }
+            if (document.getElementById('customerPhone').value.trim()) {
+                extraInfo += `<div style="color: #555; font-size: 0.8rem;">نقاط العميل الحالية: ${resData.customerPoints || 0} نقطة</div>`;
+            }
+
+            const totalRow = document.querySelector('.r-total-sec');
+            // Remove previous extra info if any
+            const existingExtra = document.getElementById('rExtraInfo');
+            if (existingExtra) existingExtra.remove();
+
+            if (extraInfo) {
+                const infoDiv = document.createElement('div');
+                infoDiv.id = 'rExtraInfo';
+                infoDiv.innerHTML = extraInfo;
+                infoDiv.style.marginTop = '10px';
+                infoDiv.style.borderTop = '1px dashed #ccc';
+                infoDiv.style.paddingTop = '10px';
+                totalRow.appendChild(infoDiv);
+            }
 
             document.getElementById('receiptModal').classList.add('active');
         }
 
         function closeReceipt() {
             document.getElementById('receiptModal').classList.remove('active');
+        }
+
+        async function sendWhatsAppReceipt() {
+            const user = getUser();
+            const plan = user.subscriptionPlan || 'Free Trial';
+
+            if (plan === 'Basic Plan') {
+                Swal.fire({
+                    icon: 'lock',
+                    title: 'ميزة احترافية',
+                    text: 'هذه الميزة متاحة فقط في الباقة الاحترافية (Pro Plan). يرجى الترقية لإرسال الفواتير عبر واتساب.',
+                    confirmButtonText: 'ترقية باقتي',
+                    showCancelButton: true,
+                    cancelButtonText: 'إلغاء'
+                }).then((res) => {
+                    if (res.isConfirmed) window.location.href = '/billing.html';
+                });
+                return;
+            }
+
+            const { value: phone } = await Swal.fire({
+                title: 'رقم هاتف العميل',
+                input: 'tel',
+                inputLabel: 'أدخل رقم هاتف العميل شاملاً كود الدولة (مثال: +2010...)',
+                inputPlaceholder: '+2...',
+                showCancelButton: true,
+                confirmButtonColor: '#25D366',
+                confirmButtonText: 'إرسال الفاتورة <i class="fab fa-whatsapp"></i>'
+            });
+
+            if (phone) {
+                const storeName = user.storeName || 'SmartGrocer';
+                const date = new Date().toLocaleString('ar-EG');
+
+                let msg = `*فاتورة من متجر ${storeName}* 🛒\n`;
+                msg += `📅 التاريخ: ${date}\n`;
+                msg += `------------------------\n`;
+
+                // Get items from the DOM to match the exact receipt
+                const listHTML = document.getElementById('rItemsList').querySelectorAll('.r-item');
+                listHTML.forEach(node => {
+                    const spans = node.querySelectorAll('span');
+                    const name = spans[0].textContent;
+                    const qty = spans[1].textContent;
+                    const total = spans[2].textContent;
+                    msg += `ـ ${name}\nالكمية: ${qty} | الإجمالي: ${total} ج.م\n\n`;
+                });
+
+                msg += `------------------------\n`;
+                msg += `💵 المجموع الفرعي: ${document.getElementById('rSub').textContent} ج.م\n`;
+                msg += `🧾 الضريبة: ${document.getElementById('rTax').textContent} ج.م\n`;
+                msg += `💰 *الإجمالي النهائي: ${document.getElementById('rTotal').textContent}*\n`;
+                msg += `\nشكراً لزيارتكم! 🌟\n`;
+
+                const encodedMsg = encodeURIComponent(msg);
+                const cleanPhone = phone.replace(/[^\d+]/g, '');
+                window.open(`https://wa.me/${cleanPhone}?text=${encodedMsg}`, '_blank');
+            }
         }
     </script>
 </body>

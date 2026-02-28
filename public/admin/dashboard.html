@@ -34,28 +34,27 @@
                 <li>
                     <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white">
                         <i class="fas fa-tachometer-alt"></i>
-                        <span>الرئيسية</span>
+                        <span data-translate="nav_dashboard">الرئيسية</span>
                     </a>
                 </li>
                 <li>
                     <a href="/admin/users.html"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
-                        <i class="fas fa-store"></i>
-                        <span>المتاجر المشتركة</span>
+                        <i class="fas fa-users"></i>
+                        <span data-translate="nav_stores">المتاجر المشتركة</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/plans.html"
+                    <a href="/admin/payments.html"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
-                        <i class="fas fa-layer-group"></i>
-                        <span>باقات الاشتراك</span>
+                        <i class="fas fa-money-check-alt"></i><span data-translate="nav_payments">طرق الدفع</span>
                     </a>
                 </li>
                 <li>
                     <a href="/admin/settings.html"
                         class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
                         <i class="fas fa-cogs"></i>
-                        <span>إعدادات النظام</span>
+                        <span data-translate="nav_settings">إعدادات النظام</span>
                     </a>
                 </li>
             </ul>
@@ -64,7 +63,7 @@
             <button onclick="logout()"
                 class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition">
                 <i class="fas fa-sign-out-alt"></i>
-                <span>تسجيل خروج</span>
+                <span data-translate="nav_logout">تسجيل خروج</span>
             </button>
         </div>
     </aside>
@@ -77,9 +76,11 @@
                 <button class="md:hidden text-gray-500 hover:text-gray-700">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
-                <h2 class="text-xl font-semibold text-gray-800">نظرة عامة</h2>
+                <h2 class="text-xl font-semibold text-gray-800" data-translate="overview">نظرة عامة</h2>
             </div>
             <div class="flex items-center gap-4">
+                <button onclick="toggleAdminLang()" id="adminLangBtn"
+                    class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition border">English</button>
                 <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
                     A
                 </div>
@@ -93,7 +94,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 mb-1">المتاجر النشطة</p>
+                        <p class="text-sm text-gray-500 mb-1" data-translate="statStores">المتاجر النشطة</p>
                         <h3 class="text-3xl font-bold text-gray-800" id="stat-stores">-</h3>
                     </div>
                     <div
@@ -104,7 +105,7 @@
 
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 mb-1">الاشتراكات الفعالة</p>
+                        <p class="text-sm text-gray-500 mb-1" data-translate="statSubs">الاشتراكات الفعالة</p>
                         <h3 class="text-3xl font-bold text-gray-800" id="stat-subs">-</h3>
                     </div>
                     <div
@@ -115,7 +116,7 @@
 
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 mb-1">إجمالي الباقات</p>
+                        <p class="text-sm text-gray-500 mb-1" data-translate="statPlans">إجمالي الباقات</p>
                         <h3 class="text-3xl font-bold text-gray-800" id="stat-plans">-</h3>
                     </div>
                     <div
@@ -128,7 +129,7 @@
             <!-- Charts Section (Placeholder for aesthetics) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col">
-                    <h4 class="font-semibold text-gray-800 mb-4">نمو المشتركين</h4>
+                    <h4 class="font-semibold text-gray-800 mb-4" data-translate="chartTitle">نمو المشتركين</h4>
                     <div class="relative flex-1 w-full" style="min-height: 250px;">
                         <canvas id="growthChart"></canvas>
                     </div>
@@ -136,15 +137,16 @@
                 <!-- Mini Table -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                     <div class="flex justify-between items-center mb-4">
-                        <h4 class="font-semibold text-gray-800">أحدث المتاجر</h4>
-                        <a href="/admin/users.html" class="text-sm text-blue-600 hover:underline">عرض الكل</a>
+                        <h4 class="font-semibold text-gray-800" data-translate="latest">أحدث المتاجر</h4>
+                        <a href="/admin/users.html" class="text-sm text-blue-600 hover:underline"
+                            data-translate="viewAll">عرض الكل</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-right text-sm text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th class="px-4 py-3">اسم المتجر</th>
-                                    <th class="px-4 py-3">الحالة</th>
+                                    <th class="px-4 py-3" data-translate="th_name">اسم المتجر</th>
+                                    <th class="px-4 py-3" data-translate="th_status">الحالة</th>
                                 </tr>
                             </thead>
                             <tbody id="latestStoresTable">
@@ -163,6 +165,57 @@
         if (!token) {
             window.location.href = '/admin/login.html';
         }
+
+        // Basic Localization Logic
+        let adminLang = localStorage.getItem('sg_admin_lang') || 'ar';
+        const dict = {
+            ar: {
+                langBtn: 'English', dir: 'rtl', overview: 'نظرة عامة',
+                nav_dashboard: 'الرئيسية', nav_stores: 'المتاجر المشتركة', nav_payments: 'طرق الدفع', nav_settings: 'إعدادات النظام', nav_logout: 'تسجيل خروج',
+                statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statPlans: 'إجمالي الباقات',
+                chartTitle: 'نمو المشتركين', latest: 'أحدث المتاجر', viewAll: 'عرض الكل', th_name: 'اسم المتجر', th_status: 'الحالة', active: 'نشط', suspended: 'موقوف'
+            },
+            en: {
+                langBtn: 'عربي', dir: 'ltr', overview: 'Overview',
+                nav_dashboard: 'Dashboard', nav_stores: 'Stores', nav_payments: 'Payments', nav_settings: 'Settings', nav_logout: 'Logout',
+                statStores: 'Active Stores', statSubs: 'Active Subscriptions', statPlans: 'Total Plans',
+                chartTitle: 'Subscriber Growth', latest: 'Latest Stores', viewAll: 'View All', th_name: 'Store Name', th_status: 'Status', active: 'Active', suspended: 'Suspended'
+            }
+        };
+
+        function applyAdminLang() {
+            document.documentElement.dir = dict[adminLang].dir;
+            document.getElementById('adminLangBtn').textContent = dict[adminLang].langBtn;
+
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (dict[adminLang][key]) {
+                    el.textContent = dict[adminLang][key];
+                }
+            });
+
+            // Fix text alignment for LTR
+            if (adminLang === 'en') {
+                document.querySelectorAll('.text-right').forEach(el => {
+                    el.classList.remove('text-right');
+                    el.classList.add('text-left');
+                });
+            } else {
+                document.querySelectorAll('.text-left').forEach(el => {
+                    el.classList.remove('text-left');
+                    el.classList.add('text-right');
+                });
+            }
+        }
+
+        function toggleAdminLang() {
+            adminLang = adminLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('sg_admin_lang', adminLang);
+            applyAdminLang();
+            window.location.reload();
+        }
+
+        applyAdminLang();
 
         function logout() {
             localStorage.removeItem('adminToken');
@@ -204,7 +257,7 @@
                             <td class="px-4 py-3 font-medium text-gray-900">${user.storeName}</td>
                             <td class="px-4 py-3">
                                 <span class="px-2 py-1 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                                    ${user.status === 'active' ? 'نشط' : 'موقوف'}
+                                    ${user.status === 'active' ? dict[adminLang].active : dict[adminLang].suspended}
                                 </span>
                             </td>
                         </tr>

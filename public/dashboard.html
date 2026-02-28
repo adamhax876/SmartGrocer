@@ -27,6 +27,23 @@
             transition: all 0.3s;
         }
 
+        .sidebar::-webkit-scrollbar {
+            width: 0px;
+            /* Remove scrollbar space */
+            background: transparent;
+            /* Optional: just make scrollbar invisible */
+        }
+
+        /* Optional: show scrollbar when hovering if desired */
+        .sidebar:hover::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+        }
+
         .sidebar-logo {
             display: flex;
             align-items: center;
@@ -196,7 +213,7 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="/images/logo.png" style="width: 100%; max-height: 100px; object-fit: contain;" alt="Logo">
-                
+
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html" class="sidebar-link active"><span class="icon">📊</span> <span
@@ -228,7 +245,14 @@
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
                     <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
-                    <span id="userGreeting" style="font-weight: bold; color: var(--text);">مرحباً</span>
+                    <button onclick="window.location.href='/billing.html'" class="btn btn-primary" id="btnUpgrade"
+                        style="padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: bold;"
+                        data-i18n="btn_upgrade">ترقية الباقة 🚀</button>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
+                        <span id="userGreeting" style="font-weight: bold; color: var(--text);">مرحباً</span>
+                        <span id="planBadge"
+                            style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 12px; background: #dcfce7; color: #166534; display: none;"></span>
+                    </div>
                 </div>
             </header>
             <div class="content">
@@ -277,14 +301,14 @@
                 btn_theme: "Theme", btn_logout: "Logout",
                 title_dashboard: "Dashboard Overview",
                 kpi_revenue: "Total Revenue", kpi_orders: "Orders Count", kpi_low_stock: "Low Stock Alerts", kpi_products: "Total Products",
-                chart_sales: "Monthly Sales", chart_categories: "Category Distribution"
+                chart_sales: "Monthly Sales", chart_categories: "Category Distribution", btn_upgrade: "Upgrade Plan 🚀"
             },
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير",
                 btn_theme: "المظهر", btn_logout: "تسجيل الخروج",
                 title_dashboard: "نظرة عامة",
                 kpi_revenue: "إجمالي المبيعات", kpi_orders: "الطلبات", kpi_low_stock: "تنبيهات المخزون", kpi_products: "إجمالي المنتجات",
-                chart_sales: "المبيعات الشهرية", chart_categories: "توزيع الفئات"
+                chart_sales: "المبيعات الشهرية", chart_categories: "توزيع الفئات", btn_upgrade: "ترقية الباقة 🚀"
             }
         };
 
@@ -326,6 +350,40 @@
             document.getElementById('userGreeting').textContent = currentLang === 'ar' ? `مرحباً، ${user.fullName || ''}` : `Hello, ${user.fullName || ''}`;
 
             try {
+                // Fetch full fresh user details
+                const meData = await api('/api/auth/me');
+                if (meData && meData.user) {
+                    const planBadge = document.getElementById('planBadge');
+                    planBadge.style.display = 'inline-block';
+
+                    let planText = meData.user.subscriptionPlan || 'Free Trial';
+                    const endDate = new Date(meData.user.subscriptionEndDate);
+                    const isActive = endDate > new Date();
+                    const upgBtn = document.getElementById('btnUpgrade');
+
+                    if (upgBtn) {
+                        if (planText === 'Pro Plan' && isActive) {
+                            upgBtn.style.display = 'none';
+                        } else if (!isActive) {
+                            upgBtn.textContent = currentLang === 'ar' ? 'تجديد الباقة 🚀' : 'Renew Plan 🚀';
+                            upgBtn.style.background = '#dc2626'; // Alert color
+                        }
+                    }
+
+                    if (planText === 'Free Trial') {
+                        const daysLeft = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24));
+                        planText = currentLang === 'ar' ? `تجربة مجانية (${daysLeft > 0 ? daysLeft : 0} يوم)` : `Free Trial (${daysLeft > 0 ? daysLeft : 0} days left)`;
+                        planBadge.style.background = '#fef3c7';
+                        planBadge.style.color = '#92400e';
+                    } else {
+                        planBadge.style.background = '#dbeafe';
+                        planBadge.style.color = '#1e40af';
+                        planText = currentLang === 'ar' && planText === 'Basic Plan' ? 'الباقة الأساسية' :
+                            currentLang === 'ar' && planText === 'Pro Plan' ? 'الباقة الاحترافية' : planText;
+                    }
+                    planBadge.textContent = planText;
+                }
+
                 const data = await api('/api/reports/overview');
 
                 // Update stats

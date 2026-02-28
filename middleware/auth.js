@@ -25,6 +25,21 @@ module.exports = async function (req, res, next) {
         }
 
         req.user = user;
+
+        // Async IP Tracking
+        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+        let cleanIp = clientIp ? clientIp.split(',')[0].trim() : '';
+
+        // Format localhost IPs to be more user-friendly
+        if (cleanIp === '::1' || cleanIp === '::ffff:127.0.0.1') {
+            cleanIp = '127.0.0.1 (Localhost)';
+        }
+
+        if (cleanIp && cleanIp !== user.lastIpAddress && user.role === 'store_owner') {
+            User.updateOne({ _id: user._id }, { $set: { lastIpAddress: cleanIp } })
+                .catch(err => console.error('Error updating IP in middleware:', err.message));
+        }
+
         next();
     } catch (error) {
         res.status(401).json({ message: 'Not authorized - invalid token' });

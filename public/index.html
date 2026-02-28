@@ -151,14 +151,20 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">
+      <div
+        style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; padding: 0.5rem 1rem; border-radius: 50px; font-weight: 700; display: inline-block; margin-bottom: 1.5rem; font-size: 0.95rem;"
+        data-i18n="hero_badge">
+        🎉 تجربة مجانية شاملة 14 يوماً (بدون فيزا)
+      </div>
       <h1 data-i18n="hero_title">أدر متجرك بذكاء واحترافية</h1>
-      <p data-i18n="hero_subtitle">منظومة متكاملة لنقاط البيع، إدارة المخزون، والتقارير التحليلية. صُممت لزيادة أرباحك
-        وتسهيل عملك اليومي.</p>
+      <p data-i18n="hero_subtitle">منظومة متكاملة لنقاط البيع، إدارة المخزون، والتقارير التحليلية. استمتع بكافة مميزات
+        الباقة الاحترافية مجاناً لمدة أسبوعين واستعد لزيادة أرباحك.</p>
       <div class="hero-btns">
-        <a href="/signup.html" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;"
-          data-i18n="hero_btn_start">ابدأ تجربتك المجانية</a>
-        <a href="#features" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.1rem;"
-          data-i18n="hero_btn_learn">تعرف على المزيد</a>
+        <a href="/login.html" class="btn btn-primary"
+          style="padding: 1rem 2rem; font-size: 1.1rem; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, #10b981 0%, #059669 100%);"
+          data-i18n="hero_btn_start">ابدأ تجربتك المجانية الآن</a>
+        <a href="#pricing" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.1rem;"
+          data-i18n="hero_btn_pricing">الأسعار والباقات</a>
       </div>
     </div>
   </section>
@@ -192,6 +198,104 @@
     </div>
   </section>
 
+  <!-- Pricing Section -->
+  <section class="pricing" id="pricing" style="padding: 5rem 5%; background: var(--bg-card);">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto; margin-bottom: 3rem;">
+      <h2 style="font-size: 2.2rem; margin-bottom: 1rem; color: var(--text);" data-i18n="pricing_title">باقات تناسب
+        طموحك</h2>
+      <p style="color: var(--text-secondary); font-size: 1.1rem;" data-i18n="pricing_subtitle">اختر الباقة الأنسب لمتجرك
+        وابدأ فوراً. بدون أي مبالغ خفية، وطرق دفع محلية وعالمية.</p>
+    </div>
+
+    <div
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: stretch;">
+      <!-- Free Tier -->
+      <div
+        style="background: var(--bg); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--border); display: flex; flex-direction: column;">
+        <h3 style="font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem;" data-i18n="plan_free">التجربة المجانية
+        </h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; height: 50px;" data-i18n="plan_free_desc">قم
+          بتجربة جميع خواص النظام بكل حرية قبل الاشتراك.</p>
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$0<span
+            style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;" data-i18n="plan_duration_free"> /
+            14 يوم</span></div>
+        <ul
+          style="list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; color: var(--text-secondary); flex-grow: 1;">
+          <li><i class="fas fa-check text-green-500 mr-2 ml-2"></i> <span data-i18n="feat_unlocked">وصول 100% لكافة
+              الخصائص</span></li>
+          <li><i class="fas fa-check text-green-500 mr-2 ml-2"></i> <span data-i18n="feat_unlimited_prod">عدد غير محدود
+              من المنتجات</span></li>
+          <li><i class="fas fa-check text-green-500 mr-2 ml-2"></i> <span data-i18n="feat_unlimited_sales">مبيعات غير
+              محدودة</span></li>
+          <li><i class="fas fa-exclamation-triangle text-yellow-500 mr-2 ml-2"></i> <span data-i18n="feat_lock">يتم قفل
+              الحساب (للقراءة فقط) بعد 14 يوم</span></li>
+        </ul>
+        <a href="/login.html" class="btn btn-outline plan-btn" style="width: 100%; text-align: center;"
+          data-i18n="btn_start_free">جرب الآن مجاناً</a>
+      </div>
+
+      <!-- Basic Tier -->
+      <div
+        style="background: var(--bg); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--border); display: flex; flex-direction: column;">
+        <h3 style="font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem;" data-i18n="plan_basic">الباقة الأساسية
+          (Startups)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; height: 50px;" data-i18n="plan_basic_desc">مثالية
+          للمحلات الصغيرة أو المتوسطة لفرع واحد.</p>
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$15<span
+            style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;" data-i18n="plan_duration_month"> /
+            شهرياً</span></div>
+        <ul
+          style="list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; color: var(--text-secondary); flex-grow: 1;">
+          <li><i class="fas fa-check text-green-500 mr-2 ml-2"></i> <span data-i18n="feat_3k_prod">حتى 3,000 منتج</span>
+          </li>
+          <li><i class="fas fa-check text-green-500 mr-2 ml-2"></i> <span data-i18n="feat_10k_sales">حتى 10,000 فاتورة
+              مبيعات</span></li>
+          <li><i class="fas fa-check text-green-500 mr-2 ml-2"></i> <span data-i18n="feat_std_reports">تقارير مبيعات
+              وجرد قياسية</span></li>
+          <li><i class="fas fa-check text-gray-400 mr-2 ml-2"></i> <span data-i18n="feat_basic_support"
+              style="color:var(--text-secondary);">دعم فني خلال أوقات العمل</span></li>
+        </ul>
+        <a href="/login.html" class="btn btn-outline plan-btn" style="width: 100%; text-align: center;"
+          data-i18n="btn_sub_basic">اشترك في الأساسية</a>
+      </div>
+
+      <!-- Pro Tier -->
+      <div
+        style="background: var(--bg-card); padding: 2.5rem; border-radius: 20px; border: 2px solid var(--primary); display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15);">
+        <div
+          style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 4px 10px rgba(79,70,229,0.3); white-space: nowrap;"
+          data-i18n="badge_recommended">الأكثر اختياراً وربحية</div>
+        <h3 style="font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem;" data-i18n="plan_pro">الباقة الاحترافية
+          (Enterprise)</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; height: 50px;" data-i18n="plan_pro_desc">للمتاجر
+          الجادة التي تبحث عن أقصى تحكم ونمو مبيعات بالذكاء التكنولوجي.</p>
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$25<span
+            style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;" data-i18n="plan_duration_month"> /
+            شهرياً</span></div>
+        <ul
+          style="list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; color: var(--text-secondary); flex-grow: 1;">
+          <li><i class="fas fa-infinity text-blue-500 mr-2 ml-2"></i> <span style="color:var(--text); font-weight: 600;"
+              data-i18n="feat_unlimited_all">منتجات ومبيعات بلا حدود</span></li>
+          <li><i class="fas fa-robot text-purple-400 mr-2 ml-2"></i> <span data-i18n="feat_ai_reports">تقارير ذكية (AI)
+              دورية عبر الإيميل</span></li>
+          <li><i class="fab fa-whatsapp text-green-400 mr-2 ml-2"></i> <span data-i18n="feat_whatsapp">إرسال الفواتير
+              للعملاء عبر واتساب</span></li>
+          <li><i class="fas fa-gift text-pink-500 mr-2 ml-2"></i> <span data-i18n="feat_loyalty">نظام نقاط الولاء لعودة
+              الزبائن</span></li>
+          <li><i class="fas fa-store text-yellow-500 mr-2 ml-2"></i> <span data-i18n="feat_multi">إدارة الفروع
+              المتعددة</span></li>
+          <li><i class="fas fa-cloud-upload-alt text-blue-300 mr-2 ml-2"></i> <span data-i18n="feat_backup">نسخ احتياطي
+              سحابي آلي</span></li>
+          <li><i class="fas fa-star text-yellow-400 mr-2 ml-2"></i> <span data-i18n="feat_pro_support"
+              style="color:var(--text); font-weight:600;">أولوية في الدعم الفني 24/7</span></li>
+        </ul>
+        <a href="/login.html" class="btn btn-primary plan-btn"
+          style="width: 100%; text-align: center; background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);"
+          data-i18n="btn_sub_pro">اشترك في الاحترافية</a>
+      </div>
+    </div>
+  </section>
+
   <footer
     style="text-align: center; padding: 3rem; background: var(--bg-card); border-top: 1px solid var(--border); color: var(--text-secondary);">
     <p>© 2026 SmartGrocer. All rights reserved.</p>
@@ -205,9 +309,10 @@
         nav_login: "Login",
         nav_signup: "Register",
         hero_title: "Manage Your Store Intelligently",
-        hero_subtitle: "An all-in-one POS, inventory management, and analytics platform. Designed to grow your profits.",
-        hero_btn_start: "Start Free Trial",
-        hero_btn_learn: "Learn More",
+        hero_subtitle: "An all-in-one POS, inventory management, and analytics platform. Enjoy all Pro features free for 14 days and get ready to multiply your profits.",
+        hero_badge: "🎉 14-Day Free Unlocked Trial (No CC Required)",
+        hero_btn_start: "Start Your Free Trial Now",
+        hero_btn_pricing: "Pricing & Plans",
         feat_title: "Everything You Need to Succeed",
         feat_subtitle: "Powerful and easy-to-use tools covering every aspect of your business.",
         feat_1_title: "Fast POS System",
@@ -215,15 +320,44 @@
         feat_2_title: "Precise Inventory",
         feat_2_desc: "Track stock levels, low stock alerts, and expiry dates in real-time.",
         feat_3_title: "Analytics & Reports",
-        feat_3_desc: "Smart dashboard showing profits, daily sales, and best-selling products."
+        feat_3_desc: "Smart dashboard showing profits, daily sales, and best-selling products.",
+        pricing_title: "Plans for Your Ambition",
+        pricing_subtitle: "Choose the best plan for your store. No hidden fees, with local & global payment methods.",
+        plan_free: "Free Trial",
+        plan_free_desc: "Freely test out all system features before subscribing.",
+        plan_duration_free: " / 14 Days",
+        feat_unlocked: "100% Access to All Pro Features",
+        feat_unlimited_prod: "Unlimited Products",
+        feat_unlimited_sales: "Unlimited Sales",
+        feat_lock: "Account locks to read-only after 14 days",
+        btn_start_free: "Try for Free",
+        plan_basic: "Basic Plan (Startups)",
+        plan_basic_desc: "Perfect for small to medium single-branch stores.",
+        plan_duration_month: " / Month",
+        feat_3k_prod: "Up to 3,000 Products",
+        feat_10k_sales: "Up to 10,000 Sales Invoices",
+        feat_std_reports: "Standard Inventory & Sales Reports",
+        btn_sub_basic: "Subscribe to Basic",
+        badge_recommended: "Most Popular & Profitable",
+        plan_pro: "Pro Plan (Enterprise)",
+        plan_pro_desc: "For serious stores looking for maximum control and AI-driven growth.",
+        feat_unlimited_all: "Unlimited Products & Sales",
+        feat_ai_reports: "Smart AI Email Reports (Mondays @ 8 AM)",
+        feat_whatsapp: "Send Receipts via WhatsApp",
+        feat_loyalty: "Customer Loyalty Points System",
+        feat_multi: "Multi-Branch Management",
+        feat_backup: "Automated Cloud Backup (Daily @ 2 AM)",
+        feat_pro_support: "24/7 Priority Support",
+        btn_sub_pro: "Subscribe to Pro"
       },
       ar: {
         nav_login: "تسجيل الدخول",
         nav_signup: "حساب جديد",
         hero_title: "أدر متجرك بذكاء واحترافية",
-        hero_subtitle: "منظومة متكاملة لنقاط البيع، إدارة المخزون، والتقارير التحليلية. صُممت لزيادة أرباحك وتسهيل عملك اليومي.",
-        hero_btn_start: "ابدأ تجربتك المجانية",
-        hero_btn_learn: "تعرف على المزيد",
+        hero_subtitle: "منظومة متكاملة لنقاط البيع، إدارة المخزون، والتقارير التحليلية. استمتع بكافة مميزات الباقة الاحترافية مجاناً لمدة أسبوعين واستعد لزيادة أرباحك.",
+        hero_badge: "🎉 تجربة مجانية شاملة 14 يوماً (بدون فيزا)",
+        hero_btn_start: "ابدأ تجربتك المجانية الآن",
+        hero_btn_pricing: "الأسعار والباقات",
         feat_title: "كل ما تحتاجه للنجاح",
         feat_subtitle: "أدوات قوية وسهلة الاستخدام تغطي كافة جوانب إدارة متجرك",
         feat_1_title: "نقاط بيع سريعة (POS)",
@@ -231,7 +365,36 @@
         feat_2_title: "إدارة مخزون دقيقة",
         feat_2_desc: "تتبع كميات المنتجات، إشعارات النواقص، وتاريخ الصلاحية لحظة بلحظة لتجنب الخسائر.",
         feat_3_title: "تقارير وتحليلات شاملة",
-        feat_3_desc: "لوحة تحكم ذكية تعرض لك الأرباح، المبيعات اليومية، وأكثر المنتجات مبيعاً لاتخاذ قرارات أفضل."
+        feat_3_desc: "لوحة تحكم ذكية تعرض لك الأرباح، المبيعات اليومية، وأكثر المنتجات مبيعاً لاتخاذ قرارات أفضل.",
+        pricing_title: "باقات تناسب طموحك",
+        pricing_subtitle: "اختر الباقة الأنسب لمتجرك وابدأ فوراً. بدون أي مبالغ خفية، وطرق دفع محلية وعالمية.",
+        plan_free: "التجربة المجانية",
+        plan_free_desc: "قم بتجربة جميع خواص النظام بكل حرية قبل الاشتراك.",
+        plan_duration_free: " / 14 يوم",
+        feat_unlocked: "وصول 100% لكافة الخصائص",
+        feat_unlimited_prod: "عدد غير محدود من المنتجات",
+        feat_unlimited_sales: "مبيعات غير محدودة",
+        feat_lock: "يتم قفل الحساب (للقراءة فقط) بعد 14 يوم",
+        btn_start_free: "جرب الآن مجاناً",
+        plan_basic: "الباقة الأساسية (Startups)",
+        plan_basic_desc: "مثالية للمحلات الصغيرة أو المتوسطة لفرع واحد.",
+        plan_duration_month: " / شهرياً",
+        feat_3k_prod: "حتى 3,000 منتج",
+        feat_10k_sales: "حتى 10,000 فاتورة مبيعات",
+        feat_std_reports: "تقارير مبيعات وجرد قياسية",
+        btn_sub_basic: "اشترك في الأساسية",
+        badge_recommended: "الأكثر اختياراً وربحية",
+        plan_pro: "الباقة الاحترافية (Enterprise)",
+        plan_pro_desc: "للمتاجر الجادة التي تبحث عن أقصى تحكم ونمو مبيعات بالذكاء التكنولوجي.",
+        feat_unlimited_all: "منتجات ومبيعات بلا حدود",
+        feat_ai_reports: "تقارير ذكية (AI) عبر الإيميل (أسبوعياً الإثنين 8 ص)",
+        feat_whatsapp: "إرسال الفواتير للعملاء عبر واتساب",
+        feat_loyalty: "نظام نقاط الولاء لعودة الزبائن",
+        feat_multi: "إدارة الفروع المتعددة",
+        feat_backup: "نسخ احتياطي سحابي آلي (يومياً 2 صباحاً)",
+        feat_basic_support: "دعم فني قياسي (أوقات العمل)",
+        feat_pro_support: "دعم فني VIP على مدار الساعة",
+        btn_sub_pro: "اشترك في الاحترافية"
       }
     };
 
@@ -268,8 +431,8 @@
       // getToken() is available from app.js
       if (typeof getToken === 'function' && getToken()) {
         const loginBtn = document.querySelector('a[href="/login.html"]');
-        const signupBtn = document.querySelector('.nav-links a[href="/signup.html"]');
-        const heroSignupBtn = document.querySelector('.hero-btns a[href="/signup.html"]');
+        const signupBtn = document.querySelector('.nav-links a[data-i18n="nav_signup"]');
+        const heroSignupBtn = document.querySelector('.hero-btns a[data-i18n="hero_btn_start"]');
 
         if (loginBtn) loginBtn.style.display = 'none';
         if (signupBtn) {
@@ -284,6 +447,60 @@
           translations.ar.hero_btn_dashboard = "الذهاب للوحة التحكم";
           translations.en.hero_btn_dashboard = "Go to Dashboard";
         }
+
+        // Logic for pricing buttons if logged in
+        const userObjStr = localStorage.getItem('sg_user');
+        if (userObjStr) {
+          try {
+            const user = JSON.parse(userObjStr);
+            const plan = user.subscriptionPlan || 'Free Trial';
+            const endDate = user.subscriptionEndDate ? new Date(user.subscriptionEndDate) : new Date();
+            const isActive = endDate > new Date();
+
+            const freeBtn = document.querySelector('a[data-i18n="btn_start_free"]');
+            const basicBtn = document.querySelector('a[data-i18n="btn_sub_basic"]');
+            const proBtn = document.querySelector('a[data-i18n="btn_sub_pro"]');
+
+            const makeActive = (btn, isRenew) => {
+              if (isRenew) {
+                btn.textContent = currentLang === 'ar' ? 'تجديد اشتراكك' : 'Renew Subscription';
+                btn.href = '/billing.html';
+              } else {
+                btn.textContent = currentLang === 'ar' ? 'هذه باقتك الحالية' : 'Your Current Plan';
+                btn.removeAttribute('data-i18n');
+                btn.href = 'javascript:void(0)';
+                btn.style.background = 'var(--bg-card)';
+                btn.style.color = 'var(--primary)';
+                btn.style.borderColor = 'var(--primary)';
+                btn.style.pointerEvents = 'none';
+                btn.style.boxShadow = 'none';
+              }
+            };
+
+            if (plan === 'Free Trial') {
+              if (freeBtn) makeActive(freeBtn, !isActive);
+              // Keep Basic and Pro visible for upgrades
+            } else if (plan === 'Basic Plan') {
+              if (freeBtn) freeBtn.style.display = 'none';
+              if (basicBtn) makeActive(basicBtn, !isActive);
+              // If inactive, keep Pro visible. If active, keep Pro visible for upgrades
+            } else if (plan === 'Pro Plan') {
+              if (freeBtn) freeBtn.style.display = 'none';
+              if (basicBtn) {
+                if (isActive) basicBtn.style.display = 'none';
+                // if !isActive, it remains visible so they can downgrade
+              }
+              if (proBtn) makeActive(proBtn, !isActive);
+            }
+          } catch (e) { }
+        }
+
+        // Redirect all remaining '.plan-btn' that weren't hidden to the billing page just in case
+        document.querySelectorAll('.plan-btn').forEach(btn => {
+          if (btn.style.display !== 'none' && !btn.hasAttribute('disabled')) {
+            btn.href = '/billing.html';
+          }
+        });
 
         // Re-run text update for the new dynamic buttons
         updateTexts();

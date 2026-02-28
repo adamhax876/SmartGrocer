@@ -32,10 +32,10 @@ router.get('/overview', async (req, res) => {
         let totalCOGS = 0;
         sales.forEach(sale => {
             sale.items.forEach(item => {
-                // If the product still exists, use its current cost price. 
-                // If it was deleted, fallback to a 70% estimated cost margin (30% profit margin).
-                const product = products.find(p => p._id.toString() === item.productId.toString());
-                const unitCost = product && product.costPrice ? product.costPrice : (item.price * 0.7);
+                // Safely handle missing product ID or old schema data
+                const pId = item.productId || item._id;
+                const product = pId ? products.find(p => p._id.toString() === pId.toString()) : null;
+                const unitCost = product && product.costPrice ? product.costPrice : ((item.unitPrice || item.price || 0) * 0.7);
                 totalCOGS += (unitCost * item.quantity);
             });
         });

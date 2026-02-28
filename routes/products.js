@@ -4,9 +4,11 @@ const multer = require('multer');
 const XLSX = require('xlsx');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
+const { enforceLockout, enforceLimits } = require('../middleware/subscription');
 
-// All routes require authentication
+// All routes require authentication and lockout check
 router.use(auth);
+router.use(enforceLockout);
 
 // Multer config for Excel upload
 const upload = multer({
@@ -99,7 +101,7 @@ router.get('/stats', async (req, res) => {
 });
 
 // POST /api/products — create product
-router.post('/', async (req, res) => {
+router.post('/', enforceLimits('products'), async (req, res) => {
     try {
         const product = await Product.create({
             ...req.body,
@@ -138,7 +140,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // POST /api/products/import — import from Excel
-router.post('/import', upload.single('file'), async (req, res) => {
+router.post('/import', enforceLimits('products'), upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'يرجى رفع ملف Excel' });

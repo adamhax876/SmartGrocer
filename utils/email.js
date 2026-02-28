@@ -68,6 +68,23 @@ async function sendPasswordResetEmail(toEmail, fullName, resetToken) {
   console.log(`✅ Password reset email sent → ${toEmail}`);
 }
 
+async function sendSubscriptionWarningEmail(toEmail, fullName, daysLeft) {
+  const appUrl = process.env.APP_URL || 'http://localhost:3000';
+  const html = buildSubscriptionWarningHTML(fullName, daysLeft, appUrl);
+  const subject = daysLeft <= 1 ? 'Urgent: SmartGrocer Trial Expires Soon' : 'SmartGrocer Trial Expires in 3 Days';
+  const text = `Hi ${fullName}, your SmartGrocer trial/subscription expires in ${daysLeft} days. Please top up your wallet to ensure uninterrupted access.`;
+  await sendEmailViaAPI(toEmail, fullName, subject, html, text);
+  console.log(`✅ Subscription warning email sent → ${toEmail}`);
+}
+
+async function sendSubscriptionActivatedEmail(toEmail, fullName, planName, startDate, endDate) {
+  const appUrl = process.env.APP_URL || 'http://localhost:3000';
+  const html = buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, appUrl);
+  const text = `Hi ${fullName}, your subscription to ${planName} has been activated. It is valid from ${startDate} to ${endDate}.`;
+  await sendEmailViaAPI(toEmail, fullName, 'SmartGrocer — Subscription Activated 🎉', html, text);
+  console.log(`✅ Subscription activated email sent → ${toEmail}`);
+}
+
 // ─── HTML Templates ──────────────────────────────────────────────────────────
 function buildVerificationHTML(fullName, code) {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
@@ -148,4 +165,56 @@ function buildPasswordResetHTML(fullName, resetLink) {
 </table></td></tr></table></body></html>`;
 }
 
-module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail };
+function buildSubscriptionWarningHTML(fullName, daysLeft, appUrl) {
+  const urgentColor = daysLeft <= 1 ? '#ef4444' : '#f59e0b';
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:40px 16px;">
+<tr><td align="center">
+<table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#1e293b;border-radius:20px;overflow:hidden;border:1px solid #334155;">
+<tr><td style="background:linear-gradient(135deg,#7f1d1d,#991b1b);padding:44px 40px;text-align:center;">
+<h1 style="color:#fff;font-size:24px;font-weight:800;margin:0 0 8px;">Action Required ⚠️</h1>
+<p style="color:rgba(255,255,255,0.65);font-size:14px;margin:0;">Your subscription is expiring</p>
+</td></tr>
+<tr><td style="padding:40px;">
+<p style="color:#cbd5e1;font-size:16px;margin:0 0 16px;">Hello, <strong style="color:#f1f5f9;">${fullName || 'there'}</strong></p>
+<p style="color:#94a3b8;font-size:15px;line-height:1.65;margin:0 0 24px;">Your SmartGrocer trial or subscription will expire in <strong style="color:${urgentColor};font-size:18px;">${daysLeft} days</strong>.</p>
+<p style="color:#94a3b8;font-size:14px;line-height:1.65;margin:0 0 24px;">Please recharge your wallet to ensure uninterrupted access to your POS and data.</p>
+<div style="text-align:center;margin-top:24px;margin-bottom:24px;">
+<a href="${appUrl}/billing.html" style="background:linear-gradient(135deg,#b91c1c,#dc2626);color:#fff;padding:15px 40px;border-radius:12px;text-decoration:none;font-weight:700;display:inline-block;">Top up Wallet</a>
+</div>
+</td></tr>
+<tr><td style="background:#0f172a;padding:16px 40px;text-align:center;">
+<p style="color:#374151;font-size:11px;margin:0;">&copy; 2026 SmartGrocer</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+function buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, appUrl) {
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f172a;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;padding:40px 16px;">
+<tr><td align="center">
+<table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#1e293b;border-radius:20px;overflow:hidden;border:1px solid #334155;">
+<tr><td style="background:linear-gradient(135deg,#1e3a8a,#1d4ed8);padding:44px 40px;text-align:center;">
+<h1 style="color:#fff;font-size:24px;font-weight:800;margin:0 0 8px;">Subscription Activated 🎉</h1>
+<p style="color:rgba(255,255,255,0.65);font-size:14px;margin:0;">Your account is now upgraded</p>
+</td></tr>
+<tr><td style="padding:40px;">
+<p style="color:#cbd5e1;font-size:16px;margin:0 0 16px;">Hello, <strong style="color:#f1f5f9;">${fullName || 'there'}</strong></p>
+<p style="color:#94a3b8;font-size:15px;line-height:1.65;margin:0 0 24px;">Your subscription to <strong style="color:#3b82f6;">${planName}</strong> has been successfully activated by the administration.</p>
+<div style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:20px;margin-bottom:24px;">
+<p style="color:#bfdbfe;margin:0 0 8px;font-size:14px;"><strong>Start Date:</strong> ${startDate}</p>
+<p style="color:#bfdbfe;margin:0;font-size:14px;"><strong>End Date:</strong> ${endDate}</p>
+</div>
+<div style="text-align:center;margin-top:24px;margin-bottom:24px;">
+<a href="${appUrl}/dashboard.html" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;padding:15px 40px;border-radius:12px;text-decoration:none;font-weight:700;display:inline-block;">Go to Dashboard</a>
+</div>
+</td></tr>
+<tr><td style="background:#0f172a;padding:16px 40px;text-align:center;">
+<p style="color:#374151;font-size:11px;margin:0;">&copy; 2026 SmartGrocer</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendEmailViaAPI };
