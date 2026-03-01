@@ -85,6 +85,13 @@ async function sendSubscriptionActivatedEmail(toEmail, fullName, planName, start
   console.log(`✅ Subscription activated email sent → ${toEmail}`);
 }
 
+async function sendAIReportEmail(toEmail, subject, htmlContent) {
+  // We extract the first heading as text content just to have a text fallback
+  const textContent = `SmartGrocer AI Analysis Report attached as HTML.`;
+  await sendEmailViaAPI(toEmail, "Shop Owner", subject, htmlContent, textContent);
+  console.log(`✅ AI Report email sent → ${toEmail}`);
+}
+
 // ─── HTML Templates ──────────────────────────────────────────────────────────
 function buildVerificationHTML(fullName, code) {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
@@ -217,4 +224,4 @@ function buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, 
 </table></td></tr></table></body></html>`;
 }
 
-module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendEmailViaAPI };
+module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailViaAPI };
