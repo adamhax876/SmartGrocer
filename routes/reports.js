@@ -133,7 +133,7 @@ router.post('/ai-analysis', async (req, res) => {
         const { GoogleGenerativeAI } = require("@google/generative-ai");
         // User provided API Key via chat
         const genAI = new GoogleGenerativeAI("AIzaSyC-6RHfBBrIw-bsSgQG1MyjS1H4qWZqX9c");
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const isAr = lang === 'ar';
         const prompt = `
@@ -162,6 +162,8 @@ Format it nicely with emojis, <strong> tags for numbers, and unordered lists for
 
         res.json({ message: 'AI Report sent successfully' });
     } catch (error) {
+        console.error("[AI ANALYSIS ERROR]:", error);
+        require('fs').writeFileSync('ai_error.log', error.stack || error.message);
         res.status(500).json({ message: 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي', error: error.message });
     }
 });
