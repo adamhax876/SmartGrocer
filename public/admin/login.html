@@ -65,13 +65,13 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Check if role is really admin
-                    if (data.user && data.user.role === 'admin') {
+                    // Check if role is really admin or support
+                    if (data.user && (data.user.role === 'admin' || data.user.role === 'support')) {
                         localStorage.setItem('adminToken', data.token);
                         localStorage.setItem('adminData', JSON.stringify(data.user));
                         window.location.href = '/admin/dashboard.html';
                     } else {
-                        errorDiv.textContent = 'هذا الحساب ليس لديه صلاحيات الإدارة';
+                        errorDiv.textContent = 'هذا الحساب ليس لديه صلاحيات الإدارة أو الدعم';
                         errorDiv.classList.remove('hidden');
                     }
                 } else {

@@ -16,8 +16,8 @@ const isAdmin = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'المستخدم غير موجود' }); // User not found
         }
 
-        if (user.role !== 'admin') {
-            return res.status(403).json({ success: false, message: 'غير مصرح لك بالدخول، هذه الصفحة للإدارة فقط' }); // Not authorized, admin only
+        if (user.role !== 'admin' && user.role !== 'support') {
+            return res.status(403).json({ success: false, message: 'غير مصرح لك بالدخول، هذه الصفحة للإدارة والدعم الفني فقط' }); // Not authorized, admin only
         }
 
         req.admin = user;

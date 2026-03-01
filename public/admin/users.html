@@ -310,6 +310,9 @@
                         </span>
                     </td>
                     <td class="px-4 py-4 flex justify-center gap-2">
+                        <button onclick="toggleSupportRole('${user._id}', '${user.role}')" class="px-3 py-1 ${user.role === 'support' ? 'bg-indigo-600 text-white hover:bg-indigo-700 border border-indigo-700' : 'bg-indigo-50 text-indigo-500 border border-indigo-200 hover:bg-indigo-100'} rounded text-xs transition-colors" title="${user.role === 'support' ? 'إزالة من الدعم الفني' : 'تعيين في فريق الدعم'}">
+                            <i class="fas fa-headset"></i>
+                        </button>
                         <button onclick="assignSubscriptionModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs" title="تفعيل / تجديد الباقة">
                             <i class="fas fa-crown"></i>
                         </button>
@@ -396,6 +399,45 @@
                     }
                 } catch (err) {
                     Swal.fire('خطأ', 'حدث خطأ في الاتصال بالسيرفر.', 'error');
+                }
+            }
+        }
+
+        async function toggleSupportRole(id, currentRole) {
+            const newRole = currentRole === 'support' ? 'store_owner' : 'support';
+            const actionText = newRole === 'support' ? 'تعيين هذا المستخدم كعضو في فريق الدعم الفني؟' : 'إزالة هذا المستخدم من فريق الدعم الفني وإعادته كعميل؟';
+
+            const confirmed = await Swal.fire({
+                title: 'تأكيد تغيير الصلاحية',
+                text: actionText,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#9ca3af',
+                confirmButtonText: 'نعم، قم بالتأكيد',
+                cancelButtonText: 'إلغاء'
+            });
+
+            if (confirmed.isConfirmed) {
+                try {
+                    const res = await fetch(`/api/admin/users/${id}/role`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ role: newRole })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        Swal.fire({ title: 'تم', text: data.message, icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                        fetchUsers();
+                    } else {
+                        Swal.fire('خطأ', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('خطأ', 'حدث خطأ في الاتصال', 'error');
                 }
             }
         }

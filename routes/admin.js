@@ -137,6 +137,30 @@ router.patch('/users/:id/profile', isAdmin, async (req, res) => {
     }
 });
 
+// 7.5 Update User Role (Assign as Support)
+router.patch('/users/:id/role', isAdmin, async (req, res) => {
+    try {
+        const { role } = req.body;
+        if (!['admin', 'store_owner', 'cashier', 'support'].includes(role)) {
+            return res.status(400).json({ success: false, message: 'Invalid role' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+        if (user.role === 'admin' && role !== 'admin') {
+            return res.status(400).json({ success: false, message: 'Cannot demote an admin from here' });
+        }
+
+        user.role = role;
+        await user.save();
+
+        res.json({ success: true, message: `تم تحديث الصلاحية إلى ${role === 'support' ? 'الدعم الفني' : 'صاحب متجر'} بنجاح` });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
 // 8. Get System Settings
 router.get('/settings', isAdmin, async (req, res) => {
     try {

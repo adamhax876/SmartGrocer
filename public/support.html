@@ -11,11 +11,11 @@
     <style>
         .support-container {
             max-width: 1000px;
-            margin: 2rem auto;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 2fr;
             gap: 2rem;
-            padding: 0 1rem;
+            padding: 1rem;
         }
 
         .ticket-form {
@@ -30,6 +30,9 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+            padding-right: 0.5rem;
         }
 
         .ticket-card {
@@ -57,11 +60,19 @@
         .badge-open {
             background: rgba(234, 179, 8, 0.1);
             color: #ca8a04;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
         .badge-answered {
             background: rgba(16, 185, 129, 0.1);
             color: #059669;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
         .admin-reply {
@@ -69,8 +80,28 @@
             padding: 1rem;
             background: rgba(59, 130, 246, 0.05);
             border-right: 4px solid var(--primary);
-            border-radius:
-                4px;
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
         }
 
         @media (max-width: 768px) {
@@ -82,61 +113,136 @@
 </head>
 
 <body class="light">
-
-    <!-- Top Navigation -->
-    <nav class="top-nav">
-        <div class="nav-brand">
-            <span class="logo-icon">🛒</span>
-            SmartGrocer
-        </div>
-        <div class="nav-links">
-            <a href="/dashboard.html" class="nav-link"><i class="fas fa-home"></i> الرئيسية</a>
-            <a href="/support.html" class="nav-link active"><i class="fas fa-life-ring"></i> الدعم الفني</a>
-            <button onclick="toggleTheme()" class="btn btn-outline"><i class="fas fa-moon"></i></button>
-            <button onclick="logout()" class="btn btn-outline"
-                style="color: var(--error); border-color: var(--error);">تسجيل الخروج</button>
-        </div>
-    </nav>
-
-    <div class="support-container">
-        <!-- New Ticket Form -->
-        <div class="ticket-form">
-            <h2 style="margin-bottom: 1.5rem; color: var(--text);"><i class="fas fa-headset text-primary"></i> تذكرة
-                جديدة</h2>
-
-            <div class="form-group">
-                <label>موضوع المشكلة</label>
-                <input type="text" id="ticketSubject" class="form-input"
-                    placeholder="مثال: مشكلة في الدفع، استفسار عن خطة..." required>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/images/logo.png" style="width: 100%; max-height: 100px; object-fit: contain;" alt="Logo">
             </div>
-
-            <div class="form-group">
-                <label>تفاصيل المشكلة (رسالتك)</label>
-                <textarea id="ticketMessage" class="form-input" rows="5" placeholder="اشرح مشكلتك بالتفصيل هنا..."
-                    required></textarea>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
+                        data-i18n="nav_dashboard">لوحة التحكم</span></a>
+                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span
+                        data-i18n="nav_products">المنتجات</span></a>
+                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span
+                        data-i18n="nav_inventory">المخزون</span></a>
+                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
+                        البيع (POS)</span></a>
+                <a href="/sales.html" class="sidebar-link"><span class="icon">💰</span> <span
+                        data-i18n="nav_sales">المبيعات</span></a>
+                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span
+                        data-i18n="nav_reports">التقارير</span></a>
+                <a href="/support.html" class="sidebar-link active"><span class="icon">🎧</span> <span
+                        data-i18n="nav_support">الدعم الفني</span></a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button onclick="window.location.href='/'" class="btn btn-primary"
+                    style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
+                    الخروج</button>
             </div>
+        </aside>
 
-            <button onclick="submitTicket()" id="submitBtn" class="btn btn-primary"
-                style="width: 100%; justify-content: center;">
-                <i class="fas fa-paper-plane"></i> إرسال التذكرة
-            </button>
-        </div>
+        <!-- Main Content -->
+        <main class="main">
+            <header class="topbar">
+                <h1 class="topbar-title" data-i18n="title_support"><i class="fas fa-life-ring"></i> مركز الدعم الفني
+                </h1>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
+                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                </div>
+            </header>
 
-        <!-- Previous Tickets -->
-        <div>
-            <h2 style="margin-bottom: 1.5rem; color: var(--text);"><i class="fas fa-history text-primary"></i> تذاكري
-                السابقة</h2>
-            <div id="ticketsContainer" class="ticket-list">
-                <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">جاري تحميل التذاكر...
+            <div class="content-wrapper" style="padding: 1.5rem;">
+                <div class="support-container">
+                    <!-- New Ticket Form -->
+                    <div class="ticket-form">
+                        <h2 style="margin-bottom: 1.5rem; color: var(--text);" data-i18n="new_ticket"><i
+                                class="fas fa-headset text-primary"></i> تذكرة جديدة</h2>
+
+                        <div class="form-group">
+                            <label data-i18n="label_subject">موضوع المشكلة</label>
+                            <input type="text" id="ticketSubject" class="form-input"
+                                placeholder="مثال: مشكلة في الدفع، استفسار عن خطة..." required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="label_message">تفاصيل المشكلة (رسالتك)</label>
+                            <textarea id="ticketMessage" class="form-input" rows="5"
+                                placeholder="اشرح مشكلتك بالتفصيل هنا..." required></textarea>
+                        </div>
+
+                        <button onclick="submitTicket()" id="submitBtn" class="btn btn-primary"
+                            style="width: 100%; justify-content: center;">
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="btn_send">إرسال التذكرة</span>
+                        </button>
+                    </div>
+
+                    <!-- Previous Tickets -->
+                    <div>
+                        <h2 style="margin-bottom: 1.5rem; color: var(--text);" data-i18n="prev_tickets"><i
+                                class="fas fa-history text-primary"></i> تذاكري السابقة</h2>
+                        <div id="ticketsContainer" class="ticket-list">
+                            <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">جاري تحميل
+                                التذاكر...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/app.js"></script>
     <script>
+        const translations = {
+            en: {
+                nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales", nav_reports: "Reports", nav_support: "Support",
+                btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home",
+                title_support: "Technical Support Center",
+                new_ticket: "New Ticket", label_subject: "Subject", label_message: "Message Details", btn_send: "Send Ticket",
+                prev_tickets: "My Previous Tickets"
+            },
+            ar: {
+                nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
+                btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية",
+                title_support: "مركز الدعم الفني",
+                new_ticket: "تذكرة جديدة", label_subject: "موضوع المشكلة", label_message: "تفاصيل المشكلة (رسالتك)", btn_send: "إرسال التذكرة",
+                prev_tickets: "تذاكري السابقة"
+            }
+        };
+
+        // Standard App Initialization
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = currentLang;
+        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
         document.body.className = localStorage.getItem('sg_theme') || 'light';
 
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        // ignore placeholder translations for simplicity, or handle if needed
+                    } else el.textContent = translations[currentLang][key];
+                }
+            });
+        }
+        updateTexts();
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('sg_lang', currentLang);
+            updateTexts();
+            location.reload();
+        }
+
+        // Support Tickets Logic
         async function loadTickets() {
             try {
                 const res = await api('/api/support');
@@ -146,29 +252,29 @@
                     container.innerHTML = `
                         <div style="text-align: center; background: var(--bg-card); border-radius: var(--radius); padding: 3rem; color: var(--text-secondary);">
                             <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                            <p>لا توجد لديك تذاكر دعم فني سابقة</p>
+                            <p>${currentLang === 'en' ? 'No previous support tickets found.' : 'لا توجد لديك تذاكر دعم فني سابقة'}</p>
                         </div>
                     `;
                     return;
                 }
 
                 container.innerHTML = res.tickets.map(ticket => {
-                    const date = new Date(ticket.createdAt).toLocaleString('ar-EG');
+                    const date = new Date(ticket.createdAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'ar-EG');
 
                     let statusHtml = '';
                     if (ticket.status === 'open') {
-                        statusHtml = '<span class="badge badge-open"><i class="fas fa-clock"></i> قيد الانتظار</span>';
+                        statusHtml = '<span class="badge badge-open"><i class="fas fa-clock"></i> ' + (currentLang === 'en' ? 'Pending' : 'قيد الانتظار') + '</span>';
                     } else if (ticket.status === 'answered') {
-                        statusHtml = '<span class="badge badge-answered"><i class="fas fa-check-circle"></i> تم الرد</span>';
+                        statusHtml = '<span class="badge badge-answered"><i class="fas fa-check-circle"></i> ' + (currentLang === 'en' ? 'Answered' : 'تم الرد') + '</span>';
                     }
 
                     let replyHtml = '';
                     if (ticket.adminReply) {
-                        const replyDate = new Date(ticket.repliedAt).toLocaleString('ar-EG');
+                        const replyDate = new Date(ticket.repliedAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'ar-EG');
                         replyHtml = `
                             <div class="admin-reply">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
-                                    <strong><i class="fas fa-user-shield"></i> رد الإدارة</strong>
+                                    <strong><i class="fas fa-user-shield"></i> ${currentLang === 'en' ? 'Admin Reply' : 'رد الإدارة'}</strong>
                                     <span>${replyDate}</span>
                                 </div>
                                 <div style="color: var(--text); line-height: 1.6;">${ticket.adminReply}</div>
@@ -179,7 +285,7 @@
                     return `
                         <div class="ticket-card">
                             <div class="ticket-header">
-                                <h3 style="color: var(--text); font-size: 1.1rem;">${ticket.subject}</h3>
+                                <h3 style="color: var(--text); font-size: 1.1rem; margin:0;">${ticket.subject}</h3>
                                 ${statusHtml}
                             </div>
                             <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
@@ -203,12 +309,12 @@
             const btn = document.getElementById('submitBtn');
 
             if (!subject || !message) {
-                Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'يرجى كتابة الموضوع والرسالة قبل الإرسال' });
+                Swal.fire({ icon: 'warning', title: currentLang === 'en' ? 'Alert' : 'تنبيه', text: currentLang === 'en' ? 'Please fill subject and message' : 'يرجى كتابة الموضوع والرسالة قبل الإرسال' });
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (currentLang === 'en' ? 'Sending...' : 'جاري الإرسال...');
 
             try {
                 await api('/api/support', {
@@ -221,17 +327,17 @@
 
                 Swal.fire({
                     icon: 'success',
-                    title: 'تم الإرسال!',
-                    text: 'تم إرسال تذكرتك لفريق الدعم بنجاح، سيتم الرد عليك في أسرع وقت.',
+                    title: currentLang === 'en' ? 'Success!' : 'تم الإرسال!',
+                    text: currentLang === 'en' ? 'Ticket sent successfully, support will reply soon.' : 'تم إرسال تذكرتك لفريق الدعم بنجاح، سيتم الرد عليك في أسرع وقت.',
                     confirmButtonColor: '#10b981'
                 });
 
                 loadTickets();
             } catch (error) {
-                Swal.fire({ icon: 'error', title: 'خطأ', text: error.message || 'حدث خطأ أثناء الإرسال' });
+                Swal.fire({ icon: 'error', title: currentLang === 'en' ? 'Error' : 'خطأ', text: error.message || (currentLang === 'en' ? 'An error occurred' : 'حدث خطأ أثناء الإرسال') });
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التذكرة';
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> ' + translations[currentLang].btn_send;
             }
         }
 
