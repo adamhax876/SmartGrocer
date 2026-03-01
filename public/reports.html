@@ -318,6 +318,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/app.js"></script>
     <script>
         const translations = {
@@ -394,8 +395,9 @@
                     sale.items.forEach(item => {
                         // Find original product to get Cost
                         const prod = products.find(p => p._id === (item.productId || (item.product ? item.product._id : item.product)));
-                        const itemCost = prod ? prod.costPrice : (item.price * 0.7); // Guess 70% cost if deleted
-                        const itemProfit = (item.price - itemCost) * item.quantity;
+                        const itemPrice = item.unitPrice || item.price || 0;
+                        const itemCost = prod ? prod.costPrice : (itemPrice * 0.7); // Guess 70% cost if deleted
+                        const itemProfit = (itemPrice - itemCost) * item.quantity;
                         const cat = prod ? prod.category : 'other';
                         const pName = prod ? prod.name : 'Unknown';
 
@@ -406,13 +408,13 @@
                         // Category Stats accumulation
                         if (!catStats[cat]) catStats[cat] = { qty: 0, rev: 0, profit: 0 };
                         catStats[cat].qty += item.quantity;
-                        catStats[cat].rev += (item.price * item.quantity);
+                        catStats[cat].rev += (itemPrice * item.quantity);
                         catStats[cat].profit += itemProfit;
 
                         // Product Stats accumulation
                         if (!prodStats[pName]) prodStats[pName] = { qty: 0, rev: 0 };
                         prodStats[pName].qty += item.quantity;
-                        prodStats[pName].rev += (item.price * item.quantity);
+                        prodStats[pName].rev += (itemPrice * item.quantity);
                     });
                 });
 

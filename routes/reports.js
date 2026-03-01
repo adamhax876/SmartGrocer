@@ -129,39 +129,31 @@ router.post('/ai-analysis', async (req, res) => {
         const products = await Product.find({ userId: user._id });
         const lowStockCount = products.filter(p => p.quantity <= p.lowStockThreshold).length;
 
-        // In a real app, you'd call the Gemini API or OpenAI here with prompt engineering.
-        // For now, we simulate an intelligent analysis strictly formatted for the user.
+        // Call Gemini API
+        const { GoogleGenerativeAI } = require("@google/generative-ai");
+        // User provided API Key via chat
+        const genAI = new GoogleGenerativeAI("AIzaSyC-6RHfBBrIw-bsSgQG1MyjS1H4qWZqX9c");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const isAr = lang === 'ar';
-        const analysisHtml = isAr ? `
-            <h3>تحليل أداء متجرك (آخر 30 يوماً)</h3>
-            <p>مرحباً <strong>${user.fullName}</strong>،</p>
-            <p>بناءً على نشاط متجرك الأخير، لقد حققت إيرادات بقيمة <strong>${totalRevenue.toFixed(2)} ج.م</strong> من خلال <strong>${recentSales.length}</strong> عملية بيع.</p>
-            <h4>النقاط المضيئة 💡</h4>
-            <ul>
-                <li>متوسط قيمة الفاتورة هو <strong>${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} ج.م</strong>. حافظ على اقتراح منتجات إضافية للعملاء لزيادة سلة مشترياتهم.</li>
-            </ul>
-            <h4>نقاط تحتاج للانتباه ⚠️</h4>
-            <ul>
-                <li>لديك <strong>${lowStockCount}</strong> منتج يوشك على النفاذ أو نفذ بالفعل. نوصي بإعادة الطلب فوراً من الموردين لتجنب فقدان المبيعات.</li>
-            </ul>
-            <p>نتمنى لك دوام التوفيق والنجاح!</p>
-            <p>— الذكاء الاصطناعي لـ SmartGrocer</p>
-        ` : `
-            <h3>Store Performance Analysis (Last 30 Days)</h3>
-            <p>Hello <strong>${user.fullName}</strong>,</p>
-            <p>Based on your recent activity, you generated <strong>${totalRevenue.toFixed(2)} EGP</strong> in revenue across <strong>${recentSales.length}</strong> transactions.</p>
-            <h4>Highlights 💡</h4>
-            <ul>
-                <li>Your average order value is <strong>${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP</strong>. Keep up-selling to increase basket size.</li>
-            </ul>
-            <h4>Action Items ⚠️</h4>
-            <ul>
-                <li>You have <strong>${lowStockCount}</strong> products running low on stock. We recommend re-ordering soon to prevent lost sales.</li>
-            </ul>
-            <p>Wishing you continued success!</p>
-            <p>— SmartGrocer AI</p>
-        `;
+        const prompt = \`
+You are an expert financial and retail business consultant for SmartGrocer SaaS. 
+Analyze the following data for a supermarket shop owner named "\${user.fullName}".
+- Total Revenue (Last 30 Days): \${totalRevenue.toFixed(2)} EGP
+- Number of Sales Transactions: \${recentSales.length}
+- Average Order Value: \${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP
+- Low Stock Products Count: \${lowStockCount}
+
+Write a professional email format report (in HTML) in \${isAr ? 'Arabic' : 'English'}.
+Highlight the good performance, note the low stock items urgently, and give 2 short actionable marketing/business advice to increase sales basket sizes or manage inventory.
+Keep it strictly under 150 words. Do not include a subject line in the text, just the HTML body starting with an <h3> tag. 
+Format it nicely with emojis, <strong> tags for numbers, and unordered lists for actionable advice.
+\`;
+
+        const result = await model.generateContent(prompt);
+        // Clean up markdown block if the AI returns it wrapped in \`\`\`html
+        let analysisHtml = result.response.text();
+        analysisHtml = analysisHtml.replace(/\\\`\\\`\\\`html/g, '').replace(/\\\`\\\`\\\`/g, '');
 
         const { sendAIReportEmail } = require('../utils/email');
         const subject = isAr ? '📊 تقريرك التحليلي الذكي من SmartGrocer' : '📊 Your SmartGrocer AI Analysis Report';
