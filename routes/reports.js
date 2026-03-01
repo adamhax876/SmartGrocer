@@ -136,24 +136,24 @@ router.post('/ai-analysis', async (req, res) => {
         const model = genAI.getGenerativeModel({ model: "gemini-3.1-pro-preview" });
 
         const isAr = lang === 'ar';
-        const prompt = \`
+        const prompt = `
 You are an expert financial and retail business consultant for SmartGrocer SaaS. 
-Analyze the following data for a supermarket shop owner named "\${user.fullName}".
-- Total Revenue (Last 30 Days): \${totalRevenue.toFixed(2)} EGP
-- Number of Sales Transactions: \${recentSales.length}
-- Average Order Value: \${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP
-- Low Stock Products Count: \${lowStockCount}
+Analyze the following data for a supermarket shop owner named "${user.fullName}".
+- Total Revenue (Last 30 Days): ${totalRevenue.toFixed(2)} EGP
+- Number of Sales Transactions: ${recentSales.length}
+- Average Order Value: ${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP
+- Low Stock Products Count: ${lowStockCount}
 
-Write a professional email format report (in HTML) in \${isAr ? 'Arabic' : 'English'}.
+Write a professional email format report (in HTML) in ${isAr ? 'Arabic' : 'English'}.
 Highlight the good performance, note the low stock items urgently, and give 2 short actionable marketing/business advice to increase sales basket sizes or manage inventory.
 Keep it strictly under 150 words. Do not include a subject line in the text, just the HTML body starting with an <h3> tag. 
 Format it nicely with emojis, <strong> tags for numbers, and unordered lists for actionable advice.
-\`;
+`;
 
         const result = await model.generateContent(prompt);
-        // Clean up markdown block if the AI returns it wrapped in \`\`\`html
+        // Clean up markdown block if the AI returns it wrapped in ```html
         let analysisHtml = result.response.text();
-        analysisHtml = analysisHtml.replace(/\\\`\\\`\\\`html/g, '').replace(/\\\`\\\`\\\`/g, '');
+        analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '');
 
         const { sendAIReportEmail } = require('../utils/email');
         const subject = isAr ? '📊 تقريرك التحليلي الذكي من SmartGrocer' : '📊 Your SmartGrocer AI Analysis Report';
