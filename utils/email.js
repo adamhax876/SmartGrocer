@@ -43,20 +43,116 @@ async function sendEmailViaAPI(toEmail, toName, subject, htmlContent, textConten
   }
 }
 
+// ─── Gmail Nodemailer Fallback ─────────────────────────────────────────────
+async function sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent) {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
+  if (!user || !pass) return false;
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user, pass }
+  });
+
+  const mailOptions = {
+    from: `"${process.env.EMAIL_FROM_NAME || 'SmartGrocer'}" <${user}>`,
+    to: toName ? `"${toName}" <${toEmail}>` : toEmail,
+    subject,
+    text: textContent,
+    html: htmlContent
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.warn("[Gmail ERROR]:", error.message);
+    return false;
+  }
+}
+
+// ─── Resend API Fallback ───────────────────────────────────────────────────
+async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return false;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      signal: controller.signal,
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: `${process.env.EMAIL_FROM_NAME || 'SmartGrocer'} <onboarding@resend.dev>`,
+        to: [toEmail],
+        subject,
+        html: htmlContent,
+        text: textContent
+      })
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`Resend API ${res.status}`);
+    return true;
+  } catch (err) {
+    clearTimeout(timeout);
+    console.warn("[Resend ERROR]:", err.message);
+    return false;
+  }
+}
+
+// ─── Master Fallback Router ────────────────────────────────────────────────
+async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, textContent) {
+  // 1. Try Gmail (Most reliable, no domain needed)
+  if (process.env.EMAIL_PASS) {
+    const gSuccess = await sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent);
+    if (gSuccess) {
+      console.log(`✅ [Gmail] Email sent → ${toEmail}`);
+      return true;
+    }
+  }
+
+  // 2. Try Resend (If they added an API key)
+  if (process.env.RESEND_API_KEY) {
+    const rSuccess = await sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent);
+    if (rSuccess) {
+      console.log(`✅ [Resend] Email sent → ${toEmail}`);
+      return true;
+    }
+  }
+
+  // 3. Fallback to Brevo
+  if (process.env.BREVO_API_KEY) {
+    try {
+      const bSuccess = await sendEmailViaAPI(toEmail, toName, subject, htmlContent, textContent);
+      if (bSuccess) {
+        console.log(`✅ [Brevo] Email sent → ${toEmail}`);
+        return true;
+      }
+    } catch (e) {
+      console.error("[EMAIL CRASH] All providers failed. Last error from Brevo:", e.message);
+    }
+  }
+
+  throw new Error("No Email Provider Configured or All Failed (Check .env for EMAIL_PASS, RESEND_API_KEY, or BREVO_API_KEY)");
+}
+
 // ─── Public Functions ────────────────────────────────────────────────────────
 async function sendVerificationEmail(toEmail, verificationCode, fullName) {
   const html = buildVerificationHTML(fullName, verificationCode);
   const text = `Your SmartGrocer verification code: ${verificationCode} (valid 10 min)`;
-  await sendEmailViaAPI(toEmail, fullName, 'SmartGrocer — Verification Code', html, text);
-  console.log(`✅ Verification email sent → ${toEmail}`);
+  await sendEmailWithFallback(toEmail, fullName, 'SmartGrocer — Verification Code', html, text);
 }
 
 async function sendWelcomeEmail(toEmail, fullName, storeName) {
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
   const html = buildWelcomeHTML(fullName, storeName, appUrl);
   const text = `Welcome ${fullName}! Your store "${storeName}" is ready.`;
-  await sendEmailViaAPI(toEmail, fullName, `Welcome to SmartGrocer`, html, text);
-  console.log(`✅ Welcome email sent → ${toEmail}`);
+  await sendEmailWithFallback(toEmail, fullName, `Welcome to SmartGrocer`, html, text);
 }
 
 async function sendPasswordResetEmail(toEmail, fullName, resetToken) {
@@ -64,8 +160,7 @@ async function sendPasswordResetEmail(toEmail, fullName, resetToken) {
   const resetLink = `${appUrl}/reset-password.html?token=${resetToken}`;
   const html = buildPasswordResetHTML(fullName, resetLink);
   const text = `Hi ${fullName}, you requested a password reset. Click this link: ${resetLink}. Valid for 30 minutes.`;
-  await sendEmailViaAPI(toEmail, fullName, 'SmartGrocer — Password Reset Request', html, text);
-  console.log(`✅ Password reset email sent → ${toEmail}`);
+  await sendEmailWithFallback(toEmail, fullName, 'SmartGrocer — Password Reset Request', html, text);
 }
 
 async function sendSubscriptionWarningEmail(toEmail, fullName, daysLeft) {
@@ -73,23 +168,20 @@ async function sendSubscriptionWarningEmail(toEmail, fullName, daysLeft) {
   const html = buildSubscriptionWarningHTML(fullName, daysLeft, appUrl);
   const subject = daysLeft <= 1 ? 'Urgent: SmartGrocer Trial Expires Soon' : 'SmartGrocer Trial Expires in 3 Days';
   const text = `Hi ${fullName}, your SmartGrocer trial/subscription expires in ${daysLeft} days. Please top up your wallet to ensure uninterrupted access.`;
-  await sendEmailViaAPI(toEmail, fullName, subject, html, text);
-  console.log(`✅ Subscription warning email sent → ${toEmail}`);
+  await sendEmailWithFallback(toEmail, fullName, subject, html, text);
 }
 
 async function sendSubscriptionActivatedEmail(toEmail, fullName, planName, startDate, endDate) {
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
   const html = buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, appUrl);
   const text = `Hi ${fullName}, your subscription to ${planName} has been activated. It is valid from ${startDate} to ${endDate}.`;
-  await sendEmailViaAPI(toEmail, fullName, 'SmartGrocer — Subscription Activated 🎉', html, text);
-  console.log(`✅ Subscription activated email sent → ${toEmail}`);
+  await sendEmailWithFallback(toEmail, fullName, 'SmartGrocer — Subscription Activated 🎉', html, text);
 }
 
 async function sendAIReportEmail(toEmail, subject, htmlContent) {
   // We extract the first heading as text content just to have a text fallback
   const textContent = `SmartGrocer AI Analysis Report attached as HTML.`;
-  await sendEmailViaAPI(toEmail, "Shop Owner", subject, htmlContent, textContent);
-  console.log(`✅ AI Report email sent → ${toEmail}`);
+  await sendEmailWithFallback(toEmail, "Shop Owner", subject, htmlContent, textContent);
 }
 
 // ─── HTML Templates ──────────────────────────────────────────────────────────
@@ -224,4 +316,4 @@ function buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, 
 </table></td></tr></table></body></html>`;
 }
 
-module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailViaAPI };
+module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback };
