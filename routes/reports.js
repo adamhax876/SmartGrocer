@@ -133,7 +133,7 @@ router.post('/ai-analysis', async (req, res) => {
         const { GoogleGenerativeAI } = require("@google/generative-ai");
         // User provided API Key via chat
         const genAI = new GoogleGenerativeAI("AIzaSyC-6RHfBBrIw-bsSgQG1MyjS1H4qWZqX9c");
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
         const isAr = lang === 'ar';
         const prompt = `
