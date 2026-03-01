@@ -103,4 +103,75 @@ router.get('/inventory', async (req, res) => {
     }
 });
 
+// POST /api/reports/ai-analysis — generate and email AI report on demand
+router.post('/ai-analysis', async (req, res) => {
+    try {
+        const { lang } = req.body;
+        const user = req.user;
+        const plan = user.subscriptionPlan || 'Free Trial';
+
+        if (plan !== 'Pro Plan' && plan !== 'Free Trial') {
+            return res.status(403).json({ message: 'This feature requires the Pro Plan or Free Trial.' });
+        }
+
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+
+        // Get recent sales
+        const recentSales = await Sale.find({
+            userId: user._id,
+            createdAt: { $gte: thirtyDaysAgo }
+        });
+
+        const totalRevenue = recentSales.reduce((sum, s) => sum + s.total, 0);
+
+        // Count low stock products
+        const products = await Product.find({ userId: user._id });
+        const lowStockCount = products.filter(p => p.quantity <= p.lowStockThreshold).length;
+
+        // In a real app, you'd call the Gemini API or OpenAI here with prompt engineering.
+        // For now, we simulate an intelligent analysis strictly formatted for the user.
+
+        const isAr = lang === 'ar';
+        const analysisHtml = isAr ? `
+            <h3>تحليل أداء متجرك (آخر 30 يوماً)</h3>
+            <p>مرحباً <strong>${user.fullName}</strong>،</p>
+            <p>بناءً على نشاط متجرك الأخير، لقد حققت إيرادات بقيمة <strong>${totalRevenue.toFixed(2)} ج.م</strong> من خلال <strong>${recentSales.length}</strong> عملية بيع.</p>
+            <h4>النقاط المضيئة 💡</h4>
+            <ul>
+                <li>متوسط قيمة الفاتورة هو <strong>${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} ج.م</strong>. حافظ على اقتراح منتجات إضافية للعملاء لزيادة سلة مشترياتهم.</li>
+            </ul>
+            <h4>نقاط تحتاج للانتباه ⚠️</h4>
+            <ul>
+                <li>لديك <strong>${lowStockCount}</strong> منتج يوشك على النفاذ أو نفذ بالفعل. نوصي بإعادة الطلب فوراً من الموردين لتجنب فقدان المبيعات.</li>
+            </ul>
+            <p>نتمنى لك دوام التوفيق والنجاح!</p>
+            <p>— الذكاء الاصطناعي لـ SmartGrocer</p>
+        ` : `
+            <h3>Store Performance Analysis (Last 30 Days)</h3>
+            <p>Hello <strong>${user.fullName}</strong>,</p>
+            <p>Based on your recent activity, you generated <strong>${totalRevenue.toFixed(2)} EGP</strong> in revenue across <strong>${recentSales.length}</strong> transactions.</p>
+            <h4>Highlights 💡</h4>
+            <ul>
+                <li>Your average order value is <strong>${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP</strong>. Keep up-selling to increase basket size.</li>
+            </ul>
+            <h4>Action Items ⚠️</h4>
+            <ul>
+                <li>You have <strong>${lowStockCount}</strong> products running low on stock. We recommend re-ordering soon to prevent lost sales.</li>
+            </ul>
+            <p>Wishing you continued success!</p>
+            <p>— SmartGrocer AI</p>
+        `;
+
+        const { sendAIReportEmail } = require('../utils/email');
+        const subject = isAr ? '📊 تقريرك التحليلي الذكي من SmartGrocer' : '📊 Your SmartGrocer AI Analysis Report';
+
+        await sendAIReportEmail(user.email, subject, analysisHtml);
+
+        res.json({ message: 'AI Report sent successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي', error: error.message });
+    }
+});
+
 module.exports = router;

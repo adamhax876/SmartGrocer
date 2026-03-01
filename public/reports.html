@@ -250,8 +250,10 @@
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
                     <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
-                    <button class="btn btn-outline" onclick="window.print()" data-i18n="btn_print">🖨️ طباعة
-                        التقرير</button>
+                    <button class="btn btn-primary" onclick="requestAiAnalysis()" id="btnAiAnalysis"
+                        style="background: linear-gradient(135deg, #8b5cf6, #4F46E5); border: none;">
+                        <span class="icon">✨</span> <span data-i18n="btn_ai_analysis">تحليل بالذكاء الاصطناعي</span>
+                    </button>
                 </div>
             </header>
 
@@ -322,7 +324,7 @@
             en: {
                 nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports",
                 btn_theme: "Theme", btn_logout: "Logout",
-                title_reports: "Advanced Analytical Reports", btn_print: "Print Report",
+                title_reports: "Advanced Analytical Reports", btn_ai_analysis: "AI Analysis",
                 kpi_profit: "Estimated Net Profit", kpi_revenue: "Total Sales Revenue", kpi_cost: "Cost of Goods Sold", kpi_margin: "Profit Margin %",
                 chart_trend: "Sales & Profit Trend", chart_top: "Top Selling Products",
                 table_summary: "Category Financial Summary",
@@ -331,7 +333,7 @@
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير",
                 btn_theme: "المظهر", btn_logout: "تسجيل الخروج",
-                title_reports: "التقارير التحليلية المتقدمة", btn_print: "طباعة التقرير",
+                title_reports: "التقارير التحليلية المتقدمة", btn_ai_analysis: "تحليل ذكي",
                 kpi_profit: "صافي الربح التقديري", kpi_revenue: "إجمالي إيرادات المبيعات", kpi_cost: "تكلفة البضاعة المباعة", kpi_margin: "هامش الربح %",
                 chart_trend: "اتجاه المبيعات والأرباح (آخر 30 يوم)", chart_top: "أكثر المنتجات مبيعاً",
                 table_summary: "ملخص الأداء المالي للفئات",
@@ -444,19 +446,39 @@
 
                 // Chart 1: Trend
                 const dates = Object.keys(dailyStats).sort();
-                const revData = dates.map(d => dailyStats[d].revenue);
-                const profData = dates.map(d => dailyStats[d].profit);
+
+                // Ensure revenue and profit map strictly to the sorted dates
+                const revData = dates.map(d => dailyStats[d].revenue || 0);
+                const profData = dates.map(d => dailyStats[d].profit || 0);
 
                 new Chart(document.getElementById('trendChart'), {
                     type: 'line',
                     data: {
                         labels: dates,
                         datasets: [
-                            { label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue', data: revData, borderColor: '#4F46E5', backgroundColor: 'rgba(79, 70, 229, 0.1)', fill: true, tension: 0.4 },
-                            { label: currentLang === 'ar' ? 'الربح' : 'Profit', data: profData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4 }
+                            {
+                                label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue',
+                                data: revData,
+                                borderColor: '#4F46E5',
+                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: currentLang === 'ar' ? 'الربح' : 'Profit',
+                                data: profData,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }
                         ]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false }
+                    }
                 });
 
                 // Chart 2: Top Products
@@ -478,6 +500,38 @@
 
             } catch (e) { console.error("Report generation failed:", e); }
         });
+
+        async function requestAiAnalysis() {
+            const btn = document.getElementById('btnAiAnalysis');
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = `<span class="icon">⌛</span> ${currentLang === 'ar' ? 'جاري التحليل...' : 'Analyzing...'}`;
+            btn.disabled = true;
+
+            try {
+                // Assuming backend route to trigger AI report immediately
+                await api('/api/reports/ai-analysis', {
+                    method: 'POST',
+                    body: JSON.stringify({ lang: currentLang })
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: currentLang === 'ar' ? 'تم الانتهاء بنجاح!' : 'Analysis Complete!',
+                    text: currentLang === 'ar' ? 'تم إرسال التقرير التحليلي بالتفصيل إلى بريدك الإلكتروني.' : 'The detailed analytical report has been sent to your email.',
+                    confirmButtonColor: '#10b981'
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: currentLang === 'ar' ? 'خطأ' : 'Error',
+                    text: error.message || (currentLang === 'ar' ? 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي.' : 'Failed to generate AI analysis.')
+                });
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
     </script>
 </body>
 
