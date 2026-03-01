@@ -334,13 +334,24 @@
                 title: 'تحديد باقة الاشتراك',
                 html: `
                     <p class="mb-4 text-sm text-gray-600">اختر الباقة وتاريخ الانتهاء الدقيق لمتجر ${storeName}</p>
-                    <select id="swal-plan" class="w-full border p-2 rounded mb-3 text-right" style="direction: rtl;">
+                    <select id="swal-plan" class="w-full border p-2 rounded mb-3 text-right" style="direction: rtl;" onchange="
+                        if(this.value === 'Free Trial') {
+                            document.getElementById('swal-endDate').disabled = true;
+                            document.getElementById('swal-endDate').style.opacity = '0.5';
+                            document.getElementById('trial-hint').style.display = 'block';
+                        } else {
+                            document.getElementById('swal-endDate').disabled = false;
+                            document.getElementById('swal-endDate').style.opacity = '1';
+                            document.getElementById('trial-hint').style.display = 'none';
+                        }
+                    ">
                         <option value="Basic Plan">الباقة الأساسية (Basic)</option>
                         <option value="Pro Plan">الباقة الاحترافية (Pro)</option>
                         <option value="Free Trial">نسخة تجريبية (Free)</option>
                     </select>
                     <label class="block text-sm text-gray-500 mb-1 text-right">ينتهي الاشتراك في يوم:</label>
                     <input type="date" id="swal-endDate" class="w-full border p-2 rounded text-right" value="${defaultDateStr}" style="direction: rtl;">
+                    <p id="trial-hint" class="text-xs text-red-500 text-right mt-1" style="display: none;">النسخة التجريبية 14 يوماً إجبارياً من تاريخ اليوم ولن يُعتد بالتاريخ أعلاه.</p>
                 `,
                 focusConfirm: false,
                 showCancelButton: true,

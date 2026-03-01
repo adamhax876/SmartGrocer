@@ -426,9 +426,18 @@
     const savedTheme = localStorage.getItem('sg_theme') || 'light';
     document.body.className = savedTheme;
 
-    // Handle authenticated state
+    // Handle authenticated state & pricing buttons
     document.addEventListener('DOMContentLoaded', () => {
-      // getToken() is available from app.js
+      const freeBtn = document.querySelector('a[data-i18n="btn_start_free"]');
+      const basicBtn = document.querySelector('a[data-i18n="btn_sub_basic"]');
+      const proBtn = document.querySelector('a[data-i18n="btn_sub_pro"]');
+
+      // Default: If not logged in, all buttons redirect to signup
+      if (freeBtn) freeBtn.href = '/signup.html';
+      if (basicBtn) basicBtn.href = '/signup.html';
+      if (proBtn) proBtn.href = '/signup.html';
+
+      // Check if logged in
       if (typeof getToken === 'function' && getToken()) {
         const loginBtn = document.querySelector('a[href="/login.html"]');
         const signupBtn = document.querySelector('.nav-links a[data-i18n="nav_signup"]');
@@ -448,7 +457,6 @@
           translations.en.hero_btn_dashboard = "Go to Dashboard";
         }
 
-        // Logic for pricing buttons if logged in
         const userObjStr = localStorage.getItem('sg_user');
         if (userObjStr) {
           try {
@@ -457,52 +465,52 @@
             const endDate = user.subscriptionEndDate ? new Date(user.subscriptionEndDate) : new Date();
             const isActive = endDate > new Date();
 
-            const freeBtn = document.querySelector('a[data-i18n="btn_start_free"]');
-            const basicBtn = document.querySelector('a[data-i18n="btn_sub_basic"]');
-            const proBtn = document.querySelector('a[data-i18n="btn_sub_pro"]');
-
-            const makeActive = (btn, isRenew) => {
+            const applyCurrentPlanStyle = (btn, isRenew) => {
               if (isRenew) {
                 btn.textContent = currentLang === 'ar' ? 'تجديد اشتراكك' : 'Renew Subscription';
+                btn.removeAttribute('data-i18n');
                 btn.href = '/billing.html';
+                btn.style.background = '#ef4444';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#ef4444';
               } else {
-                btn.textContent = currentLang === 'ar' ? 'هذه باقتك الحالية' : 'Your Current Plan';
+                btn.textContent = currentLang === 'ar' ? 'هذه باقتك' : 'Your Plan';
                 btn.removeAttribute('data-i18n');
                 btn.href = 'javascript:void(0)';
                 btn.style.background = 'var(--bg-card)';
-                btn.style.color = 'var(--primary)';
-                btn.style.borderColor = 'var(--primary)';
+                btn.style.color = 'var(--text-secondary)';
+                btn.style.borderColor = 'var(--border)';
                 btn.style.pointerEvents = 'none';
                 btn.style.boxShadow = 'none';
               }
             };
 
+            // By default, for a logged in user, upgrade buttons go to billing
+            if (basicBtn) basicBtn.href = '/billing.html';
+            if (proBtn) proBtn.href = '/billing.html';
+
             if (plan === 'Free Trial') {
-              if (freeBtn) makeActive(freeBtn, !isActive);
-              // Keep Basic and Pro visible for upgrades
+              if (freeBtn) {
+                if (!isActive) {
+                  freeBtn.textContent = currentLang === 'ar' ? 'انتهت الفترة التجريبية' : 'Trial Expired';
+                  freeBtn.removeAttribute('data-i18n');
+                  freeBtn.style.background = '#ef4444';
+                  freeBtn.style.color = '#fff';
+                  freeBtn.href = '/billing.html';
+                } else {
+                  applyCurrentPlanStyle(freeBtn, false);
+                }
+              }
             } else if (plan === 'Basic Plan') {
               if (freeBtn) freeBtn.style.display = 'none';
-              if (basicBtn) makeActive(basicBtn, !isActive);
-              // If inactive, keep Pro visible. If active, keep Pro visible for upgrades
+              if (basicBtn) applyCurrentPlanStyle(basicBtn, !isActive);
             } else if (plan === 'Pro Plan') {
               if (freeBtn) freeBtn.style.display = 'none';
-              if (basicBtn) {
-                if (isActive) basicBtn.style.display = 'none';
-                // if !isActive, it remains visible so they can downgrade
-              }
-              if (proBtn) makeActive(proBtn, !isActive);
+              if (basicBtn) basicBtn.style.display = 'none';
+              if (proBtn) applyCurrentPlanStyle(proBtn, !isActive);
             }
-          } catch (e) { }
+          } catch (e) { console.error(e); }
         }
-
-        // Redirect all remaining '.plan-btn' that weren't hidden to the billing page just in case
-        document.querySelectorAll('.plan-btn').forEach(btn => {
-          if (btn.style.display !== 'none' && !btn.hasAttribute('disabled')) {
-            btn.href = '/billing.html';
-          }
-        });
-
-        // Re-run text update for the new dynamic buttons
         updateTexts();
       }
     });
