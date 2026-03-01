@@ -317,3 +317,33 @@ function showRealtimePopup(msg) {
 
     modal.style.display = 'flex';
 }
+
+// Global UI hook for Support Ticket Notifications
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname.startsWith('/admin')) return; // Skip for admins
+    if (getToken()) {
+        const supportLinks = document.querySelectorAll('a[href="/support.html"]');
+        supportLinks.forEach(link => {
+            if (!link.querySelector('.support-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'support-badge';
+                badge.style.cssText = 'background: #ef4444; color: white; border-radius: 50px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; margin-inline-start: auto; display: none; margin-right: auto;'; // fallback flex spacing
+                link.appendChild(badge);
+            }
+        });
+        checkUnreadTickets();
+        setInterval(checkUnreadTickets, 15000);
+    }
+});
+
+async function checkUnreadTickets() {
+    try {
+        const data = await api('/api/support/unread');
+        if (data && data.count !== undefined) {
+            document.querySelectorAll('.support-badge').forEach(b => {
+                b.textContent = data.count > 99 ? '99+' : data.count;
+                b.style.display = data.count > 0 ? 'inline-block' : 'none';
+            });
+        }
+    } catch (e) { }
+}

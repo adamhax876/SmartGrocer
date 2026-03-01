@@ -9,6 +9,96 @@
     <link rel="stylesheet" href="/css/global.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            border-inline-end: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+            padding: 0 .5rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .7rem .85rem;
+            border-radius: 10px;
+            font-size: .92rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .sidebar-link:hover {
+            background: var(--bg-secondary);
+            color: var(--text);
+        }
+
+        .sidebar-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .main {
+            flex: 1;
+            margin-inline-start: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
         .support-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -144,8 +234,8 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="main">
-            <header class="topbar">
+        <main class="main" style="flex-direction: column; overflow: hidden; height: 100vh;">
+            <header class="topbar" style="flex-shrink: 0;">
                 <h1 class="topbar-title" data-i18n="title_support"><i class="fas fa-life-ring"></i> مركز الدعم الفني
                 </h1>
                 <div style="display: flex; gap: 1rem; align-items: center;">
@@ -153,43 +243,95 @@
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
                     <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
+                        <span id="userGreeting" style="font-weight: bold; color: var(--text);">مرحباً</span>
+                    </div>
                 </div>
             </header>
 
-            <div class="content-wrapper" style="padding: 1.5rem;">
-                <div class="support-container">
-                    <!-- New Ticket Form -->
-                    <div class="ticket-form">
-                        <h2 style="margin-bottom: 1.5rem; color: var(--text);" data-i18n="new_ticket"><i
-                                class="fas fa-headset text-primary"></i> تذكرة جديدة</h2>
+            <div style="flex: 1; display: flex; overflow: hidden; background: var(--bg);">
 
-                        <div class="form-group">
-                            <label data-i18n="label_subject">موضوع المشكلة</label>
-                            <input type="text" id="ticketSubject" class="form-input"
-                                placeholder="مثال: مشكلة في الدفع، استفسار عن خطة..." required>
-                        </div>
-
-                        <div class="form-group">
-                            <label data-i18n="label_message">تفاصيل المشكلة (رسالتك)</label>
-                            <textarea id="ticketMessage" class="form-input" rows="5"
-                                placeholder="اشرح مشكلتك بالتفصيل هنا..." required></textarea>
-                        </div>
-
-                        <button onclick="submitTicket()" id="submitBtn" class="btn btn-primary"
-                            style="width: 100%; justify-content: center;">
-                            <i class="fas fa-paper-plane"></i> <span data-i18n="btn_send">إرسال التذكرة</span>
+                <!-- Left Sidebar: Tickets List -->
+                <div
+                    style="width: 320px; border-inline-end: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-card); flex-shrink: 0;">
+                    <div
+                        style="padding: 1rem; border-bottom: 1px solid var(--border); display:flex; justify-content: center;">
+                        <button onclick="showNewTicketForm()" class="btn btn-primary"
+                            style="width: 100%; border-radius: 20px;">
+                            <i class="fas fa-plus"></i> <span data-i18n="new_ticket">تذكرة جديدة</span>
                         </button>
                     </div>
+                    <div id="ticketsContainer" style="flex: 1; overflow-y: auto;">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">جاري تحميل
+                            التذاكر...</div>
+                    </div>
+                </div>
 
-                    <!-- Previous Tickets -->
-                    <div>
-                        <h2 style="margin-bottom: 1.5rem; color: var(--text);" data-i18n="prev_tickets"><i
-                                class="fas fa-history text-primary"></i> تذاكري السابقة</h2>
-                        <div id="ticketsContainer" class="ticket-list">
-                            <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">جاري تحميل
-                                التذاكر...</div>
+                <!-- Right Side: Chat / Form -->
+                <div style="flex: 1; display: flex; flex-direction: column; background: #e5ddd5; position: relative;">
+
+                    <!-- Default Welcome -->
+                    <div id="defaultWelcome"
+                        style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #888;">
+                        <i class="fas fa-headset" style="font-size: 4rem; opacity: 0.5; margin-bottom: 1rem;"></i>
+                        <h3 data-i18n="title_support" style="color: #666;">مركز الدعم الفني</h3>
+                    </div>
+
+                    <!-- New Ticket Form -->
+                    <div id="newTicketForm"
+                        style="display: none; flex: 1; padding: 2rem; overflow-y: auto; background: var(--bg-card);">
+                        <div style="max-width: 600px; margin: 0 auto;">
+                            <h2 style="margin-bottom: 1.5rem; color: var(--text);" data-i18n="new_ticket"><i
+                                    class="fas fa-headset text-primary"></i> تذكرة جديدة</h2>
+                            <div class="form-group">
+                                <label data-i18n="label_subject">موضوع المشكلة</label>
+                                <input type="text" id="ticketSubject" class="form-input"
+                                    placeholder="مثال: مشكلة في الدفع..." required>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="label_message">تفاصيل المشكلة (رسالتك)</label>
+                                <textarea id="ticketMessage" class="form-input" rows="5"
+                                    placeholder="اشرح مشكلتك بالتفصيل هنا..." required></textarea>
+                            </div>
+                            <button onclick="submitTicket()" id="submitBtn" class="btn btn-primary"
+                                style="width: 100%; justify-content: center;">
+                                <i class="fas fa-paper-plane"></i> <span data-i18n="btn_send">إرسال التذكرة</span>
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Active Chat -->
+                    <div id="activeChat" style="display: none; flex: 1; flex-direction: column; height: 100%;">
+                        <div
+                            style="padding: 1rem 1.5rem; border-bottom: 1px solid #ccc; background: #f0f2f5; display: flex; align-items: center; flex-shrink: 0;">
+                            <div
+                                style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-inline-end: 1rem;">
+                                <i class="fas fa-life-ring"></i>
+                            </div>
+                            <div>
+                                <div id="chatSubject" style="font-weight: bold; color: #111; font-size: 1.1rem;"></div>
+                                <div id="chatStatusBadge" style="font-size: 0.8rem;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Bubbles Area -->
+                        <div id="messagesArea"
+                            style="flex: 1; overflow-y: auto; padding: 2rem 5%; display: flex; flex-direction: column; gap: 0.5rem; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; opacity: 0.95;">
+                            <!-- Bubbles -->
+                        </div>
+
+                        <div id="chatInputArea"
+                            style="padding: 1rem; background: #f0f2f5; display: flex; gap: 0.5rem; flex-shrink: 0; align-items: flex-end;">
+                            <textarea id="replyMessage"
+                                style="flex: 1; border: none; border-radius: 20px; padding: 12px 16px; resize: none; outline: none; max-height: 100px; font-family: inherit; font-size: 15px;"
+                                rows="1" placeholder="اكتب ردك..."
+                                oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                            <button onclick="sendReply()"
+                                style="background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;"><i
+                                    class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
@@ -216,7 +358,6 @@
             }
         };
 
-        // Standard App Initialization
         let currentLang = localStorage.getItem('sg_lang') || 'ar';
         document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = currentLang;
@@ -227,13 +368,12 @@
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        // ignore placeholder translations for simplicity, or handle if needed
-                    } else el.textContent = translations[currentLang][key];
+                    if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') el.textContent = translations[currentLang][key];
                 }
             });
+            const user = getUser();
+            if (user && document.getElementById('userGreeting')) document.getElementById('userGreeting').textContent = currentLang === 'ar' ? `مرحباً بك، ${user.storeName}` : `Welcome, ${user.storeName}`;
         }
-        updateTexts();
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
@@ -242,64 +382,128 @@
             location.reload();
         }
 
-        // Support Tickets Logic
-        async function loadTickets() {
+        let allTickets = [];
+        let activeTicketId = null;
+
+        function showNewTicketForm() {
+            activeTicketId = null;
+            document.getElementById('defaultWelcome').style.display = 'none';
+            document.getElementById('activeChat').style.display = 'none';
+            document.getElementById('newTicketForm').style.display = 'block';
+            renderConversations();
+        }
+
+        async function loadTickets(silent = false) {
             try {
                 const res = await api('/api/support');
-                const container = document.getElementById('ticketsContainer');
+                allTickets = res.tickets || [];
+                renderConversations();
 
-                if (!res.tickets || res.tickets.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align: center; background: var(--bg-card); border-radius: var(--radius); padding: 3rem; color: var(--text-secondary);">
-                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                            <p>${currentLang === 'en' ? 'No previous support tickets found.' : 'لا توجد لديك تذاكر دعم فني سابقة'}</p>
-                        </div>
-                    `;
-                    return;
+                if (activeTicketId) {
+                    const activeTicket = allTickets.find(t => t._id === activeTicketId);
+                    if (activeTicket) renderChat(activeTicket, silent);
                 }
-
-                container.innerHTML = res.tickets.map(ticket => {
-                    const date = new Date(ticket.createdAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'ar-EG');
-
-                    let statusHtml = '';
-                    if (ticket.status === 'open') {
-                        statusHtml = '<span class="badge badge-open"><i class="fas fa-clock"></i> ' + (currentLang === 'en' ? 'Pending' : 'قيد الانتظار') + '</span>';
-                    } else if (ticket.status === 'answered') {
-                        statusHtml = '<span class="badge badge-answered"><i class="fas fa-check-circle"></i> ' + (currentLang === 'en' ? 'Answered' : 'تم الرد') + '</span>';
-                    }
-
-                    let replyHtml = '';
-                    if (ticket.adminReply) {
-                        const replyDate = new Date(ticket.repliedAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'ar-EG');
-                        replyHtml = `
-                            <div class="admin-reply">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
-                                    <strong><i class="fas fa-user-shield"></i> ${currentLang === 'en' ? 'Admin Reply' : 'رد الإدارة'}</strong>
-                                    <span>${replyDate}</span>
-                                </div>
-                                <div style="color: var(--text); line-height: 1.6;">${ticket.adminReply}</div>
-                            </div>
-                        `;
-                    }
-
-                    return `
-                        <div class="ticket-card">
-                            <div class="ticket-header">
-                                <h3 style="color: var(--text); font-size: 1.1rem; margin:0;">${ticket.subject}</h3>
-                                ${statusHtml}
-                            </div>
-                            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
-                                <i class="fas fa-calendar-alt"></i> ${date}
-                            </div>
-                            <div style="color: var(--text); line-height: 1.6;">
-                                ${ticket.message}
-                            </div>
-                            ${replyHtml}
-                        </div>
-                    `;
-                }).join('');
             } catch (error) {
                 console.error('Error loading tickets:', error);
+            }
+        }
+
+        function renderConversations() {
+            const container = document.getElementById('ticketsContainer');
+            if (allTickets.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <p>${currentLang === 'en' ? 'No tickets found.' : 'لا توجد لديك تذاكر دعم فني سابقة'}</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = allTickets.map(t => {
+                const isActive = t._id === activeTicketId;
+                const date = new Date(t.createdAt).toLocaleDateString(currentLang === 'en' ? 'en-US' : 'ar-EG');
+                const time = new Date(t.createdAt).toLocaleTimeString(currentLang === 'en' ? 'en-US' : 'ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+                let lastSnippet = t.message;
+                if (t.messages && t.messages.length > 0) {
+                    lastSnippet = t.messages[t.messages.length - 1].content;
+                }
+                if (lastSnippet.length > 30) lastSnippet = lastSnippet.substring(0, 30) + '...';
+
+                // Dot indicator for unread
+                const unreadDot = t.hasUnreadUser ? `<div style="width: 10px; height: 10px; background: #ef4444; border-radius: 50%; margin-top: 4px;"></div>` : '';
+
+                return `
+                    <div onclick="openChat('${t._id}')" style="cursor: pointer; padding: 1rem; border-bottom: 1px solid var(--border); background: ${isActive ? 'var(--bg-secondary)' : 'transparent'}; transition: background 0.2s;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <h4 style="margin: 0; font-size: 1rem; color: var(--text); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${t.subject}</h4>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">${time}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${lastSnippet}</p>
+                            ${unreadDot}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openChat(id) {
+            activeTicketId = id;
+            document.getElementById('defaultWelcome').style.display = 'none';
+            document.getElementById('newTicketForm').style.display = 'none';
+            document.getElementById('activeChat').style.display = 'flex';
+
+            const t = allTickets.find(x => x._id === id);
+            t.hasUnreadUser = false; // Optimistic clear
+
+            // Header UI
+            document.getElementById('chatSubject').textContent = t.subject;
+            let statusText = t.status === 'open' ? (currentLang === 'en' ? 'Pending' : 'قيد الانتظار') : (currentLang === 'en' ? 'Answered' : 'تم الرد');
+            let color = t.status === 'open' ? '#ca8a04' : '#059669';
+            document.getElementById('chatStatusBadge').innerHTML = `<span style="color: ${color}; font-weight: bold;">${statusText}</span>`;
+
+            // If Ticket closed/resolved, hide input? We can keep it open so users can reply.
+            document.getElementById('chatInputArea').style.display = t.status === 'closed' ? 'none' : 'flex';
+
+            renderConversations();
+            renderChat(t, false);
+        }
+
+        function renderChat(t, preventScroll) {
+            const container = document.getElementById('messagesArea');
+
+            const msgs = [];
+
+            // Modern Threads
+            if (t.messages && t.messages.length > 0) {
+                t.messages.forEach(m => msgs.push({ role: m.role, content: m.content, date: m.createdAt }));
+            } else {
+                // Fallback strictly for older tickets created before Phase 15
+                if (t.message) msgs.push({ role: 'user', content: t.message, date: t.createdAt });
+                if (t.adminReply) msgs.push({ role: 'admin', content: t.adminReply, date: t.repliedAt || t.updatedAt });
+            }
+
+            let html = '';
+            msgs.forEach(m => {
+                const isMe = m.role === 'user';
+                const bg = isMe ? '#d9fdd3' : '#ffffff';
+                const align = isMe ? 'flex-end' : 'flex-start';
+                const radius = isMe ? '15px 15px 0 15px' : '15px 15px 15px 0';
+                const timeStr = new Date(m.date).toLocaleTimeString(currentLang === 'en' ? 'en-US' : 'ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+                html += `
+                    <div style="align-self: ${align}; max-width: 75%; background: ${bg}; padding: 10px 14px; border-radius: ${radius}; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative;">
+                        <div style="color: #111; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;">${m.content}</div>
+                        <div style="font-size: 0.65rem; color: #888; text-align: end; margin-top: 5px;" dir="ltr">${timeStr}</div>
+                    </div>
+                `;
+            });
+
+            const wasAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            container.innerHTML = html;
+
+            if (!preventScroll || wasAtBottom) {
+                setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
             }
         }
 
@@ -309,15 +513,13 @@
             const btn = document.getElementById('submitBtn');
 
             if (!subject || !message) {
-                Swal.fire({ icon: 'warning', title: currentLang === 'en' ? 'Alert' : 'تنبيه', text: currentLang === 'en' ? 'Please fill subject and message' : 'يرجى كتابة الموضوع والرسالة قبل الإرسال' });
+                Swal.fire({ icon: 'warning', title: currentLang === 'en' ? 'Alert' : 'تنبيه', text: currentLang === 'en' ? 'Please fill subject and message' : 'يرجى إدخال الموضوع والرسالة' });
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (currentLang === 'en' ? 'Sending...' : 'جاري الإرسال...');
-
             try {
-                await api('/api/support', {
+                const response = await api('/api/support', {
                     method: 'POST',
                     body: JSON.stringify({ subject, message })
                 });
@@ -325,25 +527,56 @@
                 document.getElementById('ticketSubject').value = '';
                 document.getElementById('ticketMessage').value = '';
 
-                Swal.fire({
-                    icon: 'success',
-                    title: currentLang === 'en' ? 'Success!' : 'تم الإرسال!',
-                    text: currentLang === 'en' ? 'Ticket sent successfully, support will reply soon.' : 'تم إرسال تذكرتك لفريق الدعم بنجاح، سيتم الرد عليك في أسرع وقت.',
-                    confirmButtonColor: '#10b981'
-                });
-
-                loadTickets();
+                await loadTickets();
+                // Find and open the new ticket
+                if (response.ticket) openChat(response.ticket._id);
             } catch (error) {
-                Swal.fire({ icon: 'error', title: currentLang === 'en' ? 'Error' : 'خطأ', text: error.message || (currentLang === 'en' ? 'An error occurred' : 'حدث خطأ أثناء الإرسال') });
+                Swal.fire({ icon: 'error', title: currentLang === 'en' ? 'Error' : 'خطأ', text: error.message });
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> ' + translations[currentLang].btn_send;
             }
         }
 
+        async function sendReply() {
+            const input = document.getElementById('replyMessage');
+            const replyText = input.value.trim();
+            if (!replyText || !activeTicketId) return;
+
+            input.value = '';
+            input.style.height = '';
+
+            // Optimistic rendering
+            const ticket = allTickets.find(t => t._id === activeTicketId);
+            if (ticket.messages) {
+                ticket.messages.push({ role: 'user', content: replyText, createdAt: new Date() });
+            }
+            renderChat(ticket, false);
+
+            try {
+                await api(`/api/support/${activeTicketId}/reply`, {
+                    method: 'POST',
+                    body: JSON.stringify({ message: replyText })
+                });
+                loadTickets(true);
+            } catch (error) {
+                Swal.fire('خطأ', error.message || 'فشل الإرسال', 'error');
+            }
+        }
+
+        document.getElementById('replyMessage')?.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendReply();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             if (!getToken()) window.location.href = '/login.html';
-            else loadTickets();
+            else {
+                updateTexts();
+                loadTickets();
+                setInterval(() => loadTickets(true), 5000); // UI Poller
+            }
         });
     </script>
 </body>

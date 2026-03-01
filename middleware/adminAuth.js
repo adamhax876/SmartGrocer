@@ -16,8 +16,13 @@ const isAdmin = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'المستخدم غير موجود' }); // User not found
         }
 
-        if (user.role !== 'admin' && user.role !== 'support') {
-            return res.status(403).json({ success: false, message: 'غير مصرح لك بالدخول، هذه الصفحة للإدارة والدعم الفني فقط' }); // Not authorized, admin only
+        if (user.role === 'support') {
+            // Allow access ONLY to /api/admin/tickets routes
+            if (!req.originalUrl.startsWith('/api/admin/tickets')) {
+                return res.status(403).json({ success: false, message: 'غير مصرح لك بالدخول، هذه الصفحة للإدارة العليا فقط' });
+            }
+        } else if (user.role !== 'admin' && user.role !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'غير مصرح لك بالدخول، هذه الصفحة للإدارة' });
         }
 
         req.admin = user;

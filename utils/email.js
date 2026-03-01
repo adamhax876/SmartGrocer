@@ -316,6 +316,35 @@ function buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, 
 </table></td></tr></table></body></html>`;
 }
 
+async function sendTicketReplyEmail(toEmail, fullName, ticketSubject, replyMessage) {
+  const subject = "تحديث جديد بخصوص تذكرتك - الدعم الفني لـ SmartGrocer";
+  const textContent = `Hello ${fullName || ''},\n\nWe have replied to your ticket: "${ticketSubject}".\n\nReply:\n${replyMessage}\n\nLogin to your account to view full details.`;
+  const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:30px 10px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#3b82f6,#2563eb);padding:25px 30px;text-align:right;" dir="rtl">
+<h1 style="color:#ffffff;font-size:20px;font-weight:600;margin:0;">الدعم الفني - SmartGrocer</h1>
+</td></tr>
+<tr><td style="padding:30px;text-align:right;" dir="rtl">
+<p style="color:#1e293b;font-size:16px;margin:0 0 15px;">أهلاً بك <strong style="color:#2563eb;">${fullName || 'عميلنا العزيز'}</strong>،</p>
+<p style="color:#475569;font-size:15px;line-height:1.6;margin:0 0 20px;">لقد تم تحديث تذكرة الدعم الفني الخاصة بك بعنوان: <strong style="color:#0f172a;">"${ticketSubject}"</strong></p>
+<div style="background:#f1f5f9;border-right:4px solid #3b82f6;padding:15px;margin-bottom:25px;border-radius:4px 0 0 4px;">
+<p style="color:#334155;font-size:15px;line-height:1.6;margin:0;white-space:pre-wrap;">${replyMessage}</p>
+</div>
+<div style="text-align:center;margin-top:30px;">
+<a href="${process.env.APP_URL || 'http://localhost:3000'}/support.html" style="background:#2563eb;color:#ffffff;padding:12px 30px;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;display:inline-block;">عرض المحادثة كاملة</a>
+</div>
+</td></tr>
+<tr><td style="background:#f8fafc;padding:20px;text-align:center;border-top:1px solid #e2e8f0;">
+<p style="color:#64748b;font-size:12px;margin:0;">هذه الرسالة تم إرسالها آلياً من نظام SmartGrocer</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+  return sendEmailWithFallback(toEmail, fullName || "Tech Support", subject, htmlContent, textContent);
+}
+
 async function sendSupportInviteEmail(toEmail, inviteLink) {
   const subject = "دعوة للانضمام إلى فريق الدعم الفني - SmartGrocer";
   const textContent = `You have been invited to join the SmartGrocer Tech Support Team. Click this link to register: ${inviteLink}`;
@@ -340,4 +369,4 @@ async function sendSupportInviteEmail(toEmail, inviteLink) {
   return sendEmailWithFallback(toEmail, "Tech Support", subject, htmlContent, textContent);
 }
 
-module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback, sendSupportInviteEmail };
+module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback, sendSupportInviteEmail, sendTicketReplyEmail };

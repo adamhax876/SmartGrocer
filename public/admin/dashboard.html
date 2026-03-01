@@ -173,6 +173,12 @@
             window.location.href = '/admin/login.html';
         }
 
+        const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+        if (adminData.role === 'support') {
+            const navElements = document.querySelectorAll('nav');
+            if (navElements.length > 0) navElements[0].style.display = 'none';
+        }
+
         // Basic Localization Logic
         let adminLang = localStorage.getItem('sg_admin_lang') || 'ar';
         const dict = {

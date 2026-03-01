@@ -9,7 +9,7 @@ const Ticket = require('../models/Ticket');
 const Invite = require('../models/Invite');
 const crypto = require('crypto');
 const { clearSettingsCache } = require('../utils/settings');
-const { sendSupportInviteEmail } = require('../utils/email');
+const { sendSupportInviteEmail, sendTicketReplyEmail } = require('../utils/email');
 
 // =====================================
 // Admin Endpoints
@@ -304,16 +304,33 @@ router.get('/tickets', isAdmin, async (req, res) => {
 router.post('/tickets/:id/reply', isAdmin, async (req, res) => {
     try {
         const { reply } = req.body;
-        const ticket = await Ticket.findById(req.params.id);
+        if (!reply) return res.status(400).json({ success: false, message: 'Message content required' });
+
+        const ticket = await Ticket.findById(req.params.id).populate('userId');
 
         if (!ticket) {
             return res.status(404).json({ success: false, message: 'التذكرة غير موجودة' });
         }
 
-        ticket.adminReply = reply;
+        ticket.messages.push({
+            sender: req.admin._id,
+            role: req.admin.role === 'admin' ? 'admin' : 'support',
+            content: reply,
+            createdAt: new Date()
+        });
+
+        ticket.adminReply = reply; // Legacy support
         ticket.status = 'answered';
+        ticket.hasUnreadUser = true;
         ticket.repliedAt = new Date();
         await ticket.save();
+
+        // Send Email
+        if (ticket.userId && ticket.userId.email) {
+            sendTicketReplyEmail(ticket.userId.email, ticket.userId.fullName, ticket.subject, reply).catch(err => {
+                console.error('Failed to send ticket reply email:', err);
+            });
+        }
 
         res.json({ success: true, message: 'تم إرسال الرد بنجاح', ticket });
     } catch (error) {

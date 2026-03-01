@@ -404,6 +404,11 @@
             }
         }
 
+        const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+        if (adminData.role === 'support') {
+            document.querySelector('nav').style.display = 'none'; // Lock them inside whatever page they land on visually
+        }
+
         async function inviteSupportModal() {
             const { value: email } = await Swal.fire({
                 title: 'دعوة عضو لدعم فني',

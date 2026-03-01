@@ -30,56 +30,121 @@
     <!-- Sidebar -->
     <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
-            <h1 class="text-xl font-bold"><i class="fas fa-bolt text-yellow-400 mr-2"></i> SmartGrocer SaaS</h1>
-        </div>
-        <nav class="flex-1 overflow-y-auto py-4">
-            <ul class="space-y-2 px-3">
-                <li><a href="/admin/dashboard.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-tachometer-alt"></i><span>الرئيسية</span></a></li>
-                <li><a href="/admin/users.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-store"></i><span>المتاجر المشتركة</span></a></li>
-                <li><a href="/admin/payments.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-money-check-alt"></i><span>طرق الدفع</span></a></li>
-                <li><a href="/admin/settings.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-cogs"></i><span>إعدادات النظام</span></a></li>
-                <li><a href="/admin/tickets.html"
-                        class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white"><i
-                            class="fas fa-life-ring"></i><span>تذاكر الدعم</span></a></li>
-            </ul>
-        </nav>
-        <div class="p-4 border-t border-gray-800">
-            <button onclick="logout()"
-                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
-                    class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
+            <h2 class="text-xl font-bold p-6 border-b border-gray-800 flex items-center gap-2">
+                <i class="fas fa-bolt text-yellow-400"></i> SmartGrocer SaaS
+            </h2>
+            <nav class="p-4 space-y-2 flex-1 overflow-y-auto w-full">
+                <!-- Navigation Tabs - Assigned IDs for JS Targeting -->
+                <a href="/admin/dashboard.html" id="navHome"
+                    class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
+                    <div class="flex items-center gap-3"><i
+                            class="fas fa-chart-pie w-6 text-center group-hover:scale-110 transition"></i>
+                        <span>الرئيسية</span>
+                    </div>
+                </a>
+                <a href="/admin/users.html" id="navStores"
+                    class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
+                    <div class="flex items-center gap-3"><i
+                            class="fas fa-store w-6 text-center group-hover:scale-110 transition"></i> <span>المتاجر
+                            المشتركة</span></div>
+                </a>
+
+                <div class="h-px bg-gray-800 my-4 mx-4"></div>
+
+                <a href="/admin/plans.html" id="navSettings"
+                    class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
+                    <div class="flex items-center gap-3"><i
+                            class="fas fa-money-check-alt w-6 text-center group-hover:scale-110 transition"></i>
+                        <span>إعدادات النظام</span>
+                    </div>
+                </a>
+                <a href="/admin/tickets.html" id="navSupport"
+                    class="block px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/20 flex items-center justify-between group">
+                    <div class="flex items-center gap-3"><i
+                            class="fas fa-life-ring w-6 text-center group-hover:scale-110 transition"></i> <span>تذاكر
+                            الدعم</span>
+                    </div>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <button onclick="logout()"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
+                        class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
+            </div>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        <header class="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0">
-            <h2 class="text-xl font-semibold text-gray-800">تذاكر الدعم الفني</h2>
-            <div class="flex gap-2">
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
-                    onclick="filterTickets('all')" id="btnFilterAll">الكل</button>
-                <button
-                    class="px-4 py-2 bg-white text-yellow-600 border border-yellow-500 rounded-lg font-semibold hover:bg-yellow-50 transition"
-                    onclick="filterTickets('open')" id="btnFilterOpen">تنتظر الرد</button>
-                <button
-                    class="px-4 py-2 bg-white text-green-600 border border-green-500 rounded-lg font-semibold hover:bg-green-50 transition"
-                    onclick="filterTickets('answered')" id="btnFilterAns">مجاب عليها</button>
-            </div>
-        </header>
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-white">
+        <!-- Chat Container -->
+        <div class="flex-1 flex overflow-hidden">
 
-        <div
-            class="flex-1 overflow-y-auto p-6 bg-gray-50 border-t border-gray-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] pt-10">
-            <div class="max-w-5xl mx-auto space-y-4" id="ticketsContainer">
-                <div class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl"></i> جاري تحميل
-                    التذاكر...</div>
+            <!-- Left Sidebar: Conversations -->
+            <div class="w-1/3 lg:w-1/4 border-l border-gray-200 bg-white flex flex-col h-full shrink-0">
+                <!-- Search/Filter -->
+                <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800">المحادثات</h2>
+                    <span id="unreadAdminCount"
+                        class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
+                </div>
+
+                <div class="flex border-b border-gray-100 text-sm font-semibold">
+                    <button class="flex-1 py-3 text-blue-600 border-b-2 border-blue-600" onclick="filterTickets('all')"
+                        id="btnFilterAll">الكل</button>
+                    <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('open')"
+                        id="btnFilterOpen">تنتظر الرد</button>
+                    <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('answered')"
+                        id="btnFilterAns">مجابة</button>
+                </div>
+
+                <!-- Conversation List -->
+                <div class="flex-1 overflow-y-auto" id="conversationList">
+                    <div class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl"></i></div>
+                </div>
             </div>
+
+            <!-- Right Side: Active Chat -->
+            <div class="flex-1 flex flex-col bg-[#f0f2f5] relative h-full">
+                <!-- Chat Header -->
+                <div id="activeChatHeader"
+                    class="h-16 border-b border-gray-200 bg-white flex items-center px-6 shadow-sm z-10 shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg" id="chatUserName">اختر محادثة</h3>
+                            <p class="text-xs text-gray-500" id="chatStoreName">للرد على العميل</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Scroll Area -->
+                <div id="messagesArea" class="flex-1 overflow-y-auto p-6 space-y-4"
+                    style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; opacity: 0.9;">
+                    <div
+                        class="flex h-full items-center justify-center text-gray-400 font-bold bg-white/80 rounded-xl w-fit mx-auto px-6 py-2">
+                        اضغط على تذكرة من القائمة الجانبية لبدء المحادثة
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div id="chatInputArea" class="p-4 bg-[#f0f2f5] border-t border-gray-200 shrink-0 hidden">
+                    <div
+                        class="flex gap-2 max-w-4xl mx-auto items-end bg-white p-2 rounded-2xl shadow-sm border border-gray-300">
+                        <textarea id="replyMessage"
+                            class="flex-1 outline-none resize-none px-3 py-2 text-gray-700 bg-transparent min-h-[44px] max-h-32"
+                            rows="1" placeholder="اكتب ردك هنا..."
+                            oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                        <button onclick="sendReply()"
+                            class="bg-blue-600 text-white rounded-xl w-11 h-11 flex items-center justify-center hover:bg-blue-700 transition shrink-0 self-end">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -87,7 +152,18 @@
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
 
-        function logout() { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; }
+        // Block UI Elements if user is only Support
+        const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+        if (adminData.role === 'support') {
+            document.getElementById('navHome').style.display = 'none';
+            document.getElementById('navStores').style.display = 'none';
+            document.getElementById('navSettings').style.display = 'none';
+            // Also hide the global Search toggle if it exists
+            const searchBox = document.querySelector('.fa-search');
+            if (searchBox) searchBox.parentElement.style.display = 'none';
+        }
+
+        function logout() { localStorage.removeItem('adminToken'); localStorage.removeItem('adminData'); window.location.href = '/admin/login.html'; }
 
         async function adminApi(url, options = {}) {
             options.headers = {
@@ -102,121 +178,195 @@
         }
 
         let allTickets = [];
+        let activeTicketId = null;
+        let currentFilter = 'all';
 
-        async function loadTickets() {
+        async function loadTickets(silent = false) {
             try {
                 const res = await adminApi('/api/admin/tickets');
                 allTickets = res.tickets || [];
-                renderTickets(allTickets);
+
+                // Update Unread Badge Top Left Menu
+                const unreadCount = allTickets.filter(t => t.hasUnreadAdmin).length;
+                const badge = document.getElementById('unreadAdminCount');
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+
+                renderConversations();
+
+                if (activeTicketId) {
+                    const activeTicket = allTickets.find(t => t._id === activeTicketId);
+                    if (activeTicket) renderChat(activeTicket, silent);
+                }
             } catch (error) {
-                Swal.fire('خطأ', 'فشل تحميل التذاكر', 'error');
+                if (!silent) Swal.fire('خطأ', 'فشل تحميل التذاكر', 'error');
             }
         }
 
         function filterTickets(status) {
+            currentFilter = status;
+
             const btnAll = document.getElementById('btnFilterAll');
             const btnOpen = document.getElementById('btnFilterOpen');
             const btnAns = document.getElementById('btnFilterAns');
 
-            // Reset all to outline
-            btnAll.className = 'px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition';
-            btnOpen.className = 'px-4 py-2 bg-white text-yellow-600 border border-yellow-500 rounded-lg font-semibold hover:bg-yellow-50 transition';
-            btnAns.className = 'px-4 py-2 bg-white text-green-600 border border-green-500 rounded-lg font-semibold hover:bg-green-50 transition';
+            [btnAll, btnOpen, btnAns].forEach(b => {
+                b.className = 'flex-1 py-3 text-gray-500 hover:text-gray-700 font-semibold transition';
+            });
 
-            // Set active
-            if (status === 'all') btnAll.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition';
-            if (status === 'open') btnOpen.className = 'px-4 py-2 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition';
-            if (status === 'answered') btnAns.className = 'px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition';
-
-            if (status === 'all') {
-                renderTickets(allTickets);
-            } else {
-                renderTickets(allTickets.filter(t => t.status === status));
-            }
+            event.currentTarget.className = 'flex-1 py-3 text-blue-600 border-b-2 border-blue-600 font-bold transition';
+            renderConversations();
         }
 
-        function renderTickets(tickets) {
-            const container = document.getElementById('ticketsContainer');
-            if (tickets.length === 0) {
-                container.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-sm text-center border"><i class="fas fa-inbox text-4xl text-gray-300 mb-3"></i><p class="text-gray-500">لا توجد تذاكر في هذا التصنيف.</p></div>`;
+        function renderConversations() {
+            const list = document.getElementById('conversationList');
+            let filtered = allTickets;
+            if (currentFilter !== 'all') {
+                filtered = allTickets.filter(t => t.status === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="p-8 text-center text-gray-400"><p>لا توجد محادثات</p></div>`;
                 return;
             }
 
-            container.innerHTML = tickets.map(t => {
-                const date = new Date(t.createdAt).toLocaleString('ar-EG');
-                const user = t.userId || { fullName: 'مستخدم محذف', storeName: 'غير معروف', phone: '' };
+            list.innerHTML = filtered.map(t => {
+                const user = t.userId || { fullName: 'مستخدم محذف' };
+                const dt = new Date(t.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                const isActive = t._id === activeTicketId ? 'bg-blue-50' : 'bg-white hover:bg-gray-50';
 
-                let statusBadge = t.status === 'open'
-                    ? `<span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold border border-yellow-200"><i class="fas fa-clock mr-1"></i> تنتظر الرد</span>`
-                    : `<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold border border-green-200"><i class="fas fa-check mr-1"></i> تم الرد</span>`;
-
-                let replyArea = '';
-                if (t.status === 'open') {
-                    replyArea = `
-                        <div class="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <h4 class="font-bold text-gray-700 mb-2"><i class="fas fa-reply text-blue-500 mr-1"></i> كتابة رد</h4>
-                            <textarea id="reply-${t._id}" class="w-full text-gray-700 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" rows="3" placeholder="اكتب ردك هنا ليظهر للعميل..."></textarea>
-                            <div class="mt-2 text-left shrink-0 pb-1">
-                                <button class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold shadow-sm" onclick="sendReply('${t._id}')"><i class="fas fa-paper-plane mr-1"></i> إرسال الرد</button>
-                            </div>
-                        </div>
-                    `;
-                } else if (t.status === 'answered') {
-                    const repliedAt = new Date(t.repliedAt).toLocaleString('ar-EG');
-                    replyArea = `
-                        <div class="mt-4 bg-green-50 p-4 rounded-lg border-r-4 border-green-500 text-gray-800">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-green-700"><i class="fas fa-shield-alt mr-1"></i> رد الإدارة</span>
-                                <span class="text-xs text-gray-500">${repliedAt}</span>
-                            </div>
-                            <div class="leading-relaxed bg-white p-3 rounded border border-green-100">${t.adminReply}</div>
-                        </div>
-                    `;
+                // Determine last message snippet
+                let lastSnippet = t.message;
+                if (t.messages && t.messages.length > 0) {
+                    lastSnippet = t.messages[t.messages.length - 1].content;
                 }
+                if (lastSnippet.length > 35) lastSnippet = lastSnippet.substring(0, 35) + '...';
+
+                // Dot indicator for unread
+                const unreadDot = t.hasUnreadAdmin ? `<div class="w-2.5 h-2.5 bg-blue-500 rounded-full mt-1"></div>` : '';
 
                 return `
-                    <div class="ticket-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm relative">
-                        <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-4">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900 mb-1">${t.subject}</h3>
-                                <div class="flex gap-4 text-sm text-gray-500">
-                                    <span><i class="fas fa-user text-gray-400"></i> ${user.fullName} (${user.storeName})</span>
-                                    <span><i class="fas fa-phone text-gray-400"></i> <span dir="ltr">${user.phone || 'لا يوجد رقم'}</span></span>
-                                    <span><i class="fas fa-calendar-alt text-gray-400"></i> ${date}</span>
-                                </div>
-                            </div>
-                            <div>${statusBadge}</div>
+                    <div onclick="openChat('${t._id}')" class="p-4 border-b border-gray-100 cursor-pointer transition ${isActive}">
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-bold text-gray-900 truncate pr-2">${user.fullName}</h4>
+                            <span class="text-xs text-gray-500 whitespace-nowrap">${dt}</span>
                         </div>
-                        <div class="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-lg text-lg">
-                            ${t.message}
+                        <div class="flex justify-between items-center">
+                            <p class="text-sm text-gray-600 truncate opacity-90">${lastSnippet}</p>
+                            ${unreadDot}
                         </div>
-                        ${replyArea}
+                        <div class="mt-1 flex gap-2">
+                             <span class="text-[10px] bg-gray-200 px-2 py-0.5 rounded text-gray-700 border border-gray-300">${t.subject}</span>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
 
-        async function sendReply(ticketId) {
-            const replyText = document.getElementById(`reply-${ticketId}`).value.trim();
-            if (!replyText) {
-                Swal.fire('تنبيه', 'يجب كتابة الرد أولاً', 'warning');
-                return;
+        async function openChat(id) {
+            activeTicketId = id;
+            renderConversations(); // update active state instantly
+            const t = allTickets.find(x => x._id === id);
+
+            // Mark read if unread locally, then hit server to persist later (or rely on next poll)
+            t.hasUnreadAdmin = false;
+
+            // Header UI
+            const user = t.userId || { fullName: 'مستخدم محذف', storeName: '' };
+            document.getElementById('chatUserName').textContent = user.fullName;
+            document.getElementById('chatStoreName').textContent = user.storeName + " - " + t.subject;
+            document.getElementById('chatInputArea').classList.remove('hidden');
+
+            renderChat(t, false);
+        }
+
+        function renderChat(t, preventScroll) {
+            const container = document.getElementById('messagesArea');
+
+            const msgs = [];
+
+            // Modern Threads
+            if (t.messages && t.messages.length > 0) {
+                t.messages.forEach(m => msgs.push({ role: m.role, content: m.content, date: m.createdAt }));
+            } else {
+                // Fallback strictly for older tickets created before Phase 15
+                if (t.message) msgs.push({ role: 'user', content: t.message, date: t.createdAt });
+                if (t.adminReply) msgs.push({ role: 'admin', content: t.adminReply, date: t.repliedAt || t.updatedAt });
             }
 
+            let html = '';
+            msgs.forEach(m => {
+                const isMe = (m.role === 'admin' || m.role === 'support');
+                const bubbleColor = isMe ? 'bg-[#d9fdd3] text-gray-800' : 'bg-white text-gray-800 border border-gray-200 shadow-sm';
+                const align = isMe ? 'self-end' : 'self-start';
+                const tail = isMe ? 'rounded-tl-xl rounded-tr-none rounded-b-xl' : 'rounded-tr-xl rounded-tl-none rounded-b-xl';
+                const time = new Date(m.date).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+                html += `
+                    <div class="flex flex-col ${align} max-w-[75%] min-w-[120px]">
+                        <div class="${bubbleColor} ${tail} px-4 py-2 relative group whitespace-pre-wrap leading-relaxed">${m.content}
+                            <div class="text-[10px] text-gray-500 mt-1 flex justify-end gap-1 items-center" dir="ltr">
+                                ${time} ${isMe ? '<i class="fas fa-check-double text-blue-400"></i>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const wasAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            container.innerHTML = `<div class="flex flex-col gap-3 py-4 w-full px-2 lg:px-12">${html}</div>`;
+
+            if (!preventScroll || wasAtBottom) {
+                setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+            }
+        }
+
+        async function sendReply() {
+            const input = document.getElementById('replyMessage');
+            const replyText = input.value.trim();
+            if (!replyText || !activeTicketId) return;
+
+            input.value = '';
+            input.style.height = '';
+
+            // Optimistic UI updates
+            const ticket = allTickets.find(t => t._id === activeTicketId);
+            if (ticket.messages) {
+                ticket.messages.push({ role: 'admin', content: replyText, createdAt: new Date() });
+            } else {
+                ticket.adminReply = replyText;
+            }
+            ticket.hasUnreadAdmin = false;
+            renderChat(ticket, false);
+            renderConversations();
+
             try {
-                const res = await adminApi(`/api/admin/tickets/${ticketId}/reply`, {
+                await adminApi(`/api/admin/tickets/${activeTicketId}/reply`, {
                     method: 'POST',
                     body: JSON.stringify({ reply: replyText })
                 });
-
-                Swal.fire('تم الإرسال', 'تم إرسال ردك للعميل بنجاح.', 'success');
-                loadTickets();
+                loadTickets(true);
             } catch (error) {
                 Swal.fire('خطأ', error.message || 'فشل إرسال الرد', 'error');
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadTickets);
+        // Enter key to send (Shift+Enter for newline)
+        document.getElementById('replyMessage').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendReply();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTickets();
+            setInterval(() => loadTickets(true), 5000); // Poll every 5 seconds
+        });
     </script>
 </body>
 
