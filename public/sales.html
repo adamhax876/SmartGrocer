@@ -279,7 +279,7 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="/images/logo.png" style="width: 100%; max-height: 100px; object-fit: contain;" alt="Logo">
-                
+
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
@@ -431,7 +431,7 @@
                         <td style="font-family: monospace; color: var(--text-secondary);">#${sale._id.substring(18)}</td>
                         <td>${d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')} - ${d.toLocaleTimeString()}</td>
                         <td>${itemsCount}</td>
-                        <td style="color: var(--primary); font-weight: bold;">${sale.totalAmount.toFixed(2)}</td>
+                        <td style="color: var(--primary); font-weight: bold;">${sale.total.toFixed(2)}</td>
                         <td><span class="badge badge-success">${sale.paymentMethod === 'cash' ? 'نقدي' : sale.paymentMethod}</span></td>
                         <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;" onclick="showDetails('${saleStr}')">استعراض</button></td>
                     </tr>
@@ -457,7 +457,7 @@
             rData.innerHTML += `
                 <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: var(--primary);">
                     <span>الإجمالي</span>
-                    <span>${sale.totalAmount.toFixed(2)}</span>
+                    <span>${sale.total.toFixed(2)}</span>
                 </div>
             `;
             document.getElementById('detailsModal').classList.add('active');

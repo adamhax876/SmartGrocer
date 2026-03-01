@@ -218,7 +218,7 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="/images/logo.png" style="width: 100%; max-height: 100px; object-fit: contain;" alt="Logo">
-                
+
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
@@ -384,15 +384,15 @@
 
                 // Process Sales History
                 sales.forEach(sale => {
-                    totalRevenue += sale.totalAmount;
+                    totalRevenue += sale.total;
                     const dateStr = sale.createdAt.split('T')[0];
                     if (!dailyStats[dateStr]) dailyStats[dateStr] = { revenue: 0, cost: 0, profit: 0 };
-                    dailyStats[dateStr].revenue += sale.totalAmount;
+                    dailyStats[dateStr].revenue += sale.total;
 
                     sale.items.forEach(item => {
                         // Find original product to get Cost
-                        const prod = products.find(p => p._id === (item.product ? item.product._id : item.product));
-                        const itemCost = prod ? prod.cost : (item.price * 0.7); // Guess 70% cost if deleted
+                        const prod = products.find(p => p._id === (item.productId || (item.product ? item.product._id : item.product)));
+                        const itemCost = prod ? prod.costPrice : (item.price * 0.7); // Guess 70% cost if deleted
                         const itemProfit = (item.price - itemCost) * item.quantity;
                         const cat = prod ? prod.category : 'other';
                         const pName = prod ? prod.name : 'Unknown';
