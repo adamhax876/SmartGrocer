@@ -158,9 +158,15 @@ Format it nicely with emojis, <strong> tags for numbers, and unordered lists for
         const { sendAIReportEmail } = require('../utils/email');
         const subject = isAr ? '📊 تقريرك التحليلي الذكي من SmartGrocer' : '📊 Your SmartGrocer AI Analysis Report';
 
-        await sendAIReportEmail(user.email, subject, analysisHtml);
+        // Attempt to send email, but don't crash if Brevo account is unactivated
+        try {
+            await sendAIReportEmail(user.email, subject, analysisHtml);
+        } catch (emailErr) {
+            console.warn("[EMAIL WARNING] AI Report generated but email failed to send:", emailErr.message);
+        }
 
-        res.json({ message: 'AI Report sent successfully' });
+        // Always return the generated HTML back to the frontend so the user can see it immediately
+        res.json({ message: 'AI Report generated successfully', reportHtml: analysisHtml });
     } catch (error) {
         console.error("[AI ANALYSIS ERROR]:", error);
         require('fs').writeFileSync('ai_error.log', error.stack || error.message);

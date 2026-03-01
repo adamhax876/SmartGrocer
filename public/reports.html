@@ -511,17 +511,20 @@
             btn.disabled = true;
 
             try {
-                // Assuming backend route to trigger AI report immediately
-                await api('/api/reports/ai-analysis', {
+                // Trigger AI report immediately
+                const res = await api('/api/reports/ai-analysis', {
                     method: 'POST',
                     body: JSON.stringify({ lang: currentLang })
                 });
 
+                // Display the generated AI report directly on the screen
                 Swal.fire({
                     icon: 'success',
-                    title: currentLang === 'ar' ? 'تم الانتهاء بنجاح!' : 'Analysis Complete!',
-                    text: currentLang === 'ar' ? 'تم إرسال التقرير التحليلي بالتفصيل إلى بريدك الإلكتروني.' : 'The detailed analytical report has been sent to your email.',
-                    confirmButtonColor: '#10b981'
+                    title: currentLang === 'ar' ? 'اكتمل التحليل ببراعة!' : 'Analysis Complete!',
+                    html: res.reportHtml || (currentLang === 'ar' ? 'تم إنشاء التقرير.' : 'Report generated.'),
+                    width: '600px',
+                    confirmButtonColor: '#10b981',
+                    confirmButtonText: currentLang === 'ar' ? 'حسناً' : 'OK'
                 });
             } catch (error) {
                 Swal.fire({
