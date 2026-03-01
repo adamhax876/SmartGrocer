@@ -14,9 +14,9 @@ cron.schedule('0 2 * * *', async () => {
             fs.mkdirSync(backupsDir);
         }
 
-        // Find all active Pro users
+        // Find all active Pro and Free Trial users
         const proUsers = await User.find({
-            subscriptionPlan: 'Pro Plan',
+            subscriptionPlan: { $in: ['Pro Plan', 'Free Trial'] },
             subscriptionEndDate: { $gt: new Date() } // Active only
         });
 

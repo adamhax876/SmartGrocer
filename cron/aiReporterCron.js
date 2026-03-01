@@ -8,9 +8,9 @@ const { sendEmailViaAPI } = require('../utils/email');
 cron.schedule('0 8 * * 1', async () => {
     console.log('🤖 Starting AI Business Reporter Cron Job...');
     try {
-        // Find Pro users
+        // Find active Pro and Free Trial users
         const proUsers = await User.find({
-            subscriptionPlan: 'Pro Plan',
+            subscriptionPlan: { $in: ['Pro Plan', 'Free Trial'] },
             subscriptionEndDate: { $gt: new Date() } // Active only
         });
 
