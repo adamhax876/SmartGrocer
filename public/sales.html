@@ -433,14 +433,15 @@
                         <td>${itemsCount}</td>
                         <td style="color: var(--primary); font-weight: bold;">${sale.total.toFixed(2)}</td>
                         <td><span class="badge badge-success">${sale.paymentMethod === 'cash' ? 'نقدي' : sale.paymentMethod}</span></td>
-                        <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;" onclick="showDetails('${saleStr}')">استعراض</button></td>
+                        <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;" onclick="showDetails('${sale._id}')">استعراض</button></td>
                     </tr>
                 `;
             }).join('');
         }
 
-        window.showDetails = function (saleObjStr) {
-            const sale = JSON.parse(saleObjStr);
+        window.showDetails = function (saleId) {
+            const sale = allSales.find(s => s._id === saleId);
+            if (!sale) return;
             const rData = document.getElementById('modalItems');
             document.getElementById('modalTitle').textContent = `الفاتورة #${sale._id.substring(18)}`;
 

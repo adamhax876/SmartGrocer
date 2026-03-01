@@ -54,7 +54,7 @@ router.post('/', enforceLimits('sales'), async (req, res) => {
         const plan = req.user.subscriptionPlan || 'Free Trial';
         let customer = null;
 
-        if (plan === 'Pro Plan' && customerPhone) {
+        if ((plan === 'Pro Plan' || plan === 'Free Trial') && customerPhone) {
             customer = await Customer.findOne({ userId: req.user._id, phone: customerPhone });
             if (!customer) {
                 customer = new Customer({

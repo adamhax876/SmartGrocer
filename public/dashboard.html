@@ -371,7 +371,7 @@
                     }
 
                     if (planText === 'Free Trial') {
-                        const daysLeft = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24));
+                        const daysLeft = Math.floor((endDate - new Date()) / (1000 * 60 * 60 * 24));
                         planText = currentLang === 'ar' ? `تجربة مجانية (${daysLeft > 0 ? daysLeft : 0} يوم)` : `Free Trial (${daysLeft > 0 ? daysLeft : 0} days left)`;
                         planBadge.style.background = '#fef3c7';
                         planBadge.style.color = '#92400e';
