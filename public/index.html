@@ -427,7 +427,7 @@
     document.body.className = savedTheme;
 
     // Handle authenticated state & pricing buttons
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const freeBtn = document.querySelector('a[data-i18n="btn_start_free"]');
       const basicBtn = document.querySelector('a[data-i18n="btn_sub_basic"]');
       const proBtn = document.querySelector('a[data-i18n="btn_sub_pro"]');
@@ -457,10 +457,14 @@
           translations.en.hero_btn_dashboard = "Go to Dashboard";
         }
 
-        const userObjStr = localStorage.getItem('sg_user');
-        if (userObjStr) {
-          try {
-            const user = JSON.parse(userObjStr);
+        try {
+          // Fetch fresh user data from server instead of stale localStorage
+          const res = await api('/api/auth/me');
+          if (res.user) {
+            const user = res.user;
+            // Update localStorage with fresh data for other pages
+            localStorage.setItem('sg_user', JSON.stringify(user));
+
             const plan = user.subscriptionPlan || 'Free Trial';
             const endDate = user.subscriptionEndDate ? new Date(user.subscriptionEndDate) : new Date();
             const isActive = endDate > new Date();
@@ -482,6 +486,8 @@
                 btn.style.borderColor = 'var(--border)';
                 btn.style.pointerEvents = 'none';
                 btn.style.boxShadow = 'none';
+                // Force disable the link completely
+                btn.onclick = (e) => e.preventDefault();
               }
             };
 
@@ -509,7 +515,9 @@
               if (basicBtn) basicBtn.style.display = 'none';
               if (proBtn) applyCurrentPlanStyle(proBtn, !isActive);
             }
-          } catch (e) { console.error(e); }
+          }
+        } catch (e) {
+          console.error("Failed to fetch latest user details:", e);
         }
         updateTexts();
       }
