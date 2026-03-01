@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGrocer — إنشاء حساب الدعم الفني</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cairo:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #09090b;
+            color: #f8fafc;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Premium Animated Background */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 85% 50%, rgba(79, 70, 229, 0.15), transparent 30%),
+                radial-gradient(circle at 15% 30%, rgba(16, 185, 129, 0.15), transparent 30%);
+            z-index: 0;
+            filter: blur(40px);
+            animation: pulseBg 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            margin: 2rem;
+            padding: 3rem;
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: #cbd5e1;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-logo"><i class="fas fa-headset"
+                    style="font-family: 'Font Awesome 6 Free'; font-weight: 900;"></i></div>
+            <h1>SmartGrocer الدعم الفني</h1>
+            <p>سجّل بياناتك لتفعيل حساب الدعم الخاص بك</p>
+        </div>
+
+        <div id="errorBox" class="error-message"></div>
+
+        <form id="supportRegisterForm">
+            <div class="form-group">
+                <label class="form-label">الاسم بالكامل</label>
+                <input type="text" id="fullName" class="form-input" required placeholder="محمد أحمد">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">رقم الهاتف المتصل بواتساب</label>
+                <input type="text" id="phone" class="form-input" required placeholder="010XXXXXXXX" dir="ltr">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" id="password" class="form-input" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">إنشاء وتفعيل الحساب</button>
+        </form>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            document.getElementById('errorBox').textContent = 'رابط الدعوة غير صالح أو مفقود. تواصل مع الإدارة العليا.';
+            document.getElementById('errorBox').style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').style.opacity = '0.5';
+        }
+
+        document.getElementById('supportRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const ogText = btn.textContent;
+
+            btn.disabled = true;
+            btn.textContent = 'جاري الإنشاء...';
+            document.getElementById('errorBox').style.display = 'none';
+
+            const payload = {
+                token,
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const res = await fetch('/api/auth/register-support', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    btn.textContent = 'تم تفعيل الحساب بنجاح!';
+                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+
+                    // Auto Login support staff
+                    localStorage.setItem('sg_token', data.token);
+                    localStorage.setItem('sg_user', JSON.stringify(data.user));
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('adminData', JSON.stringify(data.user));
+
+                    setTimeout(() => {
+                        window.location.href = '/admin/tickets.html';
+                    }, 1500);
+                } else {
+                    document.getElementById('errorBox').textContent = data.message || 'فشل التفعيل';
+                    document.getElementById('errorBox').style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = ogText;
+                }
+            } catch (err) {
+                document.getElementById('errorBox').textContent = 'خطأ في الاتصال بالسيرفر';
+                document.getElementById('errorBox').style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = ogText;
+            }
+        });
+    </script>
+</body>
+
+</html>

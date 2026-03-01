@@ -316,4 +316,28 @@ function buildSubscriptionActivatedHTML(fullName, planName, startDate, endDate, 
 </table></td></tr></table></body></html>`;
 }
 
-module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback };
+async function sendSupportInviteEmail(toEmail, inviteLink) {
+  const subject = "دعوة للانضمام إلى فريق الدعم الفني - SmartGrocer";
+  const textContent = `You have been invited to join the SmartGrocer Tech Support Team. Click this link to register: ${inviteLink}`;
+  const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:40px 16px;">
+<tr><td align="center">
+<table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#4f46e5,#3b82f6);padding:30px 40px;text-align:center;">
+<h1 style="color:#fff;font-size:24px;font-weight:bold;margin:0;">دعوة للانضمام لفريق الدعم</h1>
+</td></tr>
+<tr><td style="padding:40px;text-align:right;" dir="rtl">
+<p style="color:#374151;font-size:16px;margin:0 0 16px;">مرحباً بك،</p>
+<p style="color:#4b5563;font-size:15px;line-height:1.65;margin:0 0 24px;">لقد تمت دعوتك للعمل كعضو في فريق <strong>الدعم الفني</strong> لنظام SmartGrocer. يرجى النقر على الرابط أدناه لإنشاء حسابك وتفعيل الصلاحية الخاصة بك.</p>
+<div style="text-align:center;margin-top:24px;margin-bottom:24px;">
+<a href="${inviteLink}" style="background:linear-gradient(135deg,#4f46e5,#3b82f6);color:#fff;padding:15px 40px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">إنشاء حساب الدعم الفني</a>
+</div>
+<p style="color:#9ca3af;font-size:13px;line-height:1.5;">هذا الرابط صالح لمدة 48 ساعة فقط.</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+  return sendEmailWithFallback(toEmail, "Tech Support", subject, htmlContent, textContent);
+}
+
+module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback, sendSupportInviteEmail };

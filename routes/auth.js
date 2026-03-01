@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Invite = require('../models/Invite');
 const auth = require('../middleware/auth');
 const crypto = require('crypto');
 const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/email');
@@ -190,6 +191,47 @@ router.post('/verify', async (req, res) => {
             }
         });
     } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+    }
+});
+
+// POST /api/auth/register-support
+router.post('/register-support', async (req, res) => {
+    try {
+        const { token, fullName, password, phone } = req.body;
+
+        if (!token || !fullName || !password || !phone) {
+            return res.status(400).json({ message: 'الرجاء إدخال جميع الحقول المطلوبة' });
+        }
+
+        const invite = await Invite.findOne({ token, expiresAt: { $gt: new Date() } });
+        if (!invite) return res.status(400).json({ message: 'رابط الدعوة غير صالح أو منتهي الصلاحية' });
+
+        const existingUser = await User.findOne({ email: invite.email });
+        if (existingUser) return res.status(400).json({ message: 'البريد الإلكتروني مسجل بالفعل' });
+
+        const user = new User({
+            fullName,
+            email: invite.email,
+            password,
+            phone,
+            storeName: 'فريق الدعم الفني',
+            role: 'support',
+            isVerified: true
+        });
+
+        await user.save();
+        await Invite.deleteOne({ _id: invite._id });
+
+        const jwtToken = generateToken(user._id);
+
+        res.status(201).json({
+            message: 'تم إنشاء حساب الدعم الفني بنجاح',
+            token: jwtToken,
+            user: { _id: user._id, fullName: user.fullName, email: user.email, role: user.role }
+        });
+    } catch (error) {
+        console.error('Support Register Error:', error);
         res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
     }
 });

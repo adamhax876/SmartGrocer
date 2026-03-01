@@ -85,6 +85,10 @@
             <div class="flex items-center gap-4">
                 <button onclick="toggleAdminLang()" id="adminLangBtn"
                     class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition border">English</button>
+                <button onclick="inviteSupportModal()"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                    <i class="fas fa-headset"></i> دعوة فريق دعم
+                </button>
                 <button onclick="openMessageModal('all')"
                     class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
                     <i class="fas fa-paper-plane"></i> إرسال إشعار للجميع
@@ -310,9 +314,6 @@
                         </span>
                     </td>
                     <td class="px-4 py-4 flex justify-center gap-2">
-                        <button onclick="toggleSupportRole('${user._id}', '${user.role}')" class="px-3 py-1 ${user.role === 'support' ? 'bg-indigo-600 text-white hover:bg-indigo-700 border border-indigo-700' : 'bg-indigo-50 text-indigo-500 border border-indigo-200 hover:bg-indigo-100'} rounded text-xs transition-colors" title="${user.role === 'support' ? 'إزالة من الدعم الفني' : 'تعيين في فريق الدعم'}">
-                            <i class="fas fa-headset"></i>
-                        </button>
                         <button onclick="assignSubscriptionModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs" title="تفعيل / تجديد الباقة">
                             <i class="fas fa-crown"></i>
                         </button>
@@ -403,36 +404,35 @@
             }
         }
 
-        async function toggleSupportRole(id, currentRole) {
-            const newRole = currentRole === 'support' ? 'store_owner' : 'support';
-            const actionText = newRole === 'support' ? 'تعيين هذا المستخدم كعضو في فريق الدعم الفني؟' : 'إزالة هذا المستخدم من فريق الدعم الفني وإعادته كعميل؟';
-
-            const confirmed = await Swal.fire({
-                title: 'تأكيد تغيير الصلاحية',
-                text: actionText,
-                icon: 'question',
+        async function inviteSupportModal() {
+            const { value: email } = await Swal.fire({
+                title: 'دعوة عضو لدعم فني',
+                input: 'email',
+                inputLabel: 'البريد الإلكتروني',
+                inputPlaceholder: 'support@example.com',
                 showCancelButton: true,
-                confirmButtonColor: '#4f46e5',
-                cancelButtonColor: '#9ca3af',
-                confirmButtonText: 'نعم، قم بالتأكيد',
-                cancelButtonText: 'إلغاء'
+                confirmButtonText: 'إرسال دعوة',
+                cancelButtonText: 'إلغاء',
+                inputValidator: (value) => {
+                    if (!value) return 'يجب إدخال بريد إلكتروني!'
+                }
             });
 
-            if (confirmed.isConfirmed) {
+            if (email) {
                 try {
-                    const res = await fetch(`/api/admin/users/${id}/role`, {
-                        method: 'PATCH',
+                    Swal.fire({ title: 'جاري الإرسال...', didOpen: () => { Swal.showLoading() } });
+                    const res = await fetch('/api/admin/invite-support', {
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ role: newRole })
+                        body: JSON.stringify({ email })
                     });
                     const data = await res.json();
 
                     if (data.success) {
-                        Swal.fire({ title: 'تم', text: data.message, icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
-                        fetchUsers();
+                        Swal.fire({ title: 'تمت الدعوة', text: data.message, icon: 'success' });
                     } else {
                         Swal.fire('خطأ', data.message, 'error');
                     }

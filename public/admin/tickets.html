@@ -83,12 +83,23 @@
         </div>
     </main>
 
-    <script src="/js/admin.js"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
 
         function logout() { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; }
+
+        async function adminApi(url, options = {}) {
+            options.headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+            const res = await fetch(url, options);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Server error');
+            return data;
+        }
 
         let allTickets = [];
 

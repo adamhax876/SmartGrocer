@@ -380,11 +380,18 @@
 
         if (!res.ok) throw new Error(data.message || translations[currentLang].err_login);
 
+        // Set user tokens
         localStorage.setItem('sg_token', data.token);
         localStorage.setItem('sg_user', JSON.stringify(data.user));
 
         if (data.user.role === 'admin') {
+          localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('adminData', JSON.stringify(data.user));
           window.location.href = '/admin/dashboard.html';
+        } else if (data.user.role === 'support') {
+          localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('adminData', JSON.stringify(data.user));
+          window.location.href = '/admin/tickets.html';
         } else {
           window.location.href = '/dashboard.html';
         }

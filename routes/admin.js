@@ -6,7 +6,10 @@ const Plan = require('../models/Plan');
 const Setting = require('../models/Setting');
 const Subscription = require('../models/Subscription');
 const Ticket = require('../models/Ticket');
+const Invite = require('../models/Invite');
+const crypto = require('crypto');
 const { clearSettingsCache } = require('../utils/settings');
+const { sendSupportInviteEmail } = require('../utils/email');
 
 // =====================================
 // Admin Endpoints
@@ -315,6 +318,44 @@ router.post('/tickets/:id/reply', isAdmin, async (req, res) => {
         res.json({ success: true, message: 'تم إرسال الرد بنجاح', ticket });
     } catch (error) {
         console.error('Ticket Reply Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
+// 16. Invite Support Member
+router.post('/invite-support', isAdmin, async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ success: false, message: 'Email required' });
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ success: false, message: 'المستخدم موجود بالفعل' });
+
+        // Generate token
+        const token = crypto.randomBytes(32).toString('hex');
+
+        // Save invite (valid for 48 hours)
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 48);
+
+        await Invite.findOneAndUpdate(
+            { email },
+            { token, role: 'support', invitedBy: req.admin._id, expiresAt },
+            { upsert: true, new: true }
+        );
+
+        // Send email
+        const appUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+        const inviteLink = `${appUrl}/support-signup.html?token=${token}`;
+
+        sendSupportInviteEmail(email, inviteLink).catch(err => {
+            console.error('Failed to send invite email:', err);
+        });
+
+        res.json({ success: true, message: 'تم إرسال دعوة الدعم الفني بنجاح' });
+    } catch (error) {
+        console.error('Invite Error:', error);
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }
 });
