@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة التذاكر | SmartGrocer Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .ticket-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 1rem;
+        }
+
+        .ticket-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .badge-open {
+            background: #fef9c3;
+            color: #a16207;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .badge-answered {
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .ticket-body {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            white-space: pre-wrap;
+        }
+
+        .ticket-reply-box {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+            margin-top: 1rem;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .admin-response {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 1rem;
+            border-radius: 6px;
+            border-right: 4px solid #22c55e;
+            margin-top: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="logo-icon">🛒</span>
+                SmartGrocer <span style="color:var(--primary); font-size:0.8rem;">ADMIN</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-link"><i class="fas fa-chart-line"></i> نظرة عامة</a>
+                <a href="users.html" class="nav-link"><i class="fas fa-users"></i> إدارة المتاجر</a>
+                <a href="payments.html" class="nav-link"><i class="fas fa-credit-card"></i> طرق الدفع</a>
+                <a href="messages.html" class="nav-link"><i class="fas fa-bullhorn"></i> رسائل النظام</a>
+                <a href="tickets.html" class="nav-link active"><i class="fas fa-life-ring"></i> تذاكر الدعم</a>
+                <a href="settings.html" class="nav-link"><i class="fas fa-cogs"></i> الإعدادات</a>
+            </nav>
+            <button onclick="logoutAdmin()" class="btn btn-outline"
+                style="margin: 2rem 1rem; border-color: #ef4444; color: #ef4444; width: calc(100% - 2rem)">
+                <i class="fas fa-sign-out-alt"></i> خروج
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <h1 style="font-size: 1.5rem; color: #1f2937;">إدارة تذاكر الدعم الفني</h1>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="loadTickets()"><i class="fas fa-sync-alt"></i>
+                        تحديث</button>
+                </div>
+            </header>
+
+            <div class="filters">
+                <button class="btn btn-primary" onclick="filterTickets('all')" id="btnFilterAll">الكل</button>
+                <button class="btn btn-outline" onclick="filterTickets('open')" id="btnFilterOpen"
+                    style="border-color: #eab308; color: #a16207;">المفتوحة</button>
+                <button class="btn btn-outline" onclick="filterTickets('answered')" id="btnFilterAns"
+                    style="border-color: #22c55e; color: #166534;">المجاب عليها</button>
+            </div>
+
+            <div id="ticketsContainer">
+                <div style="text-align: center; padding: 3rem; color: #6b7280;">جاري تحميل التذاكر...</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/admin.js"></script>
+    <script>
+        let allTickets = [];
+
+        async function loadTickets() {
+            try {
+                const res = await adminApi('/api/admin/tickets');
+                allTickets = res.tickets || [];
+                renderTickets(allTickets);
+            } catch (error) {
+                Swal.fire('خطأ', 'فشل تحميل التذاكر', 'error');
+            }
+        }
+
+        function filterTickets(status) {
+            document.querySelectorAll('.filters .btn').forEach(b => {
+                b.className = 'btn btn-outline';
+                // Reset colors slightly
+                if (b.id === 'btnFilterOpen') { b.style.borderColor = '#eab308'; b.style.color = '#a16207'; }
+                if (b.id === 'btnFilterAns') { b.style.borderColor = '#22c55e'; b.style.color = '#166534'; }
+                if (b.id === 'btnFilterAll') { b.style.borderColor = '#ccc'; b.style.color = '#333'; }
+            });
+
+            const callerBtn = document.getElementById(status === 'all' ? 'btnFilterAll' : status === 'open' ? 'btnFilterOpen' : 'btnFilterAns');
+            callerBtn.className = 'btn btn-primary';
+            callerBtn.style.color = 'white';
+
+            if (status === 'all') {
+                renderTickets(allTickets);
+            } else {
+                renderTickets(allTickets.filter(t => t.status === status));
+            }
+        }
+
+        function renderTickets(tickets) {
+            const container = document.getElementById('ticketsContainer');
+            if (tickets.length === 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 3rem; color: #6b7280; background: white; border-radius: 8px;">لا توجد تذاكر في هذا التصنيف.</div>`;
+                return;
+            }
+
+            container.innerHTML = tickets.map(t => {
+                const date = new Date(t.createdAt).toLocaleString('ar-EG');
+                const user = t.userId || { fullName: 'مستخدم محذوف', storeName: 'متجر محذوف', phone: '' };
+
+                let replyArea = '';
+                if (t.status === 'open') {
+                    replyArea = `
+                        <div class="ticket-reply-box">
+                            <h4 style="margin-bottom: 0.5rem; color: #1f2937;"><i class="fas fa-reply text-primary"></i> كتابة رد</h4>
+                            <textarea id="reply-${t._id}" class="reply-textarea" placeholder="اكتب ردك هنا ليظهر في لوحة العميل..."></textarea>
+                            <button class="btn btn-primary" onclick="sendReply('${t._id}')"><i class="fas fa-paper-plane"></i> إرسال الرد</button>
+                        </div>
+                    `;
+                } else if (t.status === 'answered') {
+                    const repliedAt = new Date(t.repliedAt).toLocaleString('ar-EG');
+                    replyArea = `
+                        <div class="admin-response">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #15803d; font-size: 0.9rem;">
+                                <strong><i class="fas fa-check-circle"></i> رديت على العميل</strong>
+                                <span>${repliedAt}</span>
+                            </div>
+                            <div style="color: #166534;">${t.adminReply}</div>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <div>
+                                <div class="ticket-title">${t.subject}</div>
+                                <div class="ticket-meta">
+                                    <span><i class="fas fa-user"></i> ${user.fullName} (${user.storeName})</span>
+                                    <span><i class="fas fa-phone"></i> ${user.phone || 'لا يوجد رقم'}</span>
+                                    <span><i class="fas fa-calendar"></i> ${date}</span>
+                                </div>
+                            </div>
+                            <span class="badge-${t.status}">${t.status === 'open' ? 'تنتظر الرد' : 'تم الرد'}</span>
+                        </div>
+                        <div class="ticket-body">${t.message}</div>
+                        ${replyArea}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function sendReply(ticketId) {
+            const replyText = document.getElementById(`reply-${ticketId}`).value.trim();
+            if (!replyText) {
+                Swal.fire('تنبيه', 'يجب كتابة الرد أولاً', 'warning');
+                return;
+            }
+
+            try {
+                const res = await adminApi(`/api/admin/tickets/${ticketId}/reply`, {
+                    method: 'POST',
+                    body: JSON.stringify({ reply: replyText })
+                });
+
+                Swal.fire('تم الإرسال', 'تم إرسال ردك للعميل بنجاح.', 'success');
+                loadTickets();
+            } catch (error) {
+                Swal.fire('خطأ', error.message || 'فشل إرسال الرد', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!getAdminToken()) window.location.href = '/admin/login.html';
+            else loadTickets();
+        });
+    </script>
+</body>
+
+</html>

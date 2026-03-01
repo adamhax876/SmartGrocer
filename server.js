@@ -73,6 +73,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/subscription', require('./routes/subscription'));
+app.use('/api/support', require('./routes/support'));
 
 // Serve frontend for any non-API route
 app.get('*', (req, res) => {

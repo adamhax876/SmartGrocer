@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Plan = require('../models/Plan');
 const Setting = require('../models/Setting');
 const Subscription = require('../models/Subscription');
+const Ticket = require('../models/Ticket');
 const { clearSettingsCache } = require('../utils/settings');
 
 // =====================================
@@ -246,6 +247,50 @@ router.post('/users/:id/assign-subscription', isAdmin, async (req, res) => {
         res.json({ success: true, message: `Subscription assigned: ${planName}`, data: user });
     } catch (error) {
         console.error('Assign Subscription Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
+// =====================================
+// Support Tickets (Admin)
+// =====================================
+
+// 14. Get All Tickets
+router.get('/tickets', isAdmin, async (req, res) => {
+    try {
+        const { status } = req.query;
+        let query = {};
+        if (status) query.status = status;
+
+        const tickets = await Ticket.find(query)
+            .populate('userId', 'fullName email storeName phone')
+            .sort({ status: 1, createdAt: -1 });
+
+        res.json({ success: true, tickets });
+    } catch (error) {
+        console.error('Admin Tickets Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
+// 15. Reply to Ticket
+router.post('/tickets/:id/reply', isAdmin, async (req, res) => {
+    try {
+        const { reply } = req.body;
+        const ticket = await Ticket.findById(req.params.id);
+
+        if (!ticket) {
+            return res.status(404).json({ success: false, message: 'التذكرة غير موجودة' });
+        }
+
+        ticket.adminReply = reply;
+        ticket.status = 'answered';
+        ticket.repliedAt = new Date();
+        await ticket.save();
+
+        res.json({ success: true, message: 'تم إرسال الرد بنجاح', ticket });
+    } catch (error) {
+        console.error('Ticket Reply Error:', error);
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }
 });
