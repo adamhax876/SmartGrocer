@@ -339,6 +339,16 @@ router.post('/tickets/:id/reply', isAdmin, async (req, res) => {
     }
 });
 
+// 15.5 Mark Ticket as Read (Admin)
+router.put('/tickets/:id/read', isAdmin, async (req, res) => {
+    try {
+        await Ticket.findByIdAndUpdate(req.params.id, { hasUnreadAdmin: false });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
 // 16. Invite Support Member
 router.post('/invite-support', isAdmin, async (req, res) => {
     try {

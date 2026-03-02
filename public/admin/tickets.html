@@ -30,47 +30,47 @@
     <!-- Sidebar -->
     <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
-            <h2 class="text-xl font-bold p-6 border-b border-gray-800 flex items-center gap-2">
+            <h2 class="text-xl font-bold flex items-center gap-2">
                 <i class="fas fa-bolt text-yellow-400"></i> SmartGrocer SaaS
             </h2>
-            <nav class="p-4 space-y-2 flex-1 overflow-y-auto w-full">
-                <!-- Navigation Tabs - Assigned IDs for JS Targeting -->
-                <a href="/admin/dashboard.html" id="navHome"
-                    class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
-                    <div class="flex items-center gap-3"><i
-                            class="fas fa-chart-pie w-6 text-center group-hover:scale-110 transition"></i>
-                        <span>الرئيسية</span>
-                    </div>
-                </a>
-                <a href="/admin/users.html" id="navStores"
-                    class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
-                    <div class="flex items-center gap-3"><i
-                            class="fas fa-store w-6 text-center group-hover:scale-110 transition"></i> <span>المتاجر
-                            المشتركة</span></div>
-                </a>
+        </div>
+        <nav class="p-4 space-y-2 flex-1 overflow-y-auto">
+            <!-- Navigation Tabs -->
+            <a href="/admin/dashboard.html" id="navHome"
+                class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
+                <div class="flex items-center gap-3"><i
+                        class="fas fa-chart-pie w-6 text-center group-hover:scale-110 transition"></i>
+                    <span>الرئيسية</span>
+                </div>
+            </a>
+            <a href="/admin/users.html" id="navStores"
+                class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
+                <div class="flex items-center gap-3"><i
+                        class="fas fa-store w-6 text-center group-hover:scale-110 transition"></i> <span>المتاجر
+                        المشتركة</span></div>
+            </a>
 
-                <div class="h-px bg-gray-800 my-4 mx-4"></div>
+            <div class="h-px bg-gray-800 my-4 mx-4"></div>
 
-                <a href="/admin/plans.html" id="navSettings"
-                    class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
-                    <div class="flex items-center gap-3"><i
-                            class="fas fa-money-check-alt w-6 text-center group-hover:scale-110 transition"></i>
-                        <span>إعدادات النظام</span>
-                    </div>
-                </a>
-                <a href="/admin/tickets.html" id="navSupport"
-                    class="block px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/20 flex items-center justify-between group">
-                    <div class="flex items-center gap-3"><i
-                            class="fas fa-life-ring w-6 text-center group-hover:scale-110 transition"></i> <span>تذاكر
-                            الدعم</span>
-                    </div>
-                </a>
-            </nav>
-            <div class="p-4 border-t border-gray-800">
-                <button onclick="logout()"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
-                        class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
-            </div>
+            <a href="/admin/plans.html" id="navSettings"
+                class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
+                <div class="flex items-center gap-3"><i
+                        class="fas fa-money-check-alt w-6 text-center group-hover:scale-110 transition"></i>
+                    <span>إعدادات النظام</span>
+                </div>
+            </a>
+            <a href="/admin/tickets.html" id="navSupport"
+                class="block px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/20 flex items-center justify-between group">
+                <div class="flex items-center gap-3"><i
+                        class="fas fa-life-ring w-6 text-center group-hover:scale-110 transition"></i> <span>تذاكر
+                        الدعم</span>
+                </div>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-800">
+            <button onclick="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
+                    class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
         </div>
     </aside>
 
@@ -272,8 +272,18 @@
             renderConversations(); // update active state instantly
             const t = allTickets.find(x => x._id === id);
 
-            // Mark read if unread locally, then hit server to persist later (or rely on next poll)
-            t.hasUnreadAdmin = false;
+            // Mark read locally and persist to server
+            if (t.hasUnreadAdmin) {
+                t.hasUnreadAdmin = false;
+                try {
+                    await adminApi(`/api/admin/tickets/${id}/read`, { method: 'PUT' });
+                } catch (e) { /* silent */ }
+                // Update badge count
+                const unreadCount = allTickets.filter(x => x.hasUnreadAdmin).length;
+                const badge = document.getElementById('unreadAdminCount');
+                if (unreadCount > 0) { badge.textContent = unreadCount; badge.classList.remove('hidden'); }
+                else { badge.classList.add('hidden'); }
+            }
 
             // Header UI
             const user = t.userId || { fullName: 'مستخدم محذف', storeName: '' };
