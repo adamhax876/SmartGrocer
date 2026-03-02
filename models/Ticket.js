@@ -13,7 +13,7 @@ const ticketSchema = new mongoose.Schema({
     },
     message: { // Legacy
         type: String,
-        required: true
+        default: ''
     },
     status: {
         type: String,
