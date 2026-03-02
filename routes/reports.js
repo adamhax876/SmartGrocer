@@ -110,10 +110,6 @@ router.post('/ai-analysis', async (req, res) => {
         const user = req.user;
         const plan = user.subscriptionPlan || 'Free Trial';
 
-        if (plan !== 'Pro Plan' && plan !== 'Free Trial') {
-            return res.status(403).json({ message: 'This feature requires the Pro Plan or Free Trial.' });
-        }
-
         const now = new Date();
         const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
 
