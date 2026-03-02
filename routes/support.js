@@ -92,4 +92,17 @@ router.post('/:id/reply', async (req, res) => {
     }
 });
 
+// PUT /api/support/:id/read — mark ticket as read by user
+router.put('/:id/read', async (req, res) => {
+    try {
+        await Ticket.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user._id },
+            { hasUnreadUser: false }
+        );
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ' });
+    }
+});
+
 module.exports = router;

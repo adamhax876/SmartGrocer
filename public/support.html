@@ -372,7 +372,7 @@
                 }
             });
             const user = getUser();
-            if (user && document.getElementById('userGreeting')) document.getElementById('userGreeting').textContent = currentLang === 'ar' ? `مرحباً بك، ${user.storeName}` : `Welcome, ${user.storeName}`;
+            if (user && document.getElementById('userGreeting')) document.getElementById('userGreeting').textContent = currentLang === 'ar' ? `مرحباً بك، ${user.fullName}` : `Welcome, ${user.fullName}`;
         }
 
         function toggleLanguage() {
@@ -447,22 +447,36 @@
             }).join('');
         }
 
-        function openChat(id) {
+        async function openChat(id) {
             activeTicketId = id;
             document.getElementById('defaultWelcome').style.display = 'none';
             document.getElementById('newTicketForm').style.display = 'none';
             document.getElementById('activeChat').style.display = 'flex';
 
             const t = allTickets.find(x => x._id === id);
-            t.hasUnreadUser = false; // Optimistic clear
+
+            // Mark as read on server if unread
+            if (t.hasUnreadUser) {
+                t.hasUnreadUser = false;
+                try { await api(`/api/support/${id}/read`, { method: 'PUT' }); } catch(e) {}
+                // Also refresh the sidebar badge
+                if (typeof checkUnreadTickets === 'function') checkUnreadTickets();
+            }
 
             // Header UI
             document.getElementById('chatSubject').textContent = t.subject;
-            let statusText = t.status === 'open' ? (currentLang === 'en' ? 'Pending' : 'قيد الانتظار') : (currentLang === 'en' ? 'Answered' : 'تم الرد');
-            let color = t.status === 'open' ? '#ca8a04' : '#059669';
-            document.getElementById('chatStatusBadge').innerHTML = `<span style="color: ${color}; font-weight: bold;">${statusText}</span>`;
+            // Only show 'قيد الانتظار' when status is 'open' (admin hasn't replied)
+            if (t.status === 'open') {
+                let statusText = currentLang === 'en' ? 'Pending' : 'قيد الانتظار';
+                document.getElementById('chatStatusBadge').innerHTML = `<span style="color: #ca8a04; font-weight: bold;">${statusText}</span>`;
+            } else if (t.status === 'answered') {
+                let statusText = currentLang === 'en' ? 'Answered' : 'تم الرد';
+                document.getElementById('chatStatusBadge').innerHTML = `<span style="color: #059669; font-weight: bold;">${statusText}</span>`;
+            } else {
+                document.getElementById('chatStatusBadge').innerHTML = '';
+            }
 
-            // If Ticket closed/resolved, hide input? We can keep it open so users can reply.
+            // If Ticket closed/resolved, hide input
             document.getElementById('chatInputArea').style.display = t.status === 'closed' ? 'none' : 'flex';
 
             renderConversations();

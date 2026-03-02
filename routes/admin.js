@@ -332,6 +332,27 @@ router.post('/tickets/:id/reply', isAdmin, async (req, res) => {
             });
         }
 
+        // Send bell notification to user
+        try {
+            const Message = require('../models/Message');
+            const notifTitle = 'رد من الدعم الفني 🎧';
+            const notifContent = `تم الرد على تذكرتك "${ticket.subject}": ${reply.substring(0, 100)}${reply.length > 100 ? '...' : ''}`;
+            const newMsg = new Message({
+                sender: req.admin._id,
+                receiver: ticket.userId._id,
+                title: notifTitle,
+                content: notifContent,
+                isGlobal: false
+            });
+            await newMsg.save();
+
+            // Push via SSE realtime
+            const { sendRealtimeNotification } = require('../utils/sse');
+            sendRealtimeNotification(ticket.userId._id.toString(), newMsg);
+        } catch (notifErr) {
+            console.error('Failed to send bell notification:', notifErr);
+        }
+
         res.json({ success: true, message: 'تم إرسال الرد بنجاح', ticket });
     } catch (error) {
         console.error('Ticket Reply Error:', error);
