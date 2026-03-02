@@ -127,9 +127,9 @@ router.post('/ai-analysis', async (req, res) => {
 
         // Call Gemini API
         const { GoogleGenerativeAI } = require("@google/generative-ai");
-        // User provided API Key via chat
-        const genAI = new GoogleGenerativeAI("AIzaSyC-6RHfBBrIw-bsSgQG1MyjS1H4qWZqX9c");
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const apiKey = process.env.GEMINI_API_KEY || "AIzaSyC-6RHfBBrIw-bsSgQG1MyjS1H4qWZqX9c";
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const isAr = lang === 'ar';
         const prompt = `
