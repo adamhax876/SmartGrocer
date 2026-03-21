@@ -198,6 +198,78 @@ img { max-width: 100%; }
   max-width: 400px;
 }
 .toast-success { background: var(--primary); }
-.toast-error { background: var(--red); }
 .toast-info { background: var(--blue); }
 @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =============================================
+   MOBILE RESPONSIVENESS & FLEX-WRAP
+   ============================================= */
+@media screen and (max-width: 768px) {
+  /* Fix Main Layout */
+  .app { flex-direction: column; }
+  .main { margin-inline-start: 0 !important; width: 100%; }
+
+  /* Ensure Sidebar behaves gracefully if present */
+  .sidebar { 
+    position: fixed; 
+    transform: translateX(100%); 
+    z-index: 1000; 
+    box-shadow: var(--shadow-lg);
+  }
+  body.ltr .sidebar { transform: translateX(-100%); }
+  .sidebar.mobile-open { transform: translateX(0); }
+
+  /* Topbar wrap */
+  .topbar {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    height: auto;
+  }
+  .topbar > div, .topbar-actions {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start !important;
+  }
+
+  /* Content Padding Reduction */
+  .content { padding: 1rem; }
+
+  /* Force wrap on flex containers */
+  [style*="display: flex"] { flex-wrap: wrap; }
+  
+  /* Exclude specific flex components from breaking */
+  .btn, .badge, .lang-switch, .theme-toggle, .sidebar-logo, .sidebar-link, .icon {
+    flex-wrap: nowrap !important;
+  }
+
+  /* Convert all grids to 1 column */
+  .kpi-grid, .charts-grid, [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Table Horizontal Scrolling */
+  .table-wrapper, [style*="overflow-x: auto"] {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem !important;
+  }
+
+  /* Modal Mobile Fixes */
+  .modal-content {
+    width: 95% !important;
+    max-width: none !important;
+    margin: auto;
+    padding: 1.5rem !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .topbar-title { font-size: 1.1rem; }
+  .btn { width: 100%; justify-content: center; } /* Make buttons full width on tiny screens */
+  .theme-toggle, .lang-switch { width: auto; justify-content: center; }
+}
