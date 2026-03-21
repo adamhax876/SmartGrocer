@@ -6,8 +6,37 @@ const path = require('path');
 
 const app = express();
 
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const rateLimit = require('express-rate-limit');
+
+// Security Middleware
+app.set('trust proxy', 1); // Trust the first proxy to get real IP
+app.use(helmet()); // Set security headers
+app.use(mongoSanitize()); // Prevent NoSQL injection globally
+
+// Global Rate Limiting (100 requests per 15 minutes)
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { success: false, message: 'Too many requests, please try again later.' }
+});
+app.use(globalLimiter);
+
 // Middleware
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [process.env.APP_URL, 'http://localhost:3000'];
+app.use(cors({
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // or allowed origins.
+        if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS policy violation'));
+        }
+    },
+    credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 // Maintenance Mode Middleware MUST run before serving any files/APIs
 const maintenance = require('./middleware/maintenance');

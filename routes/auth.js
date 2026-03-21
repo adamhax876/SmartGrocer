@@ -6,6 +6,13 @@ const Invite = require('../models/Invite');
 const auth = require('../middleware/auth');
 const crypto = require('crypto');
 const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/email');
+const rateLimit = require('express-rate-limit');
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 requests per windowMs
+    message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes.' }
+});
 
 // Generate cryptographically secure token
 function generateResetToken() {
@@ -13,9 +20,9 @@ function generateResetToken() {
 }
 
 // POST /api/auth/forgot-password
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', authLimiter, async (req, res) => {
     try {
-        const { email } = req.body;
+        const email = String(req.body.email);
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -38,7 +45,8 @@ router.post('/forgot-password', async (req, res) => {
 
         res.json({ success: true, message: 'If the email is registered, a reset link was sent.' });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'حدث خطأ في الخادم', error: error.message });
+        console.error('Forgot Password Error:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -63,7 +71,8 @@ router.post('/reset-password', async (req, res) => {
 
         res.json({ success: true, message: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول' });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'حدث خطأ في الخادم', error: error.message });
+        console.error('Reset Password Error:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
@@ -82,9 +91,10 @@ function generateCode() {
 }
 
 // POST /api/auth/signup
-router.post('/signup', async (req, res) => {
+router.post('/signup', authLimiter, async (req, res) => {
     try {
-        const { storeName, storeType, fullName, email, password, country, language } = req.body;
+        const { storeName, storeType, fullName, password, country, language } = req.body;
+        const email = String(req.body.email);
         console.log('📝 Signup attempt:', email);
 
         // Check if user already exists
@@ -133,7 +143,7 @@ router.post('/signup', async (req, res) => {
         return;
     } catch (error) {
         console.error('❌ SIGNUP ERROR:', error.message);
-        return res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
@@ -145,7 +155,7 @@ router.delete('/dev/clear-users', async (req, res) => {
 });
 
 // POST /api/auth/verify
-router.post('/verify', async (req, res) => {
+router.post('/verify', authLimiter, async (req, res) => {
     try {
         const { userId, code } = req.body;
 
@@ -191,7 +201,8 @@ router.post('/verify', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+        console.error('Verify Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
@@ -237,9 +248,10 @@ router.post('/register-support', async (req, res) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { password } = req.body;
+        const email = String(req.body.email);
 
         // Find user
         const user = await User.findOne({ email });
@@ -302,7 +314,8 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'حدث خطأ في الخادم', error: error.message });
+        console.error('Login Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
@@ -322,7 +335,8 @@ router.put('/settings', auth, async (req, res) => {
         const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password');
         res.json({ user });
     } catch (error) {
-        res.status(500).json({ message: 'حدث خطأ', error: error.message });
+        console.error('Settings Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 

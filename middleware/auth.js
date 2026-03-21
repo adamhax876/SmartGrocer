@@ -27,8 +27,7 @@ module.exports = async function (req, res, next) {
         req.user = user;
 
         // Async IP Tracking
-        const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
-        let cleanIp = clientIp ? clientIp.split(',')[0].trim() : '';
+        let cleanIp = req.ip || '';
 
         // Format localhost IPs to be more user-friendly
         if (cleanIp === '::1' || cleanIp === '::ffff:127.0.0.1') {
