@@ -21,6 +21,7 @@ app.use(mongoSanitize()); // Prevent NoSQL injection globally
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
+    skip: (req, res) => process.env.DISABLE_RATE_LIMIT === 'true',
     message: { success: false, message: 'Too many requests, please try again later.' }
 });
 app.use(globalLimiter);
