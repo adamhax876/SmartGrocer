@@ -171,4 +171,54 @@ Format it nicely with emojis, <strong> tags for numbers, and unordered lists for
     }
 });
 
+// GET /api/reports/export-excel
+router.get('/export-excel', async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const XLSX = require('xlsx');
+
+        // Fetch user data
+        const sales = await Sale.find({ userId }).populate('items.productId');
+        const products = await Product.find({ userId });
+
+        // Build Sales Worksheet
+        const salesData = sales.map(s => ({
+            'Invoice ID': s._id.toString(),
+            'Date': s.createdAt.toLocaleDateString(),
+            'Total Amount': s.total,
+            'Payment Method': s.paymentMethod,
+            'Status': s.status
+        }));
+        
+        // Build Products Worksheet
+        const inventoryData = products.map(p => ({
+            'Barcode': p.barcode || 'N/A',
+            'Name': p.name,
+            'Category': p.category,
+            'Price': p.price,
+            'Cost': p.costPrice,
+            'Stock': p.quantity
+        }));
+
+        const wb = XLSX.utils.book_new();
+        
+        const wsSales = XLSX.utils.json_to_sheet(salesData.length ? salesData : [{ 'Notice': 'No Sales Found' }]);
+        XLSX.utils.book_append_sheet(wb, wsSales, "Sales");
+        
+        const wsInventory = XLSX.utils.json_to_sheet(inventoryData.length ? inventoryData : [{ 'Notice': 'No Products Found' }]);
+        XLSX.utils.book_append_sheet(wb, wsInventory, "Inventory");
+
+        const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename="report.xlsx"');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        
+        res.send(buf);
+
+    } catch (error) {
+        console.error("Excel Export Error:", error);
+        res.status(500).json({ message: 'فشل تصدير التقرير' });
+    }
+});
+
 module.exports = router;

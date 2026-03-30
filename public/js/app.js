@@ -53,6 +53,19 @@ function getUser() {
 function setUser(user) { localStorage.setItem('sg_user', JSON.stringify(user)); }
 function removeUser() { localStorage.removeItem('sg_user'); }
 
+// Sidebar Toggle for Mobile
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.toggle('open');
+    }
+    if (overlay) {
+        overlay.classList.toggle('active');
+    }
+}
+
 function logout() {
     removeToken(); removeUser();
     window.location.href = '/login.html';

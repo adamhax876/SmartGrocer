@@ -1,0 +1,59 @@
+# Gemini Deployment Context
+
+هذا الملف يحتوي على سياق متكامل لمشروع SmartGrocer لتسهيل نقله إلى سيرفر Ubuntu على DigitalOcean باستخدام PM2 لضمان عمله 24/7.
+
+## 1. هيكل المشروع (Project Structure)
+- `server.js`: نقطة البداية للمشروع (Entry Point) وفيه ربط قواعد البيانات وتهيئة مسارات الـ API ومهام الكرون (Cron).
+- `cron/`: مجلد يحتوي على المهام المجدولة التي تعمل في الخلفية (Background Jobs) مثل:
+  - `subscriptionCron.js`: لتتبع انتهاء الاشتراكات.
+  - `backupCron.js`: لأخذ نسخة احتياطية من قاعدة البيانات.
+  - `aiReporterCron.js`: لإرسال تقارير ذكية تلقائياً.
+  - ملاحظة: هذه المهام تعمل تلقائياً بمجرد تشغيل `server.js`، ولا تحتاج لعملية منفصلة.
+- `models/`: مخططات قاعدة البيانات (Mongoose Schemas).
+- `routes/`: مسارات النهاية للـ API (Endpoints).
+- `public/`: ملفات الواجهة الأمامية (Frontend) ويتم تقديمها كملفات ثابتة (Static Files) عبر Express.
+- `middleware/`: طبقات التحقق مثل (المصادقة `auth`، وضع الصيانة `maintenance`، حدود الباقات `subscription`).
+- `backups/`: مجلد لحفظ النسخ الاحتياطية (يجب التأكد من وجود صلاحيات كتابة فيه).
+- `seed_admin.js`: سكريبت لتهيئة قاعدة البيانات الأولية (الباقات وحسابات الإدارة).
+
+## 2. إعدادات السيرفر (Server Setup)
+- نقطة البداية: `server.js`
+- منفذ التشغيل (Port): يستخدم المتغير `PORT` من ملف `.env`، وإذا لم يوجد يعمل افتراضياً على البورت `3000`.
+
+## 3. قاعدة البيانات (MongoDB & Atlas)
+- يتم الاتصال عبر Mongoose بقاعدة بيانات MongoDB Atlas.
+- يجب توفير المتغيرات التالية في ملف `.env` (بدون القيم الحقيقية هنا لدواعٍ أمنية):
+  - `PORT`
+  - `MONGODB_URI` (رابط الاتصال بـ MongoDB Atlas)
+  - `JWT_SECRET`
+  - `JWT_EXPIRES_IN`
+  - `EMAIL_USER`
+  - `EMAIL_PASS`
+  - `BREVO_SMTP_KEY`
+  - `BREVO_API_KEY`
+  - `EMAIL_FROM_NAME`
+  - `APP_URL`
+  - `GEMINI_API_KEY` (لخدمات الذكاء الاصطناعي)
+
+## 4. المتطلبات (Dependencies)
+- إصدار Node.js الموصى به: 18.x أو 20.x (نسخة LTS).
+- أهم الباكدجات الأساسية من `package.json`: 
+  - `express`, `mongoose`, `cors`, `dotenv`
+  - `jsonwebtoken`, `bcryptjs` (للمصادقة والأمان)
+  - `node-cron` (للمهام المجدولة)
+  - `nodemailer` (لإرسال الإيميلات)
+  - `@google/generative-ai` (للتحليل الذكي)
+  - `multer`, `xlsx`, `stripe`
+
+## 5. ملاحظات النشر (Deployment Notes و PM2)
+1. **أوامر PM2**: 
+   - لضمان بقاء الموقع يعمل: `pm2 start server.js --name "smartgrocer"`
+   - لضبط PM2 ليعمل تلقائياً عند إعادة تشغيل السيرفر:
+     `pm2 startup`
+     `pm2 save`
+2. **سكريبت التهيئة (Seed Script)**:
+   - بعد رفع الملفات ونسخ `.env` وتثبيت الباكدجات (`npm install`)، وقبل تشغيل السيرفر بالـ PM2، يُفضل تشغيل أمر `node seed_admin.js` لتهيئة الباقات الأساسية (Plans) وإنشاء مستخدم الإدارة الافتراضي.
+3. **التوجيه (Reverse Proxy)**:
+   - يُفضل إعداد Nginx كـ Reverse Proxy لتوجيه حركة المرور من البورت 80/443 إلى المنفذ الداخلي للمشروع (كمثال 3000)، وهذا يحسن الأداء والأمان.
+4. **تحديث الكود لاحقاً**:
+   - بدل التوقيف والتشغيل اليدوي، عند رفع تحديثات يمكن استخدام: `pm2 restart smartgrocer` او `pm2 reload smartgrocer` لتقليل وقت التوقف.

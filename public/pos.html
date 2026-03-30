@@ -400,6 +400,41 @@
                 display: none !important;
             }
         }
+
+        /* Mobile Adjustments for POS */
+        @media screen and (max-width: 768px) {
+            .pos-container {
+                flex-direction: column-reverse; /* Cart on top or products on top? Products on top is better flow, cart summary pinned? Actually column-reverse means Products (Left panel) are on TOP, Cart is BOTTOM. Wait, Left panel is Products, Right panel is Cart. */
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .pos-cart {
+                width: 100%;
+                border-inline-end: none;
+                border-top: 2px solid var(--border);
+                position: sticky;
+                bottom: 0;
+                box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+                max-height: 50vh;
+            }
+
+            .pos-products {
+                width: 100%;
+                flex: none;
+                height: 50vh; /* Give products half screen, cart half screen */
+            }
+
+            .product-card {
+                padding: 1.5rem 1rem; /* Larger touch area */
+                font-size: 1.1rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+        }
     </style>
 </head>
 

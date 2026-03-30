@@ -248,11 +248,14 @@
             <header class="topbar">
                 <h1 class="topbar-title" data-i18n="title_reports">التقارير التحليلية المتقدمة</h1>
                 <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
-                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                    <button type="button" onclick="exportToExcel()" class="btn btn-outline" style="background: #10b981; color: white; border: none;">
+                        <span class="icon">📊</span> <span data-i18n="btn_export_excel">تصدير إكسيل</span>
+                    </button>
+                    <button type="button" onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
-                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                    <button type="button" onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
-                    <button class="btn btn-primary" onclick="requestAiAnalysis()" id="btnAiAnalysis"
+                    <button type="button" class="btn btn-primary" onclick="requestAiAnalysis()" id="btnAiAnalysis"
                         style="background: linear-gradient(135deg, #8b5cf6, #4F46E5); border: none;">
                         <span class="icon">✨</span> <span data-i18n="btn_ai_analysis">تحليل بالذكاء الاصطناعي</span>
                     </button>
@@ -537,6 +540,35 @@
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
+            }
+        } // Closed requestAiAnalysis()
+        
+        async function exportToExcel() {
+            try {
+                // Fetch the binary excel blob from the server
+                const token = getToken();
+                const headers = {};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const resp = await fetch('/api/reports/export-excel', { headers });
+                if (!resp.ok) {
+                    const data = await resp.json();
+                    throw new Error(data.message || 'فشل التصدير');
+                }
+
+                // Create download link for the binary blob
+                const blob = await resp.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `SmartGrocer_Report_${new Date().toLocaleDateString('en-GB').replace(/\//g, '-')}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            } catch (error) {
+                Swal.fire('خطأ', error.message, 'error');
             }
         }
     </script>
