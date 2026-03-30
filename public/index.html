@@ -130,6 +130,19 @@
       color: var(--text-secondary);
       line-height: 1.6;
     }
+
+    /* Mobile Responsive Overrides */
+    @media screen and (max-width: 768px) {
+      .hero { padding: 1.5rem; min-height: 60vh; }
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1.1rem; }
+      .hero-btns { flex-direction: column; width: 100%; }
+      .hero-btns .btn { width: 100%; padding: 0.8rem 1rem !important; }
+      
+      section h2 { font-size: 1.8rem !important; }
+      .pricing h3 { font-size: 1.3rem !important; }
+      .pricing div[style*="font-size: 2.5rem"] { font-size: 2rem !important; }
+    }
   </style>
 </head>
 

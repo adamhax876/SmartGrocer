@@ -18,10 +18,17 @@ router.post('/', enforceLimits('sales'), async (req, res) => {
             return res.status(400).json({ message: 'يجب إضافة منتج واحد على الأقل' });
         }
 
+        if (discount < 0) {
+            return res.status(400).json({ message: 'الخصم لا يمكن أن يكون قيمة سالبة' });
+        }
+
         let subtotal = 0;
         const saleItems = [];
 
         for (const item of items) {
+            if (item.quantity <= 0) {
+                return res.status(400).json({ message: 'يجب أن تكون الكمية أكبر من صفر' });
+            }
             const product = await Product.findOne({ _id: item.productId, userId: req.user._id });
             if (!product) {
                 return res.status(404).json({ message: `المنتج غير موجود: ${item.productId}` });

@@ -148,12 +148,7 @@ router.post('/signup', authLimiter, async (req, res) => {
     }
 });
 
-// DEV ONLY: Clear all users
-router.delete('/dev/clear-users', async (req, res) => {
-    const result = await User.deleteMany({});
-    console.log('🗑️ Cleared', result.deletedCount, 'users');
-    res.json({ cleared: result.deletedCount });
-});
+// Security: dev/clear-users route has been removed permanently as per security audit
 
 // POST /api/auth/verify
 router.post('/verify', authLimiter, async (req, res) => {

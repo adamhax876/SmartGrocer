@@ -103,6 +103,10 @@ router.get('/stats', async (req, res) => {
 // POST /api/products — create product
 router.post('/', enforceLimits('products'), async (req, res) => {
     try {
+        if (req.body.price < 0 || req.body.costPrice < 0 || req.body.quantity < 0) {
+            return res.status(400).json({ message: 'الأسعار والكميات لا يمكن أن تكون قيم سالبة' });
+        }
+        
         const product = await Product.create({
             ...req.body,
             userId: req.user._id
@@ -116,6 +120,10 @@ router.post('/', enforceLimits('products'), async (req, res) => {
 // PUT /api/products/:id — update product
 router.put('/:id', async (req, res) => {
     try {
+        if (req.body.price < 0 || req.body.costPrice < 0 || req.body.quantity < 0) {
+            return res.status(400).json({ message: 'الأسعار والكميات لا يمكن أن تكون قيم سالبة' });
+        }
+
         const product = await Product.findOneAndUpdate(
             { _id: req.params.id, userId: req.user._id },
             req.body,
@@ -175,6 +183,11 @@ router.post('/import', enforceLimits('products'), upload.single('file'), async (
 
                 if (!product.name) {
                     errors.push(`Row ${i + 2}: Missing product name`);
+                    continue;
+                }
+
+                if (product.price < 0 || product.costPrice < 0 || product.quantity < 0) {
+                    errors.push(`Row ${i + 2}: Negative values are not allowed for price or quantity`);
                     continue;
                 }
 

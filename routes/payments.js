@@ -58,65 +58,27 @@ router.post('/create-checkout-session', auth, async (req, res) => {
         res.json({ success: true, id: session.id, url: session.url });
         */
 
-        // --- MOCKED CHECKOUT FOR DEMO PURPOSES ---
-        // We simulate a successful payment locally without actually hitting Stripe for the MVP
-        // In reality, this would be an actual stripe URL.
-        const mockSessionId = 'cs_test_' + Math.random().toString(36).substring(7);
-        const successUrl = `/api/payments/mock-webhook?session_id=${mockSessionId}&user_id=${req.user._id}&plan_id=${plan._id}`;
+        // MOCKED CHECKOUT TO PENDING WORKFLOW
+        // In this manual verification mode, requesting an upgrade saves a 'pending' Subscription.
+        const pendingSub = new Subscription({
+            user: req.user._id,
+            plan: plan._id,
+            status: 'pending',
+            startDate: new Date(),
+            endDate: new Date() // Will be updated when Admin activates it
+        });
+        await pendingSub.save();
 
         res.json({
             success: true,
-            id: mockSessionId,
-            url: successUrl, // Redirects user directly to success handler
-            message: "Using mocked payment gateway for demo purposes"
+            message: "تم استلام طلب الترقية بنجاح! سيتم التفعيل بعد المراجعة من الإدارة.",
+            status: 'pending',
+            url: "/index.html?payment=pending"
         });
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
-    }
-});
-
-// 3. Mock Webhook for Development/Demo
-// In production, this would be a POST from Stripe to '/webhook' with raw body parsing
-router.get('/mock-webhook', async (req, res) => {
-    const { user_id, plan_id, session_id } = req.query;
-
-    try {
-        const plan = await Plan.findById(plan_id);
-        const user = await User.findById(user_id);
-
-        if (!plan || !user) {
-            return res.status(400).send("Invalid data");
-        }
-
-        // Calculate end date (e.g., 30 days from now)
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + plan.durationDays);
-
-        // Cancel previous active subscriptions for this user
-        await Subscription.updateMany(
-            { user: user._id, status: 'active' },
-            { status: 'canceled' }
-        );
-
-        // Create new active subscription
-        const subscription = new Subscription({
-            user: user._id,
-            plan: plan._id,
-            status: 'active',
-            startDate: new Date(),
-            endDate: endDate,
-            stripeSubscriptionId: session_id // usually sub_xxx
-        });
-
-        await subscription.save();
-
-        // Redirect user back to dashboard or success page
-        res.redirect('/index.html?payment=success');
-
-    } catch (error) {
-        res.status(500).send("Webhook processing failed");
     }
 });
 

@@ -7,12 +7,20 @@ const User = require('../models/User');
 // Deduct wallet balance and renew subscription
 router.post('/renew', auth, async (req, res) => {
     try {
-        const { planName, cost } = req.body;
+        const { planName } = req.body;
         const user = await User.findById(req.user._id);
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
+
+        const Plan = require('../models/Plan');
+        const planObj = await Plan.findOne({ name: planName });
+        if (!planObj) {
+            return res.status(404).json({ success: false, message: 'Invalid plan selected' });
+        }
+
+        const cost = planObj.price;
 
         if (user.walletBalance < cost) {
             return res.status(400).json({ success: false, message: 'Insufficient wallet balance' });
