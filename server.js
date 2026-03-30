@@ -41,6 +41,18 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
+
+// OWASP 2026: Block Prototype Pollution attempts directly in JSON body
+app.use((req, res, next) => {
+    if (req.body && typeof req.body === 'object') {
+        if ('__proto__' in req.body || 'constructor' in req.body) {
+             console.warn('⚠️ [SECURITY] Blocked Prototype Pollution Attempt from:', req.ip);
+             return res.status(400).json({ success: false, message: 'Invalid payload structure (OWASP #3 Mitigation)' });
+        }
+    }
+    next();
+});
+
 // Maintenance Mode Middleware MUST run before serving any files/APIs
 const maintenance = require('./middleware/maintenance');
 app.use(maintenance);
@@ -121,4 +133,15 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 SmartGrocer server running on http://localhost:${PORT}`);
+});
+
+// OWASP 2026: Mishandling of Exceptional Conditions (Fail-Safe global catchers)
+process.on('uncaughtException', (err) => {
+    console.error('🔥 [CRITICAL] Uncaught Exception Detected:', err);
+    // Keeps process alive despite uncaught synchronous errors (DoS prevention)
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🔥 [CRITICAL] Unhandled Promise Rejection at:', promise, 'reason:', reason);
+    // Keeps process alive despite unhandled async errors
 });
