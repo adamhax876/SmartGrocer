@@ -45,9 +45,13 @@ app.use(express.json({ limit: '10mb' }));
 // OWASP 2026: Block Prototype Pollution attempts directly in JSON body
 app.use((req, res, next) => {
     if (req.body && typeof req.body === 'object') {
-        if ('__proto__' in req.body || 'constructor' in req.body) {
+        // Use Object.prototype.hasOwnProperty to avoid checking the prototype chain!
+        const hasProto = Object.prototype.hasOwnProperty.call(req.body, '__proto__');
+        const hasConstructor = Object.prototype.hasOwnProperty.call(req.body, 'constructor');
+        
+        if (hasProto || hasConstructor) {
              console.warn('⚠️ [SECURITY] Blocked Prototype Pollution Attempt from:', req.ip);
-             return res.status(400).json({ success: false, message: 'Invalid payload structure (OWASP #3 Mitigation)' });
+             return res.status(400).json({ success: false, message: 'Invalid payload structure (OWASP Mitigation)' });
         }
     }
     next();
