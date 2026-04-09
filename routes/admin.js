@@ -59,7 +59,8 @@ router.get('/stats', isAdmin, async (req, res) => {
 // 2. Get All Users (Store Owners)
 router.get('/users', isAdmin, async (req, res) => {
     try {
-        const users = await User.find({ role: 'store_owner' }).select('-password');
+        // Find all users except admins (or filter as needed)
+        const users = await User.find({ role: { $ne: 'admin' } }).select('-password');
         res.json({ success: true, count: users.length, data: users });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
