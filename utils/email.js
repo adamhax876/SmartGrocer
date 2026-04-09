@@ -369,4 +369,25 @@ async function sendSupportInviteEmail(toEmail, inviteLink) {
   return sendEmailWithFallback(toEmail, "Tech Support", subject, htmlContent, textContent);
 }
 
-module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback, sendSupportInviteEmail, sendTicketReplyEmail };
+async function sendGoodbyeEmail(toEmail, fullName) {
+  const subject = "تم حذف حسابك بنجاح - وداعاً من SmartGrocer";
+  const textContent = `أهلاً ${fullName || ''}، لقد تم حذف بيانات متجرك وحسابك من منصة SmartGrocer بنجاح. نتمنى لك التوفيق!`;
+  const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#fef2f2;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#fef2f2;padding:40px 16px;">
+<tr><td align="center">
+<table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #fee2e2;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#dc2626,#991b1b);padding:30px 40px;text-align:center;">
+<h1 style="color:#fff;font-size:24px;font-weight:bold;margin:0;">تأكيد حذف الحساب</h1>
+</td></tr>
+<tr><td style="padding:40px;text-align:right;" dir="rtl">
+<p style="color:#374151;font-size:16px;margin:0 0 16px;">مرحباً ${fullName || 'بك'}،</p>
+<p style="color:#4b5563;font-size:15px;line-height:1.65;margin:0 0 24px;">نؤكد لك أنه قد <strong>تم تدمير حسابك ومسح كافة بيانات متجرك</strong> من خوادم SmartGrocer بشكل نهائي بناءً على طلبك.</p>
+<p style="color:#4b5563;font-size:15px;line-height:1.65;margin:0 0 24px;">لقد سعدنا كثيراً بالعمل معك، ونتمنى لمتجرك دوام التوفيق والنجاح. إذا قررت العودة يوماً ما، فأبوابنا دائماً مفتوحة لك!</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+  return sendEmailWithFallback(toEmail, fullName, subject, htmlContent, textContent);
+}
+
+module.exports = { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionWarningEmail, sendSubscriptionActivatedEmail, sendAIReportEmail, sendEmailWithFallback, sendSupportInviteEmail, sendTicketReplyEmail, sendGoodbyeEmail };

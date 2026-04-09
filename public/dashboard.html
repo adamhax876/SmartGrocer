@@ -290,8 +290,8 @@
             <div class="sidebar-bottom">
                 <button onclick="window.location.href='/'" class="btn btn-primary"
                     style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
-                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
-                    الخروج</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" data-i18n="btn_logout">تسجيل الخروج</button>
+                <button onclick="promptDeleteAccount()" class="btn btn-outline" style="width: 100%; border-color: var(--error); color: var(--error);" data-i18n="btn_delete_account">حذف حساب المتجر</button>
             </div>
         </aside>
 
@@ -495,6 +495,43 @@
                 console.error('Error fetching dashboard data:', error);
             }
         });
+
+        async function promptDeleteAccount() {
+            const confirmed = await Swal.fire({
+                title: currentLang === 'ar' ? 'هل أنت متأكد من حذف حسابك؟' : 'Are you sure you want to delete your account?',
+                text: currentLang === 'ar' ? "لن تتمكن من التراجع عن هذا الإجراء، وسيتم مسح كل بيانات متجرك نهائياً!" : "You will not be able to undo this action, and all your store data will be deleted permanently!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3b82f6',
+                confirmButtonText: currentLang === 'ar' ? 'نعم، احذف حسابي النهائي' : 'Yes, delete my account',
+                cancelButtonText: currentLang === 'ar' ? 'إلغاء' : 'Cancel'
+            });
+
+            if (confirmed.isConfirmed) {
+                try {
+                    Swal.fire({
+                        title: currentLang === 'ar' ? 'جاري الحذف...' : 'Deleting...',
+                        didOpen: () => { Swal.showLoading() }
+                    });
+                    
+                    const res = await api('/api/auth/account', 'DELETE');
+                    if (res && res.success) {
+                        await Swal.fire(
+                            currentLang === 'ar' ? 'تم الوداع' : 'Goodbye',
+                            res.message,
+                            'success'
+                        );
+                        localStorage.clear();
+                        window.location.href = '/login.html';
+                    } else {
+                        throw new Error(res?.message || 'Failed to delete');
+                    }
+                } catch (err) {
+                    Swal.fire(currentLang === 'ar' ? 'خطأ' : 'Error', err.message, 'error');
+                }
+            }
+        }
     </script>
 </body>
 

@@ -335,5 +335,27 @@ router.put('/settings', auth, async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+// DELETE /api/auth/account — delete own account
+router.delete('/account', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Send goodbye email asynchronously
+        sendGoodbyeEmail(user.email, user.fullName).catch(err => {
+            console.error('⚠️ Goodbye email failed:', err.message);
+        });
+
+        // Delete the user record
+        await User.findByIdAndDelete(req.user._id);
+        
+        res.json({ success: true, message: 'تم إغلاق حسابك بنجاح' });
+    } catch (error) {
+        console.error('Account Deletion Error:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;
