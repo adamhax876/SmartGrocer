@@ -1,509 +1,392 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrocer — إنشاء حساب جديد</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Cairo:wght@400;600;800&display=swap"
-        rel="stylesheet">
+    <!-- Use global stylesheet which handles Light/Dark theme variables -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Cairo', 'Outfit', sans-serif;
+        .auth-wrapper {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #09090b;
-            color: #f8fafc;
-            overflow-x: hidden;
+            background: var(--bg-secondary);
+            padding: 2rem;
             position: relative;
         }
-
-        /* Premium Animated Background */
-        .bg-gradient {
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(circle at 85% 50%, rgba(79, 70, 229, 0.15), transparent 30%),
-                radial-gradient(circle at 15% 30%, rgba(16, 185, 129, 0.15), transparent 30%);
-            z-index: 0;
-            filter: blur(40px);
-            animation: pulseBg 12s ease-in-out infinite alternate;
+        .top-bar {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        @keyframes pulseBg {
-            0% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-        }
-
-        .auth-container {
-            position: relative;
-            z-index: 10;
+        .auth-card {
             width: 100%;
             max-width: 550px;
-            margin: 2rem;
-            padding: 3rem;
-            background: rgba(24, 24, 27, 0.7);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.5s ease;
         }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .auth-logo {
+        .logo-icon {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .auth-header h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(to right, #ffffff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
+            display: inline-block;
+            color: var(--primary);
+            text-align: center;
+            width: 100%;
         }
-
-        .auth-header p {
+        .auth-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        .auth-subtitle {
             font-size: 0.95rem;
-            color: #94a3b8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            text-align: center;
         }
-
+        
         /* Stepper */
         .stepper {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
             position: relative;
             padding: 0 1rem;
         }
-
         .stepper::before {
             content: '';
             position: absolute;
-            top: 14px;
+            top: 15px;
             left: 2rem;
             right: 2rem;
             height: 2px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--border);
             z-index: 1;
         }
-
         .step {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.5rem;
         }
-
         .step-num {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: #18181b;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.85rem;
             font-weight: 700;
-            color: #94a3b8;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-muted);
+            transition: all 0.3s ease;
         }
-
         .step.active .step-num {
-            border-color: #4f46e5;
-            background: #4f46e5;
+            border-color: var(--primary);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
             transform: scale(1.1);
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
-
         .step.completed .step-num {
-            background: #10b981;
-            border-color: #10b981;
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
         }
-
         .step-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: #64748b;
+            color: var(--text-muted);
             transition: color 0.3s;
         }
-
-        .step.active .step-label {
-            color: #f8fafc;
-        }
-
-        .step.completed .step-label {
-            color: #cbd5e1;
-        }
+        .step.active .step-label { color: var(--text); }
+        .step.completed .step-label { color: var(--primary); }
 
         /* Forms */
         .step-form {
             display: none;
             animation: fadeIn 0.4s ease;
         }
-
-        .step-form.active {
-            display: block;
-        }
-
+        .step-form.active { display: block; }
+        
         .form-group {
+            text-align: right;
             margin-bottom: 1.5rem;
         }
-
+        body.ltr .form-group { text-align: left; }
+        
         .form-label {
             display: block;
-            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #cbd5e1;
-            margin-bottom: 0.6rem;
-            letter-spacing: 0.02em;
+            font-size: 0.9rem;
+            color: var(--text);
         }
-
         .form-input {
             width: 100%;
-            padding: 1rem 1.2rem;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            color: white;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-input);
+            color: var(--text);
             font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
             outline: none;
-            border-color: #4f46e5;
-            background: rgba(15, 23, 42, 0.8);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+            transition: all 0.3s;
         }
-
-        select.form-input {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 1rem center;
-            padding-left: 3rem;
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
-
-        [dir="ltr"] select.form-input {
-            background-position: right 1rem center;
-            padding-right: 3rem;
-            padding-left: 1.2rem;
+        select.form-input { cursor: pointer; }
+        
+        /* Password Strength */
+        .password-strength-container {
+            margin-top: 0.5rem;
         }
-
-        select.form-input option {
-            background: #1e293b;
-            color: white;
+        .strength-bars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 0.3rem;
         }
-
+        .strength-bar {
+            height: 6px;
+            flex: 1;
+            background: var(--border);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .strength-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
         .form-actions {
             display: flex;
-            margin-top: 2.5rem;
+            margin-top: 2rem;
             gap: 1rem;
         }
-
-        .btn {
-            flex: 1;
-            padding: 1rem;
-            border-radius: 14px;
-            font-family: inherit;
-            font-size: 1.05rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #cbd5e1;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-        }
-
+        .btn-full { flex: 1; justify-content: center; text-align: center; }
+        
         .auth-footer {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             text-align: center;
-            font-size: 0.95rem;
-            color: #94a3b8;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
-
-        .auth-link {
-            color: #818cf8;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-
-        .auth-link:hover {
-            color: #a5b4fc;
-        }
-
+        .auth-link { color: var(--blue); font-weight: 700; transition: color 0.3s; }
+        .auth-link:hover { color: var(--primary); }
+        
         .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            color: #f87171;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            background: var(--red-light);
+            color: var(--red);
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
             font-size: 0.9rem;
+            border: 1px solid var(--red);
             display: none;
-            border: 1px solid rgba(239, 68, 68, 0.2);
             text-align: center;
         }
-
         .success-message {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
             font-size: 0.9rem;
+            border: 1px solid var(--primary);
             display: none;
-            border: 1px solid rgba(16, 185, 129, 0.2);
             text-align: center;
         }
-
-        /* Verification Code Styling */
+        
         .otp-input {
             text-align: center;
             font-size: 2rem;
             letter-spacing: 12px;
             font-weight: 800;
-            font-family: 'Outfit', sans-serif;
-            padding: 1.5rem;
-            border-color: rgba(255, 255, 255, 0.2);
+            padding: 1.2rem;
         }
 
-        .top-nav {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            z-index: 20;
-        }
-
-        [dir="rtl"] .top-nav {
-            right: auto;
-            left: 2rem;
-        }
-
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
+        .header-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
             padding: 0.5rem 1rem;
-            border-radius: 20px;
+            border-radius: var(--radius);
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            font-family: inherit;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.3s;
         }
-
-        .lang-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .header-btn:hover { background: var(--bg-input); }
+        .header-actions { display: flex; gap: 0.5rem; }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-
 <body>
-
-    <div class="bg-gradient"></div>
-
-    <div class="top-nav">
-        <button onclick="toggleLanguage()" class="lang-btn" id="langToggle">English</button>
-    </div>
-
-    <div class="auth-container">
-        <div class="auth-header">
-            <div class="auth-logo">🛒</div>
-            <h1 data-i18n="signup_title">إنشاء حساب جديد</h1>
-            <p data-i18n="signup_desc">خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك</p>
-        </div>
-
-        <div class="stepper" id="stepper">
-            <div class="step active" id="st-1">
-                <div class="step-num">1</div>
-                <div class="step-label" data-i18n="step_1">البيانات</div>
+    <div class="auth-wrapper">
+        <!-- Top Navigation -->
+        <div class="top-bar">
+            <div>
+                <!-- Dynamic Back Button that navigates pages, not just stepper -->
+                <button onclick="window.history.back()" class="header-btn" id="homeLink">
+                    <i class="fas fa-arrow-right rtl-icon"></i>
+                    <i class="fas fa-arrow-left ltr-icon" style="display:none;"></i>
+                    <span data-i18n="back_home">رجوع</span>
+                </button>
             </div>
-            <div class="step" id="st-2">
-                <div class="step-num">2</div>
-                <div class="step-label" data-i18n="step_2">المتجر</div>
-            </div>
-            <div class="step" id="st-3">
-                <div class="step-num">3</div>
-                <div class="step-label" data-i18n="step_3">المرور</div>
-            </div>
-            <div class="step" id="st-4" style="display: none;">
-                <div class="step-num">4</div>
-                <div class="step-label" data-i18n="step_4">التحقق</div>
+            <div class="header-actions">
+                <button onclick="toggleLanguage()" class="header-btn" id="langToggle">English</button>
+                <button onclick="toggleTheme()" class="header-btn" id="theme-toggle">🌙</button>
             </div>
         </div>
 
-        <div class="error-message" id="errorBox"></div>
-        <div class="success-message" id="successBox"></div>
+        <div class="auth-card">
+            <div class="logo-icon"><i class="fas fa-store"></i></div>
+            <h1 class="auth-title" data-i18n="signup_title">إنشاء حساب جديد</h1>
+            <p class="auth-subtitle" data-i18n="signup_desc">خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك</p>
 
-        <!-- Step 1: Personal Info -->
-        <div class="step-form active" id="form-1">
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_name">الاسم الكامل</label>
-                <input type="text" class="form-input" id="u-name" required placeholder="أحمد محمد">
+            <div class="stepper" id="stepper">
+                <div class="step active" id="st-1">
+                    <div class="step-num">1</div>
+                    <div class="step-label" data-i18n="step_1">البيانات</div>
+                </div>
+                <div class="step" id="st-2">
+                    <div class="step-num">2</div>
+                    <div class="step-label" data-i18n="step_2">المتجر</div>
+                </div>
+                <div class="step" id="st-3">
+                    <div class="step-num">3</div>
+                    <div class="step-label" data-i18n="step_3">المرور</div>
+                </div>
+                <div class="step" id="st-4" style="display: none;">
+                    <div class="step-num">4</div>
+                    <div class="step-label" data-i18n="step_4">التحقق</div>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_email">البريد الإلكتروني</label>
-                <input type="email" class="form-input" id="u-email" required placeholder="ahmed@example.com">
+
+            <div class="error-message" id="errorBox"></div>
+            <div class="success-message" id="successBox"></div>
+
+            <!-- Step 1 -->
+            <div class="step-form active" id="form-1">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_name">الاسم الكامل</label>
+                    <input type="text" class="form-input" id="u-name" required placeholder="أحمد محمد">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_email">البريد الإلكتروني</label>
+                    <input type="email" class="form-input" id="u-email" required placeholder="ahmed@example.com">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary btn-full" onclick="nextStepUI(2)" data-i18n="btn_next">متابعة ➝</button>
+                </div>
+                <div class="auth-footer">
+                    <span data-i18n="has_acc">لديك حساب فعلاً؟</span> <a href="/login.html" class="auth-link" data-i18n="btn_login">دخول</a>
+                </div>
             </div>
-            <div class="form-actions" style="margin-top: 1.5rem;">
-                <button class="btn btn-primary" onclick="nextStepUI(2)" data-i18n="btn_next">متابعة ➝</button>
+
+            <!-- Step 2 -->
+            <div class="step-form" id="form-2">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_store_name">اسم المتجر</label>
+                    <input type="text" class="form-input" id="s-name" required placeholder="سوبر ماركت السعادة">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_store_type">نشاط المتجر</label>
+                    <select class="form-input" id="s-type">
+                        <option value="supermarket" data-i18n="type_supermarket">سوبر ماركت</option>
+                        <option value="grocery" data-i18n="type_grocery">بقالة</option>
+                        <option value="minimarket" data-i18n="type_minimarket">ميني ماركت</option>
+                        <option value="wholesale" data-i18n="type_wholesale">جملة (Wholesale)</option>
+                        <option value="other" data-i18n="type_other">نشاط آخر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_country">الدولة / Country</label>
+                    <select class="form-input" id="u-country" required>
+                        <option value="Egypt">مصر - Egypt</option>
+                        <option value="Saudi Arabia">السعودية - Saudi Arabia</option>
+                        <option value="UAE">الإمارات - UAE</option>
+                        <option value="Kuwait">الكويت - Kuwait</option>
+                        <option value="Qatar">قطر - Qatar</option>
+                        <option value="Oman">عمان - Oman</option>
+                        <option value="Jordan">الأردن - Jordan</option>
+                        <option value="USA">الولايات المتحدة - USA</option>
+                        <option value="UK">المملكة المتحدة - UK</option>
+                        <option value="Other">دولة أخرى - Other</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <!-- Form internal navigation -->
+                    <button class="btn btn-outline btn-full" onclick="nextStepUI(1)" data-i18n="btn_back">تراجع للحقول</button>
+                    <button class="btn btn-primary btn-full" onclick="nextStepUI(3)" data-i18n="btn_next">متابعة ➝</button>
+                </div>
             </div>
-            <div class="auth-footer">
-                <span data-i18n="has_acc">لديك حساب فعلاً؟</span> <a href="/login.html" class="auth-link"
-                    data-i18n="btn_login">دخول</a>
+
+            <!-- Step 3 -->
+            <div class="step-form" id="form-3">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_password">كلمة المرور الآمنة</label>
+                    <input type="password" class="form-input" id="u-pass" oninput="checkPasswordStrength()" required placeholder="••••••••">
+                    
+                    <div class="password-strength-container">
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                            <div class="strength-bar" id="bar4"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText" style="color: var(--text-muted);">
+                            الرجاء إدخال كلمة مرور قوية
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="label_confirm">تأكيد كلمة المرور</label>
+                    <input type="password" class="form-input" id="u-pass-confirm" required placeholder="••••••••">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-outline btn-full" onclick="nextStepUI(2)" data-i18n="btn_back">تراجع للمتجر</button>
+                    <!-- Disabled by default until strength is met -->
+                    <button class="btn btn-primary btn-full" onclick="submitRegistration()" id="btnSubmit" data-i18n="btn_finish" disabled>إتمام وإنشاء الحساب</button>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-form" id="form-4">
+                <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 1.6;" data-i18n="verify_msg">أرسلنا كود التأكيد للبريد الخاص بك. يرجى إدخال الأرقام الستة أدناه للمتابعة.</p>
+                    <input type="text" class="form-input otp-input" id="u-otp" placeholder="000000" maxlength="6">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary btn-full" onclick="verifyOTP()" id="btnVerify" data-i18n="btn_verify">تأكيد الرمز والدخول</button>
+                </div>
             </div>
         </div>
-
-        <!-- Step 2: Store Info -->
-        <div class="step-form" id="form-2">
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_store_name">اسم المتجر</label>
-                <input type="text" class="form-input" id="s-name" required placeholder="سوبر ماركت السعادة">
-            </div>
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_store_type">نشاط المتجر</label>
-                <select class="form-input" id="s-type">
-                    <option value="supermarket" data-i18n="type_supermarket">سوبر ماركت</option>
-                    <option value="grocery" data-i18n="type_grocery">بقالة</option>
-                    <option value="minimarket" data-i18n="type_minimarket">ميني ماركت</option>
-                    <option value="wholesale" data-i18n="type_wholesale">جملة (Wholesale)</option>
-                    <option value="other" data-i18n="type_other">نشاط آخر</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_country">الدولة / Country</label>
-                <select class="form-input" id="u-country" required>
-                    <option value="Egypt">مصر - Egypt</option>
-                    <option value="Saudi Arabia">السعودية - Saudi Arabia</option>
-                    <option value="UAE">الإمارات - UAE</option>
-                    <option value="Kuwait">الكويت - Kuwait</option>
-                    <option value="Qatar">قطر - Qatar</option>
-                    <option value="Oman">عمان - Oman</option>
-                    <option value="Jordan">الأردن - Jordan</option>
-                    <option value="USA">الولايات المتحدة - USA</option>
-                    <option value="UK">المملكة المتحدة - UK</option>
-                    <option value="Other">دولة أخرى - Other</option>
-                </select>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-outline" onclick="nextStepUI(1)" data-i18n="btn_back">تراجع</button>
-                <button class="btn btn-primary" onclick="nextStepUI(3)" data-i18n="btn_next">متابعة ➝</button>
-            </div>
-        </div>
-
-        <!-- Step 3: Security & Call API Signup -->
-        <div class="step-form" id="form-3">
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_password">كلمة المرور الآمنة</label>
-                <input type="password" class="form-input" id="u-pass" required placeholder="••••••••">
-            </div>
-            <div class="form-group">
-                <label class="form-label" data-i18n="label_confirm">تأكيد كلمة المرور</label>
-                <input type="password" class="form-input" id="u-pass-confirm" required placeholder="••••••••">
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-outline" onclick="nextStepUI(2)" data-i18n="btn_back">تراجع</button>
-                <button class="btn btn-primary" onclick="submitRegistration()" id="btnSubmit"
-                    data-i18n="btn_finish">إتمام وإنشاء الحساب</button>
-            </div>
-        </div>
-
-        <!-- Step 4: OTP Verification -->
-        <div class="step-form" id="form-4">
-            <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
-                <p style="margin-bottom: 1.5rem; color: #94a3b8; line-height: 1.6;" data-i18n="verify_msg">أرسلنا كود
-                    التأكيد للبريد الخاص بك. يرجى إدخال الأرقام الستة أدناه للمتابعة.</p>
-                <input type="text" class="form-input otp-input" id="u-otp" placeholder="000000" maxlength="6">
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" onclick="verifyOTP()" id="btnVerify" data-i18n="btn_verify">تأكيد الرمز
-                    والدخول</button>
-            </div>
-        </div>
-
     </div>
 
     <!-- Scripts -->
@@ -520,7 +403,11 @@
                 label_store_name: "Store Name", label_store_type: "Business Type",
                 type_supermarket: "Supermarket", type_grocery: "Grocery Store", type_minimarket: "Mini Market", type_wholesale: "Wholesale", type_other: "Other",
                 label_password: "Secure Password", label_confirm: "Confirm Password",
-                btn_finish: "Complete Registration", btn_creating: "Creating..."
+                btn_finish: "Complete Registration", btn_creating: "Creating...",
+                label_country: "Country",
+                back_home: "Go Back",
+                pass_weak: "Weak", pass_fair: "Fair", pass_good: "Good", pass_strong: "Strong",
+                pass_prompt: "Please enter a strong password"
             },
             ar: {
                 signup_title: "إنشاء حساب جديد", signup_desc: "خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك",
@@ -533,16 +420,40 @@
                 type_supermarket: "سوبر ماركت", type_grocery: "بقالة", type_minimarket: "ميني ماركت", type_wholesale: "جملة (Wholesale)", type_other: "نشاط آخر",
                 label_password: "كلمة المرور الآمنة", label_confirm: "تأكيد كلمة المرور",
                 btn_finish: "إتمام وإنشاء الحساب", btn_creating: "جاري الإنشاء...",
-                label_country: "الدولة"
+                label_country: "الدولة",
+                back_home: "رجوع للخلف",
+                pass_weak: "ضعيفة ❌", pass_fair: "مقبولة ⚠️", pass_good: "جيدة 👍", pass_strong: "قوية جداً 🛡️",
+                pass_prompt: "الرجاء إدخال كلمة مرور قوية"
             }
         };
 
-        let currentLang = localStorage.getItem('sg_lang') || 'ar';
-        document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = currentLang;
-        document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = getTheme();
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            updateThemeIcon(currentTheme);
+
+            const currentLang = localStorage.getItem('sg_lang') || 'ar';
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+            document.body.className = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
+            updateTexts();
+            updateIconsForLang();
+        });
+
+        function updateIconsForLang() {
+            const dir = document.documentElement.dir;
+            if (dir === 'rtl') {
+                document.querySelector('.rtl-icon').style.display = 'inline-block';
+                document.querySelector('.ltr-icon').style.display = 'none';
+            } else {
+                document.querySelector('.rtl-icon').style.display = 'none';
+                document.querySelector('.ltr-icon').style.display = 'inline-block';
+            }
+        }
 
         function updateTexts() {
+            const currentLang = localStorage.getItem('sg_lang') || 'ar';
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
@@ -550,21 +461,86 @@
                     if (el.tagName === 'INPUT') el.placeholder = translations[currentLang][key];
                 }
             });
+            // Re-trigger password checker for translation update
+            checkPasswordStrength();
         }
-        updateTexts();
 
         function toggleLanguage() {
+            let currentLang = localStorage.getItem('sg_lang') || 'ar';
             currentLang = currentLang === 'en' ? 'ar' : 'en';
             localStorage.setItem('sg_lang', currentLang);
             document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
             document.documentElement.lang = currentLang;
+            document.body.className = currentLang === 'ar' ? 'rtl' : 'ltr';
             document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
             updateTexts();
+            updateIconsForLang();
         }
 
         // Form Logic
         let currentStep = 1;
         let registeredUserId = null;
+        let isPasswordStrong = false;
+
+        function checkPasswordStrength() {
+            const pass = document.getElementById('u-pass').value;
+            const currentLang = localStorage.getItem('sg_lang') || 'ar';
+            const textEl = document.getElementById('strengthText');
+            const submitBtn = document.getElementById('btnSubmit');
+            const bars = [
+                document.getElementById('bar1'),
+                document.getElementById('bar2'),
+                document.getElementById('bar3'),
+                document.getElementById('bar4')
+            ];
+            
+            // Reset
+            bars.forEach(b => b.style.background = 'var(--border)');
+            isPasswordStrong = false;
+            submitBtn.disabled = true;
+            
+            if (!pass) {
+                textEl.textContent = translations[currentLang].pass_prompt;
+                textEl.style.color = 'var(--text-muted)';
+                return;
+            }
+            
+            let score = 0;
+            if (pass.length > 5) score++; // Length > 5
+            if (pass.length > 8) score++; // Length > 8
+            if (/[A-Z]/.test(pass)) score++; // Has uppercase
+            if (/[0-9]/.test(pass)) score++; // Has number
+            if (/[^A-Za-z0-9]/.test(pass)) score++; // Has special char
+            
+            // Max score normalization
+            if (score > 4) score = 4;
+            if (pass.length < 6) score = 1;
+
+            if (score === 1) {
+                bars[0].style.background = 'var(--red)';
+                textEl.textContent = translations[currentLang].pass_weak;
+                textEl.style.color = 'var(--red)';
+            } else if (score === 2) {
+                bars[0].style.background = 'var(--orange)';
+                bars[1].style.background = 'var(--orange)';
+                textEl.textContent = translations[currentLang].pass_fair;
+                textEl.style.color = 'var(--orange)';
+            } else if (score === 3) {
+                bars[0].style.background = 'var(--primary)';
+                bars[1].style.background = 'var(--primary)';
+                bars[2].style.background = 'var(--primary)';
+                textEl.textContent = translations[currentLang].pass_good;
+                textEl.style.color = 'var(--primary)';
+                isPasswordStrong = true;
+                submitBtn.disabled = false;
+            } else if (score >= 4) {
+                bars.forEach(b => b.style.background = 'var(--primary-dark)');
+                textEl.textContent = translations[currentLang].pass_strong;
+                textEl.style.color = 'var(--primary-dark)';
+                isPasswordStrong = true;
+                submitBtn.disabled = false;
+            }
+        }
 
         function showError(msg) {
             const box = document.getElementById('errorBox');
@@ -581,7 +557,7 @@
         }
 
         function nextStepUI(target) {
-            // Basic UI Validation
+            const currentLang = localStorage.getItem('sg_lang') || 'ar';
             if (target === 2) {
                 const name = document.getElementById('u-name').value;
                 const email = document.getElementById('u-email').value;
@@ -615,8 +591,8 @@
             currentStep = target;
         }
 
-        // 1. Submit Registration API
         async function submitRegistration() {
+            const currentLang = localStorage.getItem('sg_lang') || 'ar';
             const fullName = document.getElementById('u-name').value;
             const email = document.getElementById('u-email').value;
             const storeName = document.getElementById('s-name').value;
@@ -625,8 +601,8 @@
             const password = document.getElementById('u-pass').value;
             const confirm = document.getElementById('u-pass-confirm').value;
 
-            if (password.length < 6) {
-                showError(currentLang === 'ar' ? 'يجب أن تكون كلمة المرور 6 أحرف على الأقل' : 'Password must be at least 6 characters');
+            if (!isPasswordStrong) {
+                showError(currentLang === 'ar' ? 'يرجى اختيار كلمة مرور قوية لتأمين متجرك' : 'Please choose a strong password to secure your store');
                 return;
             }
             if (password !== confirm) {
@@ -639,7 +615,6 @@
                 btn.disabled = true;
                 btn.innerHTML = translations[currentLang].btn_creating;
 
-                // CALLING THE BACKEND SIGNUP ROUTE
                 const res = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -647,13 +622,9 @@
                 });
 
                 const data = await res.json();
-
                 if (!res.ok) throw new Error(data.message || 'Registration failed');
 
-                // Success! Save ID and move to OTP screen
                 registeredUserId = data.userId;
-
-                // Show Step 4 explicitly
                 document.getElementById('st-4').style.display = 'flex';
                 nextStepUI(4);
                 showSuccess(data.message || (currentLang === 'ar' ? 'تم إنشاء الحساب! افحص بريدك الإلكتروني للحصول على الرمز.' : 'Account created! Check your email for code.'));
@@ -666,8 +637,8 @@
             }
         }
 
-        // 2. Verify OTP API
         async function verifyOTP() {
+            const currentLang = localStorage.getItem('sg_lang') || 'ar';
             const otp = document.getElementById('u-otp').value;
             if (!otp || otp.length < 4) {
                 showError(currentLang === 'ar' ? 'رمز غير صالح' : 'Invalid code');
@@ -690,7 +661,6 @@
 
                 if (!res.ok) throw new Error(data.message || 'Invalid code');
 
-                // OTP Valid! Log them in.
                 localStorage.setItem('sg_token', data.token);
                 localStorage.setItem('sg_user', JSON.stringify(data.user));
                 window.location.href = '/dashboard.html';
@@ -699,5 +669,4 @@
         }
     </script>
 </body>
-
 </html>
