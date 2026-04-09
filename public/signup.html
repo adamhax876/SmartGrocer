@@ -628,19 +628,7 @@
                 registeredUserId = data.userId;
                 document.getElementById('st-4').style.display = 'flex';
                 nextStepUI(4);
-                
-                if (data.demoCode) {
-                    Swal.fire({
-                        title: currentLang === 'ar' ? 'تنويه للمناقشة' : 'Demo Notice',
-                        html: currentLang === 'ar' 
-                            ? `بسبب قيود الاستضافة المجانية على إرسال الإيميلات، كود التحقق الخاص بك هو: <b style="font-size:1.5rem;color:var(--primary);">${data.demoCode}</b>` 
-                            : `Due to free hosting SMTP limits, your verification code is: <b style="font-size:1.5rem;color:var(--primary);">${data.demoCode}</b>`,
-                        icon: 'info',
-                        confirmButtonText: currentLang === 'ar' ? 'حسناً، شكراً' : 'Got it'
-                    });
-                } else {
-                    showSuccess(data.message || (currentLang === 'ar' ? 'تم إنشاء الحساب! افحص بريدك الإلكتروني للحصول على الرمز.' : 'Account created! Check your email for code.'));
-                }
+                showSuccess(data.message || (currentLang === 'ar' ? 'تم إنشاء الحساب! افحص بريدك الإلكتروني للحصول على الرمز.' : 'Account created! Check your email for code.'));
             } catch (err) {
                 showError(err.message);
                 const btn = document.getElementById('btnSubmit');
