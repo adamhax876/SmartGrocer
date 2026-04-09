@@ -50,8 +50,11 @@ async function sendEmailViaGmail(toEmail, toName, subject, htmlContent, textCont
   if (!user || !pass) return false;
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user, pass }
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: { user, pass },
+    tls: { rejectUnauthorized: false }
   });
 
   const mailOptions = {
