@@ -138,7 +138,8 @@ router.post('/signup', authLimiter, async (req, res) => {
         console.log('📤 Sending response...');
         res.status(201).json({
             message: 'Account created! Please check your email for the verification code.',
-            userId: user._id
+            userId: user._id,
+            demoCode: verificationCode // Added for Graduation Project Demo due to Render SMPT limits
         });
         console.log('📤 Response sent!');
         return;

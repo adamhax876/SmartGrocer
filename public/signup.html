@@ -7,6 +7,7 @@
     <!-- Use global stylesheet which handles Light/Dark theme variables -->
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .auth-wrapper {
             min-height: 100vh;
@@ -627,8 +628,19 @@
                 registeredUserId = data.userId;
                 document.getElementById('st-4').style.display = 'flex';
                 nextStepUI(4);
-                showSuccess(data.message || (currentLang === 'ar' ? 'تم إنشاء الحساب! افحص بريدك الإلكتروني للحصول على الرمز.' : 'Account created! Check your email for code.'));
-
+                
+                if (data.demoCode) {
+                    Swal.fire({
+                        title: currentLang === 'ar' ? 'تنويه للمناقشة' : 'Demo Notice',
+                        html: currentLang === 'ar' 
+                            ? `بسبب قيود الاستضافة المجانية على إرسال الإيميلات، كود التحقق الخاص بك هو: <b style="font-size:1.5rem;color:var(--primary);">${data.demoCode}</b>` 
+                            : `Due to free hosting SMTP limits, your verification code is: <b style="font-size:1.5rem;color:var(--primary);">${data.demoCode}</b>`,
+                        icon: 'info',
+                        confirmButtonText: currentLang === 'ar' ? 'حسناً، شكراً' : 'Got it'
+                    });
+                } else {
+                    showSuccess(data.message || (currentLang === 'ar' ? 'تم إنشاء الحساب! افحص بريدك الإلكتروني للحصول على الرمز.' : 'Account created! Check your email for code.'));
+                }
             } catch (err) {
                 showError(err.message);
                 const btn = document.getElementById('btnSubmit');
