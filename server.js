@@ -27,7 +27,7 @@ const globalLimiter = rateLimit({
 app.use(globalLimiter);
 
 // Middleware
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [process.env.APP_URL, 'http://localhost:3000'];
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [process.env.APP_URL, 'http://localhost:3000', 'https://smartgrocer.me', 'https://www.smartgrocer.me'];
 app.use(cors({
     origin: function(origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
@@ -131,6 +131,13 @@ app.get('*', (req, res) => {
     return res.sendFile(htmlFile);
   }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+// Global JSON Error Handler (Prevents returning HTML on API errors like CORS)
+app.use((err, req, res, next) => {
+    console.error('⚠️ [Express Error]:', err.message);
+    if (!res.headersSent) {
+        res.status(err.status || 500).json({ success: false, message: err.message || 'Internal Server Error' });
+    }
 });
 
 // Start server
