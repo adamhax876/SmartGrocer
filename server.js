@@ -1,4 +1,10 @@
 require('dotenv').config();
+
+// Global Override: Force the new custom domain everywhere, intercepting the old Render domain if set.
+if (process.env.APP_URL && process.env.APP_URL.includes('onrender.com')) {
+    process.env.APP_URL = 'https://smartgrocer.me';
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');

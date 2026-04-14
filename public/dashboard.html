@@ -517,7 +517,7 @@
                         didOpen: () => { Swal.showLoading() }
                     });
                     
-                    const res = await api('/api/auth/account', 'DELETE');
+                    const res = await api('/api/auth/account', { method: 'DELETE' });
                     if (res && res.success) {
                         await Swal.fire(
                             currentLang === 'ar' ? 'تم الوداع' : 'Goodbye',
