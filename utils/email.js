@@ -87,7 +87,7 @@ async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textCon
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: `${process.env.EMAIL_FROM_NAME || 'SmartGrocer'} <onboarding@resend.dev>`,
+        from: `${process.env.EMAIL_FROM_NAME || 'SmartGrocer'} <>`,
         to: [toEmail],
         subject,
         html: htmlContent,
