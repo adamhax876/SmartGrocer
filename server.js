@@ -27,7 +27,8 @@ const globalLimiter = rateLimit({
 app.use(globalLimiter);
 
 // Middleware
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [process.env.APP_URL, 'http://localhost:3000', 'https://smartgrocer.me', 'https://www.smartgrocer.me'];
+const defaultOrigins = [process.env.APP_URL, 'http://localhost:3000', 'https://smartgrocer.me', 'https://www.smartgrocer.me'];
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').concat(defaultOrigins) : defaultOrigins;
 app.use(cors({
     origin: function(origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
@@ -35,6 +36,7 @@ app.use(cors({
         if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
             callback(null, true);
         } else {
+            console.error(`CORS BLOCKED ORIGIN: ${origin}`);
             callback(new Error('CORS policy violation'));
         }
     },
