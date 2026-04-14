@@ -5,7 +5,7 @@ const User = require('../models/User');
 const Invite = require('../models/Invite');
 const auth = require('../middleware/auth');
 const crypto = require('crypto');
-const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } = require('../utils/email');
+const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendGoodbyeEmail } = require('../utils/email');
 const rateLimit = require('express-rate-limit');
 
 const authLimiter = rateLimit({
