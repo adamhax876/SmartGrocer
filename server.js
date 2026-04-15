@@ -19,8 +19,17 @@ const rateLimit = require('express-rate-limit');
 // Security Middleware
 app.set('trust proxy', 1); // Trust the first proxy to get real IP
 app.use(helmet({
-    contentSecurityPolicy: false
-})); // Set security headers but disable CSP to allow frontend inline scripts
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdn.tailwindcss.com", "https://cdn.chart.js"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            connectSrc: ["'self'", "https://api.resend.com"]
+        }
+    }
+})); // OWASP 2026: Content Security Policy
 app.use(mongoSanitize()); // Prevent NoSQL injection globally
 
 // Global Rate Limiting (100 requests per 15 minutes)

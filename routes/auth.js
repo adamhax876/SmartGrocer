@@ -56,6 +56,10 @@ router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
 
+        // OWASP: Enforce password policy on resets too
+        if (!newPassword || newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+            return res.status(400).json({ success: false, message: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على حرف كبير ورقم' });
+        }
         const user = await User.findOne({
             resetPasswordToken: token,
             resetPasswordExpire: { $gt: new Date() }
@@ -82,7 +86,7 @@ module.exports = router;
 // Generate JWT
 function generateToken(id) {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+        expiresIn: process.env.JWT_EXPIRES_IN || '3d'
     });
 }
 
@@ -97,6 +101,11 @@ router.post('/signup', authLimiter, async (req, res) => {
         const { storeName, storeType, fullName, password, country, language } = req.body;
         const email = String(req.body.email);
         console.log('📝 Signup attempt:', email);
+
+        // OWASP: Enforce strong password policy
+        if (!password || password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
+            return res.status(400).json({ message: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على حرف كبير ورقم' });
+        }
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
