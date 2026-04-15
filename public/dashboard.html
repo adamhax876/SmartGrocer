@@ -340,13 +340,17 @@
 
                 <div class="charts-grid">
                     <div class="chart-card">
-                        <h2 style="margin-bottom: 1rem; color: var(--text);" data-i18n="chart_sales">المبيعات الشهرية
-                        </h2>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <h2 style="margin: 0; color: var(--text); font-size: 1.1rem;" data-i18n="chart_sales">المبيعات الشهرية</h2>
+                            <span style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(79,70,229,0.1); color: #4F46E5; font-weight: 600;">📊 MONTHLY</span>
+                        </div>
                         <canvas id="revenueChart" height="300"></canvas>
                     </div>
                     <div class="chart-card">
-                        <h2 style="margin-bottom: 1rem; color: var(--text);" data-i18n="chart_categories">توزيع الفئات
-                        </h2>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <h2 style="margin: 0; color: var(--text); font-size: 1.1rem;" data-i18n="chart_categories">توزيع الفئات</h2>
+                            <span style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(16,185,129,0.1); color: #10b981; font-weight: 600;">🏷️ CATEGORIES</span>
+                        </div>
                         <canvas id="categoryChart" height="300"></canvas>
                     </div>
                 </div>
@@ -463,33 +467,110 @@
 
                 Chart.defaults.color = savedTheme === 'dark' ? '#94a3b8' : '#64748b';
                 Chart.defaults.borderColor = savedTheme === 'dark' ? '#334155' : '#e2e8f0';
+                Chart.defaults.font.family = 'Cairo, sans-serif';
 
-                // Revenue Chart
-                const revCtx = document.getElementById('revenueChart');
+                // Monthly Revenue — Premium Gradient Bar Chart
+                const revCtx = document.getElementById('revenueChart').getContext('2d');
+                const barGrad = revCtx.createLinearGradient(0, 0, 0, 300);
+                barGrad.addColorStop(0, '#4F46E5');
+                barGrad.addColorStop(1, '#818cf8');
+
+                const monthKeys = Object.keys(data.monthlyRevenue);
+                const shortMonths = monthKeys.map(m => {
+                    const parts = m.split('-');
+                    const monthNames = currentLang === 'ar' 
+                        ? ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
+                        : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                    return monthNames[parseInt(parts[1]) - 1] || m;
+                });
+
                 new Chart(revCtx, {
                     type: 'bar',
                     data: {
-                        labels: Object.keys(data.monthlyRevenue),
+                        labels: shortMonths,
                         datasets: [{
                             label: currentLang === 'ar' ? 'المبيعات' : 'Sales',
                             data: Object.values(data.monthlyRevenue),
-                            backgroundColor: '#4F46E5',
-                            borderRadius: 6
+                            backgroundColor: barGrad,
+                            borderRadius: 10,
+                            borderSkipped: false,
+                            barPercentage: 0.55,
+                            hoverBackgroundColor: '#6366f1'
                         }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: savedTheme === 'dark' ? '#1e293b' : '#fff',
+                                titleColor: savedTheme === 'dark' ? '#e2e8f0' : '#1e293b',
+                                bodyColor: savedTheme === 'dark' ? '#94a3b8' : '#64748b',
+                                borderColor: savedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                                borderWidth: 1,
+                                cornerRadius: 10,
+                                padding: 12,
+                                callbacks: {
+                                    label: ctx => (currentLang === 'ar' ? 'المبيعات: ' : 'Sales: ') + ctx.parsed.y.toLocaleString()
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { beginAtZero: true, grid: { color: savedTheme === 'dark' ? '#1e293b' : '#f1f5f9' }, ticks: { callback: v => v.toLocaleString() } }
+                        }
                     }
                 });
 
-                // Category Chart
+                // Category Chart — Premium Doughnut with Legend
+                const catData = data.categories;
+                const catLabels = Object.keys(catData);
+                const catValues = Object.values(catData).map(c => c.products);
+                const catColors = ['#4F46E5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6'];
+
                 const catCtx = document.getElementById('categoryChart');
                 new Chart(catCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: Object.keys(data.categories),
+                        labels: catLabels,
                         datasets: [{
-                            data: Object.values(data.categories).map(c => c.products),
-                            backgroundColor: ['#4F46E5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
-                            borderWidth: 0
+                            data: catValues,
+                            backgroundColor: catColors.slice(0, catLabels.length),
+                            borderWidth: 3,
+                            borderColor: savedTheme === 'dark' ? '#1e293b' : '#ffffff',
+                            hoverOffset: 8
                         }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '65%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    padding: 16,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: savedTheme === 'dark' ? '#1e293b' : '#fff',
+                                titleColor: savedTheme === 'dark' ? '#e2e8f0' : '#1e293b',
+                                bodyColor: savedTheme === 'dark' ? '#94a3b8' : '#64748b',
+                                borderColor: savedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                                borderWidth: 1,
+                                cornerRadius: 10,
+                                padding: 12,
+                                callbacks: {
+                                    label: ctx => {
+                                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                        const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                                        return ctx.label + ': ' + ctx.parsed + ' (' + pct + '%)';
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
 

@@ -1,0 +1,84 @@
+[
+  {"type":"h1","text":"تقرير الفحص الأمني - SmartGrocer"},
+  {"type":"body","text":"نظام إدارة البقالات والسوبرماركت - Back-Office System"},
+  {"type":"body","text":"تاريخ الفحص: 4 أبريل 2026"},
+  {"type":"body","text":"مستوى الخطورة: ⚫ حرج | 🟠 عالي | 🟡 متوسط | 🟢 منخفض"},
+  {"type":"divider"},
+  
+  {"type":"h2","text":"الثغرات الحرجة (CRITICAL) - يجب إصلاحها فوراً"},
+  
+  {"type":"h3","text":"1. تسريب بيانات حساسة في ملف .env"},
+  {"type":"callout","text":"الملف: .env | الخطورة: ⚫ حرجة جداً"},
+  {"type":"body","text":"تم العثور على البيانات التالية في ملف المتغيرات البيئية:"},
+  {"type":"bullet","text":"كلمة مرور قاعدة البيانات (MongoDB)"},
+  {"type":"bullet","text":"كلمة مرور البريد الإلكتروني (Gmail App Password)"},
+  {"type":"bullet","text":"مفاتيح API للخدمة (Brevo SMTP & API Keys)"},
+  {"type":"bullet","text":"مفتاح Gemini API"},
+  {"type":"bullet","text":"JWT_SECRET ضعيفة جداً: smartgrocer_secret_key_2025_graduation_project"},
+  {"type":"body","text":"⚠️ الخطر: أي شخص يحصل على هذا الملف يمكنه:"},
+  {"type":"bullet","text":"الوصول الكامل لقاعدة بيانات العملاء"},
+  {"type":"bullet","text":"إرسال رسائل بريد إلكتروني نيابة عنك"},
+  {"type":"bullet","text":"سرقة أو تعديل بيانات المتاجر"},
+  {"type":"bullet","text":"اختراق حسابات المستخدمين"},
+  
+  {"type":"h3","text":"2. طباعة رمز التحقق في Console"},
+  {"type":"callout","text":"الملفات: routes/auth.js | الخطورة: ⚫ حرجة"},
+  {"type":"code","text":"// السطر 39\nconsole.log(`📧 [FALLBACK] Reset token for ${email}: ${resetToken}`);\n\n// السطر 111\nconsole.log(`📧 [FALLBACK} Verification code for ${email}: ${verificationCode}`);"},
+  {"type":"body","text":"المشكلة: عند فشل إرسال البريد الإلكتروني، يتم طباعة رمز التحقق في Console مما يسمح لأي شخص على الخادم بسرقة الحسابات."},
+  
+  {"type":"h3","text":"3. Admin يمكنه تعيين كلمة مرور بدون تشفير"},
+  {"type":"callout","text":"الملف: routes/admin.js | الخطورة: ⚫ حرجة"},
+  {"type":"code","text":"// السطر 170-186\nif (password && password.trim() !== '') {\n    user.password = password.trim(); // ← يتم حفظها بدون تشفير!\n}\nawait user.save();"},
+  {"type":"body","text":"المشكلة: Admin يمكنه تعيين كلمة مرور للمستخدم مباشرة بدون المرور بعملية التشفير، مما يعني حفظها كنص عادي في قاعدة البيانات."},
+  
+  {"type":"divider"},
+  {"type":"h2","text":"الثغرات العالية (HIGH)"},
+  
+  {"type":"h3","text":"4. توكن JWT في URL"},
+  {"type":"callout","text":"الملف: public/js/app.js | الخطورة: 🟠 عالية"},
+  {"type":"code","text":"// السطر 295\nconst evtSource = new EventSource(`/api/sse?token=${token}`);"},
+  {"type":"body","text":"المشكلة: التوكن يظهر في URL مما قد يُسجل في سجلات المتصفح والخادم."},
+  
+  {"type":"h3","text":"5. عدم وجود Cookie Security"},
+  {"type":"callout","text":"الخطورة: 🟠 عالية"},
+  {"type":"body","text":"JWT يُرسل بدون httpOnly, secure, sameSite flags مما يجعله عرضة للسرقة عبر XSS."},
+  
+  {"type":"h3","text":"6. إعدادات CORS مرنة جداً"},
+  {"type":"callout","text":"الملف: server.js | الخطورة: 🟠 عالية"},
+  {"type":"body","text":"في بيئة development، يتم السماح من أي origin مما قد يُعرض الإنتاج للخطر."},
+  
+  {"type":"divider"},
+  {"type":"h2","text":"الثغرات المتوسطة (MEDIUM)"},
+  
+  {"type":"h3","text":"7. عدم وجود حماية CSRF"},
+  {"type":"body","text":"لا يوجد CsrfToken middleware في المشروع."},
+  
+  {"type":"h3","text":"8. عدم وجود Logout endpoint"},
+  {"type":"body","text":"لا يتم إرسال طلب للخادم لإلغاء التوكن عند تسجيل الخروج."},
+  
+  {"type":"h3","text":"9. التحقق من البريد الإلكتروني غير كافٍ"},
+  {"type":"body","text":"لا يوجد تحقق regex من صيغة البريد الإلكتروني قبل المعالجة."},
+  
+  {"type":"divider"},
+  {"type":"h2","text":"ملاحظات إيجابية"},
+  
+  {"type":"bullet","text":"✅ استخدام bcrypt لتشفير كلمات المرور"},
+  {"type":"bullet","text":"✅ استخدام express-mongo-sanitize للحماية من NoSQL Injection"},
+  {"type":"bullet","text":"✅ استخدام helmet للأمان"},
+  {"type":"bullet","text":"✅ حماية Prototype Pollution"},
+  {"type":"bullet","text":"✅ Rate Limiting"},
+  {"type":"bullet","text":"✅ التحقق من الأدوار (admin, support, store_owner)"},
+  {"type":"bullet","text":"✅ التحقق من حالة الاشتراك"},
+  
+  {"type":"divider"},
+  {"type":"h2","text":"جدول الأولوية في الإصلاح"},
+  
+  {"type":"table","headers":["الأولوية","الثغرة","الوقت"],"rows":[["🔴 فوري","ملف .env + تغيير كلمات المرور","الآن"],["🔴 فوري","حذف console.log للتوثيق","الآن"],["🔴 فوري","إصلاح تعيين كلمة المرور في Admin","الآن"],["🟠 عاجل","نقل JWT لـ httpOnly cookies","1-2 يوم"],["🟠 عاجل","تقوية JWT_SECRET","1 ساعة"],["🟡 مهم","إضافة CSRF protection","2-3 أيام"],["🟡 مهم","إضافة logout endpoint","1 ساعة"]],"col_widths":[1.5,3,1.5]},
+  
+  {"type":"divider"},
+  {"type":"h2","text":"الخلاصة"},
+  
+  {"type":"body","text":"⚠️ الخطر العام: HIGH - يجب إصلاح الثغرات الحرجة قبل الإطلاق"},
+  {"type":"body","text":"المشروع يستخدم ممارسات أمنية جيدة في بعض المناطق، لكن هناك ثغرات حرجة تحتاج إصلاح فوري قبل الإطلاق للproduction."},
+  {"type":"body","text":"⚠️ أنصح بشدة بإصلاح الثغرات الحرجة (تسريب .env + console.log + كلمة المرور) قبل أي إطلاق."}
+]
