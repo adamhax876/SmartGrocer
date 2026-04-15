@@ -263,55 +263,86 @@
             </header>
 
             <div class="content" id="reportContent">
+                <!-- Premium KPI Cards -->
                 <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <h3 data-i18n="kpi_profit">صافي الربح التقديري</h3>
-                        <div id="stat-profit" class="kpi-value" style="color: #10b981;">0.00</div>
+                    <div class="kpi-card" style="border-inline-start: 4px solid #10b981;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h3 data-i18n="kpi_profit" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">صافي الربح التقديري</h3>
+                                <div id="stat-profit" class="kpi-value" style="color: #10b981; font-size: 1.8rem;">0.00</div>
+                            </div>
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">💰</div>
+                        </div>
                     </div>
-                    <div class="kpi-card">
-                        <h3 data-i18n="kpi_revenue">إجمالي إيرادات المبيعات</h3>
-                        <div id="stat-revenue" class="kpi-value">0.00</div>
+                    <div class="kpi-card" style="border-inline-start: 4px solid #4F46E5;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h3 data-i18n="kpi_revenue" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">إجمالي إيرادات المبيعات</h3>
+                                <div id="stat-revenue" class="kpi-value" style="color: #4F46E5; font-size: 1.8rem;">0.00</div>
+                            </div>
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(79,70,229,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">📈</div>
+                        </div>
                     </div>
-                    <div class="kpi-card">
-                        <h3 data-i18n="kpi_cost">تكلفة البضاعة المباعة</h3>
-                        <div id="stat-cost" class="kpi-value" style="color: #ef4444;">0.00</div>
+                    <div class="kpi-card" style="border-inline-start: 4px solid #ef4444;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h3 data-i18n="kpi_cost" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">تكلفة البضاعة المباعة</h3>
+                                <div id="stat-cost" class="kpi-value" style="color: #ef4444; font-size: 1.8rem;">0.00</div>
+                            </div>
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239,68,68,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">📉</div>
+                        </div>
                     </div>
-                    <div class="kpi-card">
-                        <h3 data-i18n="kpi_margin">هامش الربح %</h3>
-                        <div id="stat-margin" class="kpi-value" style="color: #8b5cf6;">0%</div>
+                    <div class="kpi-card" style="border-inline-start: 4px solid #8b5cf6;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h3 data-i18n="kpi_margin" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">هامش الربح %</h3>
+                                <div id="stat-margin" class="kpi-value" style="color: #8b5cf6; font-size: 1.8rem;">0%</div>
+                            </div>
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(139,92,246,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">⚡</div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Premium Charts -->
                 <div class="charts-grid">
                     <div class="chart-card">
-                        <h2 data-i18n="chart_trend">اتجاه المبيعات والأرباح (آخر 30 يوم)</h2>
-                        <div style="position: relative; height: 250px; width: 100%;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+                            <h2 data-i18n="chart_trend" style="color: var(--text); font-size: 1.1rem; margin: 0;">اتجاه المبيعات والأرباح</h2>
+                            <span style="font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: rgba(79,70,229,0.1); color: #4F46E5; font-weight: 600;" data-i18n="chart_trend_badge">آخر 30 يوم</span>
+                        </div>
+                        <div style="position: relative; height: 280px; width: 100%;">
                             <canvas id="trendChart"></canvas>
                         </div>
                     </div>
                     <div class="chart-card">
-                        <h2 data-i18n="chart_top">أكثر المنتجات مبيعاً</h2>
-                        <div style="position: relative; height: 250px; width: 100%;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+                            <h2 data-i18n="chart_top" style="color: var(--text); font-size: 1.1rem; margin: 0;">أكثر المنتجات مبيعاً</h2>
+                            <span style="font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: rgba(139,92,246,0.1); color: #8b5cf6; font-weight: 600;">TOP 5</span>
+                        </div>
+                        <div style="position: relative; height: 280px; width: 100%;">
                             <canvas id="topProductsChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <div class="table-wrapper">
-                    <h2 style="margin-bottom: 1rem; color: var(--text);" data-i18n="table_summary">ملخص الأداء المالي
-                        للفئات</h2>
-                    <table>
+                <!-- Premium Table -->
+                <div class="table-wrapper" style="border-radius: 16px; overflow: hidden;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+                        <h2 style="color: var(--text); font-size: 1.1rem; margin: 0;" data-i18n="table_summary">ملخص الأداء المالي للفئات</h2>
+                        <span style="font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: rgba(16,185,129,0.1); color: #10b981; font-weight: 600;">📊 ANALYTICS</span>
+                    </div>
+                    <table style="border-collapse: separate; border-spacing: 0;">
                         <thead>
-                            <tr>
-                                <th data-i18n="th_cat">الفئة</th>
-                                <th data-i18n="th_qty">الكمية المباعة</th>
-                                <th data-i18n="th_rev">الإيرادات</th>
-                                <th data-i18n="th_profit">الربح الصافي</th>
+                            <tr style="background: linear-gradient(135deg, #4F46E5, #7c3aed); color: white;">
+                                <th data-i18n="th_cat" style="color: white; border-radius: 8px 0 0 0;">الفئة</th>
+                                <th data-i18n="th_qty" style="color: white;">الكمية المباعة</th>
+                                <th data-i18n="th_rev" style="color: white;">الإيرادات</th>
+                                <th data-i18n="th_profit" style="color: white; border-radius: 0 8px 0 0;">الربح الصافي</th>
                             </tr>
                         </thead>
                         <tbody id="categoryTableBody">
                             <tr>
-                                <td colspan="4" style="text-align: center;">جاري التحميل...</td>
+                                <td colspan="4" style="text-align: center; padding: 2rem;">⏳ جاري التحميل...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -447,62 +478,137 @@
                     `).join('');
                 }
 
-                // Render Charts
+                // ---- Premium Chart Rendering ----
                 Chart.defaults.color = savedTheme === 'dark' ? '#94a3b8' : '#64748b';
                 Chart.defaults.borderColor = savedTheme === 'dark' ? '#334155' : '#e2e8f0';
+                Chart.defaults.font.family = 'Cairo, sans-serif';
 
-                // Chart 1: Trend
                 const dates = Object.keys(dailyStats).sort();
-
-                // Ensure revenue and profit map strictly to the sorted dates
                 const revData = dates.map(d => dailyStats[d].revenue || 0);
                 const profData = dates.map(d => dailyStats[d].profit || 0);
+                const shortDates = dates.map(d => { const parts = d.split('-'); return parts[2] + '/' + parts[1]; });
 
-                new Chart(document.getElementById('trendChart'), {
+                // Gradient for Revenue line
+                const trendCtx = document.getElementById('trendChart').getContext('2d');
+                const revGrad = trendCtx.createLinearGradient(0, 0, 0, 280);
+                revGrad.addColorStop(0, 'rgba(79, 70, 229, 0.25)');
+                revGrad.addColorStop(1, 'rgba(79, 70, 229, 0.01)');
+                const profGrad = trendCtx.createLinearGradient(0, 0, 0, 280);
+                profGrad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+                profGrad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+
+                new Chart(trendCtx, {
                     type: 'line',
                     data: {
-                        labels: dates,
+                        labels: shortDates,
                         datasets: [
                             {
                                 label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue',
                                 data: revData,
                                 borderColor: '#4F46E5',
-                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                backgroundColor: revGrad,
                                 fill: true,
-                                tension: 0.4
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#4F46E5',
+                                pointHoverRadius: 6,
+                                pointHoverBackgroundColor: '#4F46E5',
                             },
                             {
                                 label: currentLang === 'ar' ? 'الربح' : 'Profit',
                                 data: profData,
                                 borderColor: '#10b981',
-                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                backgroundColor: profGrad,
                                 fill: true,
-                                tension: 0.4
+                                tension: 0.4,
+                                borderWidth: 2.5,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#10b981',
+                                pointHoverRadius: 6,
+                                pointHoverBackgroundColor: '#10b981',
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        interaction: { mode: 'index', intersect: false }
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+                            tooltip: {
+                                backgroundColor: savedTheme === 'dark' ? '#1e293b' : '#fff',
+                                titleColor: savedTheme === 'dark' ? '#e2e8f0' : '#1e293b',
+                                bodyColor: savedTheme === 'dark' ? '#94a3b8' : '#64748b',
+                                borderColor: savedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                                borderWidth: 1,
+                                cornerRadius: 10,
+                                padding: 12,
+                                displayColors: true,
+                                callbacks: {
+                                    label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2); }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false } },
+                            y: { beginAtZero: true, grid: { color: savedTheme === 'dark' ? '#1e293b' : '#f1f5f9' }, ticks: { callback: v => v.toLocaleString() } }
+                        }
                     }
                 });
 
-                // Chart 2: Top Products
+                // Chart 2: Top Products — Horizontal bar with revenue overlay
                 const topProducts = Object.entries(prodStats).sort((a, b) => b[1].qty - a[1].qty).slice(0, 5);
+                const barColors = ['#4F46E5', '#7c3aed', '#8b5cf6', '#a78bfa', '#c4b5fd'];
 
                 new Chart(document.getElementById('topProductsChart'), {
                     type: 'bar',
                     data: {
                         labels: topProducts.map(p => p[0]),
-                        datasets: [{
-                            label: currentLang === 'ar' ? 'الكمية المباعة' : 'Qty Sold',
-                            data: topProducts.map(p => p[1].qty),
-                            backgroundColor: '#8b5cf6',
-                            borderRadius: 4
-                        }]
+                        datasets: [
+                            {
+                                label: currentLang === 'ar' ? 'الكمية المباعة' : 'Qty Sold',
+                                data: topProducts.map(p => p[1].qty),
+                                backgroundColor: barColors,
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                barPercentage: 0.6,
+                            },
+                            {
+                                label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue',
+                                data: topProducts.map(p => p[1].rev),
+                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                borderColor: '#10b981',
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                barPercentage: 0.6,
+                                yAxisID: 'y1'
+                            }
+                        ]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+                            tooltip: {
+                                backgroundColor: savedTheme === 'dark' ? '#1e293b' : '#fff',
+                                titleColor: savedTheme === 'dark' ? '#e2e8f0' : '#1e293b',
+                                bodyColor: savedTheme === 'dark' ? '#94a3b8' : '#64748b',
+                                borderColor: savedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                                borderWidth: 1,
+                                cornerRadius: 10,
+                                padding: 12,
+                            }
+                        },
+                        scales: {
+                            x: { beginAtZero: true, grid: { display: false }, position: 'top' },
+                            y: { grid: { display: false } },
+                            y1: { display: false, beginAtZero: true }
+                        }
+                    }
                 });
 
             } catch (e) { console.error("Report generation failed:", e); }
