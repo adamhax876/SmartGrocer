@@ -287,8 +287,7 @@ router.post('/login', authLimiter, async (req, res) => {
             return res.status(403).json({
                 message: 'Account not verified. A new verification code has been sent to your email.',
                 userId: user._id,
-                needsVerification: true,
-                verificationCode: verificationCode // Dev fallback
+                needsVerification: true
             });
         }
 
