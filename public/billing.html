@@ -120,15 +120,15 @@
                     <ul class="space-y-5 mb-10 flex-1">
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
-                            <span>إدارة حتى <strong class="text-white">3,000 منتج</strong> بسهولة تامة</span>
+                            <span data-i18n="bil_feat1">إدارة حتى <strong class="text-white">3,000 منتج</strong> بسهولة تامة</span>
                         </li>
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
-                            <span>إصدار <strong class="text-white">10,000 فاتورة</strong> شهرياً</span>
+                            <span data-i18n="bil_feat2">إصدار <strong class="text-white">10,000 فاتورة</strong> شهرياً</span>
                         </li>
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
-                            <span>دعم فني عبر البريد الإلكتروني</span>
+                            <span data-i18n="bil_feat3">دعم فني عبر البريد الإلكتروني</span>
                         </li>
                     </ul>
                     <a href="https://wa.me/201024155762?text=أرغب%20في%20تفعيل%20الباقة%20الأساسية" target="_blank" class="w-full py-4 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition text-center flex justify-center items-center gap-2">
@@ -158,19 +158,19 @@
                     <ul class="space-y-5 mb-10 flex-1">
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-infinity text-xs"></i></div>
-                            <span><strong class="text-white">منتجات ومبيعات بلا حدود</strong></span>
+                            <span data-i18n="bil_feat_pro1"><strong class="text-white">منتجات ومبيعات بلا حدود</strong></span>
                         </li>
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>
-                            <span>تحليلات ذكية بالـ <strong class="text-white">AI</strong> للبيانات</span>
+                            <span data-i18n="bil_feat_pro2">تحليلات ذكية بالـ <strong class="text-white">AI</strong> للبيانات</span>
                         </li>
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center shrink-0"><i class="fab fa-whatsapp text-xs"></i></div>
-                            <span>إرسال الفواتير للعملاء عبر <strong class="text-white">واتساب</strong></span>
+                            <span data-i18n="bil_feat_pro3">إرسال الفواتير للعملاء عبر <strong class="text-white">واتساب</strong></span>
                         </li>
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0"><i class="fas fa-cloud-upload-alt text-xs"></i></div>
-                            <span>نسخ احتياطي سحابي، ولاء العملاء وإدارة الفروع</span>
+                            <span data-i18n="bil_feat_pro4">نسخ احتياطي سحابي، ولاء العملاء وإدارة الفروع</span>
                         </li>
                     </ul>
                     <a href="https://wa.me/201024155762?text=أرغب%20في%20تفعيل%20الباقة%20الاحترافية" target="_blank" class="w-full py-4 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.4)] text-white transition text-center flex justify-center items-center gap-2 transform hover:-translate-y-1">
@@ -238,8 +238,9 @@
                     rateDisplay.textContent = `1$ = ${egpRate.toFixed(2)} ج.م`;
                     
                     // Dynamic calculation
-                    pBasic.textContent = Math.ceil(basicPriceUsd * egpRate).toLocaleString('ar-EG');
-                    pPro.textContent = Math.ceil(proPriceUsd * egpRate).toLocaleString('ar-EG');
+                    const loc = (typeof currentUserLang !== 'undefined' ? currentUserLang : (localStorage.getItem('sg_lang') || 'ar')) === 'ar' ? 'ar-EG' : 'en-US';
+                    pBasic.textContent = Math.ceil(basicPriceUsd * egpRate).toLocaleString(loc);
+                    pPro.textContent = Math.ceil(proPriceUsd * egpRate).toLocaleString(loc);
                 } else {
                     throw new Error('Invalid rate data from backend');
                 }

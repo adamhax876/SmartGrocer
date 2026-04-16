@@ -38,7 +38,14 @@ const userTranslations = {
         bil_expire: "Expired",
         bil_btn_basic: "Activate via WhatsApp",
         bil_btn_pro: "Activate Pro Plan",
-        live_rate: "Live Exchange Rate: "
+        live_rate: "Live Exchange Rate: ",
+        bil_feat1: "Manage up to <strong class=\"text-white\">3,000 products</strong> easily",
+        bil_feat2: "Issue <strong class=\"text-white\">10,000 invoices</strong> monthly",
+        bil_feat3: "Email support",
+        bil_feat_pro1: "<strong class=\"text-white\">Unlimited products and sales</strong>",
+        bil_feat_pro2: "Smart <strong class=\"text-white\">AI</strong> data analytics",
+        bil_feat_pro3: "Send invoices to customers via <strong class=\"text-white\">WhatsApp</strong>",
+        bil_feat_pro4: "Cloud backup, customer loyalty, and branch management"
     },
     ar: {
         nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -76,7 +83,14 @@ const userTranslations = {
         bil_expire: "منتهية الصلاحية",
         bil_btn_basic: "تفعيل عبر واتساب",
         bil_btn_pro: "تفعيل الباقة الفاخرة",
-        live_rate: "سعر الصرف الحي: "
+        live_rate: "سعر الصرف الحي: ",
+        bil_feat1: "إدارة حتى <strong class=\"text-white\">3,000 منتج</strong> بسهولة تامة",
+        bil_feat2: "إصدار <strong class=\"text-white\">10,000 فاتورة</strong> شهرياً",
+        bil_feat3: "دعم فني عبر البريد الإلكتروني",
+        bil_feat_pro1: "<strong class=\"text-white\">منتجات ومبيعات بلا حدود</strong>",
+        bil_feat_pro2: "تحليلات ذكية بالـ <strong class=\"text-white\">AI</strong> للبيانات",
+        bil_feat_pro3: "إرسال الفواتير للعملاء عبر <strong class=\"text-white\">واتساب</strong>",
+        bil_feat_pro4: "نسخ احتياطي سحابي، ولاء العملاء وإدارة الفروع"
     }
 };
 
