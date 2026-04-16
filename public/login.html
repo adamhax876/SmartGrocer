@@ -171,6 +171,13 @@
                 <button type="submit" class="btn btn-primary btn-auth" id="loginBtn" data-i18n="btn_login">تسجيل الدخول</button>
             </form>
 
+            <!-- Verification Code Section (hidden by default) -->
+            <div id="verifySection" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: rgba(79,70,229,0.05); border-radius: 12px; border: 1px solid rgba(79,70,229,0.2);">
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;" data-i18n="verify_msg">أدخل رمز التحقق المرسل إلى بريدك الإلكتروني</p>
+                <input type="text" class="form-input" id="verifyCode" placeholder="000000" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; margin-bottom: 1rem;">
+                <button type="button" onclick="handleVerify()" class="btn btn-primary btn-auth" id="verifyBtn" style="background: linear-gradient(135deg, #10b981, #059669);">✅ تأكيد الرمز</button>
+            </div>
+
             <div class="auth-footer">
                 <span data-i18n="no_acc">ليس لديك متجر بعد؟</span>
                 <a href="/signup.html" class="auth-link" data-i18n="create_acc">ابدأ مجاناً الآن</a>
@@ -288,6 +295,14 @@
                 btn.disabled = false;
                 btn.textContent = ogText;
 
+                if (data.needsVerification) {
+                    // Show verification code input
+                    document.getElementById('verifySection').style.display = 'block';
+                    document.getElementById('verifySection').dataset.userId = data.userId;
+                    showError(currentLang === 'ar' ? 'تم إرسال رمز التحقق إلى بريدك الإلكتروني' : 'Verification code sent to your email');
+                    return;
+                }
+
                 if (!res.ok) throw new Error(data.message || translations[currentLang].err_login);
 
                 localStorage.setItem('sg_token', data.token);
@@ -308,6 +323,33 @@
                 showError(err.message);
                 btn.disabled = false;
                 btn.textContent = ogText;
+            }
+        }
+
+        async function handleVerify() {
+            const code = document.getElementById('verifyCode').value.trim();
+            const userId = document.getElementById('verifySection').dataset.userId;
+            if (!code || !userId) return;
+
+            const verifyBtn = document.getElementById('verifyBtn');
+            verifyBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, code })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message);
+
+                document.getElementById('verifySection').style.display = 'none';
+                const currentLang = localStorage.getItem('sg_lang') || 'ar';
+                showError(currentLang === 'ar' ? '✅ تم التحقق بنجاح! قم بتسجيل الدخول مرة أخرى' : '✅ Verified! Please login again');
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                verifyBtn.disabled = false;
             }
         }
     </script>
