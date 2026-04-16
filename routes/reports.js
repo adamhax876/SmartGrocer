@@ -134,9 +134,14 @@ Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
 
         const modelsToTry = [
             'meta-llama/llama-3.3-70b-instruct:free',
-            'deepseek/deepseek-r1:free',
-            'google/gemini-2.5-flash:free',
-            'huggingfaceh4/zephyr-7b-beta:free'
+            'google/gemma-3-27b-it:free',
+            'google/gemma-4-31b-it:free',
+            'google/gemma-4-26b-a4b-it:free',
+            'z-ai/glm-4.5-air:free',
+            'openai/gpt-oss-120b:free',
+            'minimax/minimax-m2.5:free',
+            'nvidia/nemotron-nano-9b-v2:free',
+            'deepseek/deepseek-r1:free'
         ];
 
         let aiRes = null;

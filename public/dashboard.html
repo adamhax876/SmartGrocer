@@ -461,10 +461,10 @@
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: savedTheme === 'dark' ? '#1e293b' : '#fff',
-                                titleColor: savedTheme === 'dark' ? '#e2e8f0' : '#1e293b',
-                                bodyColor: savedTheme === 'dark' ? '#94a3b8' : '#64748b',
-                                borderColor: savedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                                backgroundColor: themeStr === 'dark' ? '#1e293b' : '#fff',
+                                titleColor: themeStr === 'dark' ? '#e2e8f0' : '#1e293b',
+                                bodyColor: themeStr === 'dark' ? '#94a3b8' : '#64748b',
+                                borderColor: themeStr === 'dark' ? '#334155' : '#e2e8f0',
                                 borderWidth: 1,
                                 cornerRadius: 10,
                                 padding: 12,
@@ -539,27 +539,27 @@
 
         async function promptDeleteAccount() {
             const confirmed = await Swal.fire({
-                title: currentLang === 'ar' ? 'هل أنت متأكد من حذف حسابك؟' : 'Are you sure you want to delete your account?',
-                text: currentLang === 'ar' ? "لن تتمكن من التراجع عن هذا الإجراء، وسيتم مسح كل بيانات متجرك نهائياً!" : "You will not be able to undo this action, and all your store data will be deleted permanently!",
+                title: currentUserLang === 'ar' ? 'هل أنت متأكد من حذف حسابك؟' : 'Are you sure you want to delete your account?',
+                text: currentUserLang === 'ar' ? "لن تتمكن من التراجع عن هذا الإجراء، وسيتم مسح كل بيانات متجرك نهائياً!" : "You will not be able to undo this action, and all your store data will be deleted permanently!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3b82f6',
-                confirmButtonText: currentLang === 'ar' ? 'نعم، احذف حسابي النهائي' : 'Yes, delete my account',
-                cancelButtonText: currentLang === 'ar' ? 'إلغاء' : 'Cancel'
+                confirmButtonText: currentUserLang === 'ar' ? 'نعم، احذف حسابي النهائي' : 'Yes, delete my account',
+                cancelButtonText: currentUserLang === 'ar' ? 'إلغاء' : 'Cancel'
             });
 
             if (confirmed.isConfirmed) {
                 try {
                     Swal.fire({
-                        title: currentLang === 'ar' ? 'جاري الحذف...' : 'Deleting...',
+                        title: currentUserLang === 'ar' ? 'جاري الحذف...' : 'Deleting...',
                         didOpen: () => { Swal.showLoading() }
                     });
                     
                     const res = await api('/api/auth/account', { method: 'DELETE' });
                     if (res && res.success) {
                         await Swal.fire(
-                            currentLang === 'ar' ? 'تم الوداع' : 'Goodbye',
+                            currentUserLang === 'ar' ? 'تم الوداع' : 'Goodbye',
                             res.message,
                             'success'
                         );
@@ -569,7 +569,7 @@
                         throw new Error(res?.message || 'Failed to delete');
                     }
                 } catch (err) {
-                    Swal.fire(currentLang === 'ar' ? 'خطأ' : 'Error', err.message, 'error');
+                    Swal.fire(currentUserLang === 'ar' ? 'خطأ' : 'Error', err.message, 'error');
                 }
             }
         }

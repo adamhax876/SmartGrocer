@@ -224,15 +224,17 @@
             const container = document.getElementById('modalItems');
             document.getElementById('modalTitle').textContent = `${t('invoice_title')} #${sale._id.substring(18)}`;
 
-            container.innerHTML = sale.items.map(i => `
+            container.innerHTML = sale.items.map(i => {
+                const itemPrice = i.price || i.unitPrice || 0;
+                return `
                 <div class="modal-item-row">
                     <div>
                         <div class="modal-item-name">${i.product ? i.product.name : '—'}</div>
-                        <div class="modal-item-meta">${i.quantity} × ${i.price.toFixed(2)}</div>
+                        <div class="modal-item-meta">${i.quantity} × ${itemPrice.toFixed(2)}</div>
                     </div>
-                    <div style="font-weight: bold; color: var(--text);">${(i.quantity * i.price).toFixed(2)}</div>
+                    <div style="font-weight: bold; color: var(--text);">${(i.quantity * itemPrice).toFixed(2)}</div>
                 </div>
-            `).join('');
+            `}).join('');
 
             container.innerHTML += `
                 <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: var(--primary);">
