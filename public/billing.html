@@ -58,9 +58,13 @@
                         <span id="liveRateDisplay" class="font-bold text-green-400"><div class="loader w-4 h-4 border-2"></div></span>
                     </div>
                     
+                    <button id="langToggle" class="text-gray-400 hover:text-white transition w-14 h-10 flex items-center justify-center rounded-lg hover:bg-gray-800 font-bold" title="Language">
+                        English
+                    </button>
+
                     <a href="/dashboard.html" class="text-gray-300 hover:text-white transition font-semibold" data-i18n="nav_dashboard">لوحة التحكم</a>
                     <button id="logoutBtn" class="text-sm font-bold text-white bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/50 px-5 py-2.5 rounded-xl transition-all">
-                        خروج <i class="fas fa-sign-out-alt ml-2"></i>
+                        <span data-i18n="btn_logout">خروج</span> <i class="fas fa-sign-out-alt ml-2"></i>
                     </button>
                 </div>
             </div>
@@ -72,8 +76,8 @@
         
         <!-- Header -->
         <div class="text-center mb-16">
-            <h1 class="text-5xl font-extrabold mb-6 lux-text-gradient">ارتقِ بتجارتك للمستوى التالي</h1>
-            <p class="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed">اختر الباقة التي تناسب طموحك. تقنيات سحابية متقدمة، ذكاء اصطناعي، وتحليلات دقيقة بين يديك.</p>
+            <h1 class="text-5xl font-extrabold mb-6 lux-text-gradient" data-i18n="bil_heading">ارتقِ بتجارتك للمستوى التالي</h1>
+            <p class="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed" data-i18n="bil_subheading">اختر الباقة التي تناسب طموحك. تقنيات سحابية متقدمة، ذكاء اصطناعي، وتحليلات دقيقة بين يديك.</p>
         </div>
 
         <!-- Current Status -->
@@ -85,15 +89,15 @@
                         <i class="fas fa-crown"></i>
                     </div>
                     <div>
-                        <p class="text-gray-400 text-sm font-semibold tracking-wider mb-1 uppercase">باقتك الحالية</p>
-                        <h2 class="text-3xl font-bold text-white" id="currentPlanName">جاري التحميل...</h2>
+                        <p class="text-gray-400 text-sm font-semibold tracking-wider mb-1 uppercase" data-i18n="bil_curr_plan">باقتك الحالية</p>
+                        <h2 class="text-3xl font-bold text-white" id="currentPlanName" data-i18n="bil_loading">جاري التحميل...</h2>
                         <div class="flex gap-4 mt-3">
-                            <span class="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full"><i class="fas fa-calendar-alt ml-1 text-blue-400"></i> تنتهي: <span id="currentPlanExpiry" class="text-white">-</span></span>
+                            <span class="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full"><i class="fas fa-calendar-alt ml-1 text-blue-400"></i> <span id="currentPlanExpiry" class="text-white">-</span></span>
                         </div>
                     </div>
                 </div>
                 <div id="statusBadge" class="px-6 py-3 rounded-xl font-bold flex items-center gap-2 border">
-                    <div class="loader"></div> التحقق من الحالة
+                    <div class="loader"></div> <span data-i18n="bil_loading">التحقق من الحالة</span>
                 </div>
             </div>
         </div>
@@ -104,13 +108,13 @@
             <!-- Standard Plan -->
             <div class="card-hover glass-panel rounded-3xl border border-gray-700/50 overflow-hidden flex flex-col">
                 <div class="p-10 border-b border-gray-700/50">
-                    <h3 class="text-2xl font-bold text-white mb-2">الباقة الأساسية</h3>
-                    <p class="text-gray-400 text-sm mb-6">مثالية للمتاجر الناشئة والمتوسطة</p>
+                    <h3 class="text-2xl font-bold text-white mb-2" data-i18n="bil_basic">الباقة الأساسية</h3>
+                    <p class="text-gray-400 text-sm mb-6" data-i18n="bil_basic_desc">مثالية للمتاجر الناشئة والمتوسطة</p>
                     <div class="flex items-baseline gap-2 mb-2">
                         <span class="text-5xl font-black text-white" id="basicPriceEgp">...</span>
-                        <span class="text-lg text-gray-400 font-semibold">ج.م /شهرياً</span>
+                        <span class="text-lg text-gray-400 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
                     </div>
-                    <div class="text-green-400 font-semibold text-sm bg-green-400/10 inline-block px-3 py-1 rounded-lg">يعادل 15$ شهرياً (تحديث حي)</div>
+                    <div class="text-green-400 font-semibold text-sm bg-green-400/10 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 15$ / month</div>
                 </div>
                 <div class="p-10 flex-1 flex flex-col bg-gray-800/30">
                     <ul class="space-y-5 mb-10 flex-1">
@@ -128,7 +132,7 @@
                         </li>
                     </ul>
                     <a href="https://wa.me/201024155762?text=أرغب%20في%20تفعيل%20الباقة%20الأساسية" target="_blank" class="w-full py-4 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition text-center flex justify-center items-center gap-2">
-                        <i class="fab fa-whatsapp text-green-400 text-xl"></i> تفعيل عبر واتساب
+                        <i class="fab fa-whatsapp text-green-400 text-xl"></i> <span data-i18n="bil_btn_basic">تفعيل عبر واتساب</span>
                     </a>
                 </div>
             </div>
@@ -136,18 +140,18 @@
             <!-- Preimum Plan -->
             <div class="card-hover glass-panel rounded-3xl border-2 border-blue-500/80 overflow-hidden flex flex-col relative transform md:-translate-y-4 shadow-[0_0_40px_rgba(59,130,246,0.3)]">
                 <div class="absolute top-5 right-5 bg-gradient-to-r from-yellow-400 to-amber-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
-                    <i class="fas fa-star mr-1"></i> الأكثر اختياراً
+                    <i class="fas fa-star mr-1"></i> <span data-i18n="bil_most">الأكثر اختياراً</span>
                 </div>
                 <div class="p-10 border-b border-gray-700/50 lux-gradient relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MCcgaGVpZ2h0PSc0MCc+PGNpcmNsZSBjeD0nMjAnIGN5PScyMCcgcj0nMicgZmlsbD0nI2ZmZicgZmlsbC1vcGFjaXR5PScwLjInLz48L3N2Zz4=')] opacity-30"></div>
                     <div class="relative z-10">
-                        <h3 class="text-2xl font-bold text-white mb-2">الباقة الاحترافية</h3>
-                        <p class="text-blue-100 text-sm mb-6">الطاقة القصوى لتوسيع إمبراطوريتك</p>
+                        <h3 class="text-2xl font-bold text-white mb-2" data-i18n="bil_pro">الباقة الاحترافية</h3>
+                        <p class="text-blue-100 text-sm mb-6" data-i18n="bil_pro_desc">الطاقة القصوى لتوسيع إمبراطوريتك</p>
                         <div class="flex items-baseline gap-2 mb-2">
                             <span class="text-5xl font-black text-white" id="proPriceEgp">...</span>
-                            <span class="text-lg text-blue-100 font-semibold">ج.م /شهرياً</span>
+                            <span class="text-lg text-blue-100 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
                         </div>
-                        <div class="text-white font-semibold text-sm bg-black/20 inline-block px-3 py-1 rounded-lg">يعادل 25$ شهرياً (تحديث حي)</div>
+                        <div class="text-white font-semibold text-sm bg-black/20 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 25$ / month</div>
                     </div>
                 </div>
                 <div class="p-10 flex-1 flex flex-col bg-gray-900/60">
@@ -170,7 +174,7 @@
                         </li>
                     </ul>
                     <a href="https://wa.me/201024155762?text=أرغب%20في%20تفعيل%20الباقة%20الاحترافية" target="_blank" class="w-full py-4 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.4)] text-white transition text-center flex justify-center items-center gap-2 transform hover:-translate-y-1">
-                        <i class="fab fa-whatsapp text-xl"></i> تفعيل الباقة الفاخرة
+                        <i class="fab fa-whatsapp text-xl"></i> <span data-i18n="bil_btn_pro">تفعيل الباقة الفاخرة</span>
                     </a>
                 </div>
             </div>
@@ -182,8 +186,8 @@
                 <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/30">
                     <i class="fas fa-wallet text-3xl text-yellow-500"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-3">كيفية الدفع والتفعيل</h3>
-                <p class="text-gray-400 max-w-2xl mx-auto">قم بتحويل المبلغ المطلوب عبر أحد الطرق التالية، ثم شاركنا إيصال التحويل عبر الواتساب لاختصار الوقت وتفعيل حسابك في دقائق.</p>
+                <h3 class="text-2xl font-bold text-white mb-3" data-i18n="bil_pay">كيفية الدفع والتفعيل</h3>
+                <p class="text-gray-400 max-w-2xl mx-auto" data-i18n="bil_pay_desc">قم بتحويل المبلغ المطلوب عبر أحد الطرق التالية، ثم شاركنا إيصال التحويل عبر الواتساب لاختصار الوقت وتفعيل حسابك في دقائق.</p>
             </div>
 
             <div id="paymentMethodsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -270,10 +274,10 @@
                     eDate.setHours(0,0,0,0);
 
                     if (eDate >= now) {
-                        statusBadge.innerHTML = '<i class="fas fa-check-circle text-lg"></i> باقة نشطة';
+                        statusBadge.innerHTML = `<i class="fas fa-check-circle text-lg"></i> ${typeof t === 'function' ? t('bil_active') : 'باقة نشطة'}`;
                         statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-green-500/20 text-green-400 border-green-500/30';
                     } else {
-                        statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle text-lg"></i> منتهية الصلاحية';
+                        statusBadge.innerHTML = `<i class="fas fa-exclamation-triangle text-lg"></i> ${typeof t === 'function' ? t('bil_expire') : 'منتهية الصلاحية'}`;
                         statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-red-500/20 text-red-400 border-red-500/30 animate-pulse';
                     }
                 }
@@ -318,11 +322,24 @@
         }
 
         // UI Features integration
+        document.getElementById('langToggle').addEventListener('click', () => {
+            let currentLang = localStorage.getItem('sg_lang') || 'ar';
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('sg_lang', currentLang);
+            if (typeof applyUserLang === 'function') {
+                currentUserLang = currentLang;
+                applyUserLang();
+            } else {
+                location.reload();
+            }
+        });
+
         // Initialize All
         updateExchangeRates();
         loadUserData();
         loadPaymentMethods();
     </script>
+    <script src="/js/user-lang.js"></script>
     <script src="/js/app.js"></script>
 </body>
 </html>

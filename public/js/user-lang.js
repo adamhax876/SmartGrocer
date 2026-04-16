@@ -18,7 +18,27 @@ const userTranslations = {
         label_punit: "Unit", unit_piece: "Piece", unit_kg: "Kg", unit_liter: "Liter", unit_box: "Box", unit_pack: "Pack", label_pbarcode: "Barcode (Optional)",
         
         // Settings / General
-        settings_title: "Store Settings"
+        settings_title: "Store Settings",
+        
+        // Billing
+        bil_title: "Pricing & Subscriptions",
+        bil_heading: "Upgrade Your Business to the Next Level",
+        bil_subheading: "Choose the right plan. Advanced cloud tech, AI, and precise analytics at your fingertips.",
+        bil_curr_plan: "Your Current Plan",
+        bil_loading: "Loading...",
+        bil_basic: "Basic Plan",
+        bil_basic_desc: "Ideal for startups and medium stores",
+        bil_month: "EGP /month",
+        bil_pro: "Pro Plan",
+        bil_pro_desc: "Power to expand your empire",
+        bil_most: "Most Popular",
+        bil_pay: "How to Pay & Activate",
+        bil_pay_desc: "Transfer via below methods, then send a WhatsApp receipt to activate in minutes.",
+        bil_active: "Active Plan",
+        bil_expire: "Expired",
+        bil_btn_basic: "Activate via WhatsApp",
+        bil_btn_pro: "Activate Pro Plan",
+        live_rate: "Live Exchange Rate: "
     },
     ar: {
         nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -36,7 +56,27 @@ const userTranslations = {
         modal_title: "إضافة منتج جديد", label_pname: "اسم المنتج", label_pcat: "الفئة", label_pcost: "التكلفة", label_pprice: "سعر البيع", label_pqty: "الكمية الابتدائية", btn_save: "حفظ المنتج",
         label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)",
         
-        settings_title: "إعدادات المتجر"
+        settings_title: "إعدادات المتجر",
+        
+        // Billing
+        bil_title: "الباقات والاشتراكات",
+        bil_heading: "ارتقِ بتجارتك للمستوى التالي",
+        bil_subheading: "اختر الباقة التي تناسب طموحك. تقنيات سحابية متقدمة، ذكاء اصطناعي، وتحليلات دقيقة بين يديك.",
+        bil_curr_plan: "باقتك الحالية",
+        bil_loading: "جاري التحميل...",
+        bil_basic: "الباقة الأساسية",
+        bil_basic_desc: "مثالية للمتاجر الناشئة والمتوسطة",
+        bil_month: "ج.م /شهرياً",
+        bil_pro: "الباقة الاحترافية",
+        bil_pro_desc: "الطاقة القصوى لتوسيع إمبراطوريتك",
+        bil_most: "الأكثر اختياراً",
+        bil_pay: "كيفية الدفع والتفعيل",
+        bil_pay_desc: "قم بتحويل المبلغ المطلوب عبر أحد الطرق التالية، ثم شاركنا إيصال التحويل عبر الواتساب لاختصار الوقت.",
+        bil_active: "باقة نشطة",
+        bil_expire: "منتهية الصلاحية",
+        bil_btn_basic: "تفعيل عبر واتساب",
+        bil_btn_pro: "تفعيل الباقة الفاخرة",
+        live_rate: "سعر الصرف الحي: "
     }
 };
 
