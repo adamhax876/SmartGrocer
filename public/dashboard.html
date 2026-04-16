@@ -377,7 +377,7 @@
             }
 
             const user = getUser();
-            document.getElementById('userGreeting').textContent = currentLang === 'ar' ? `مرحباً، ${user.fullName || ''}` : `Hello, ${user.fullName || ''}`;
+            document.getElementById('userGreeting').textContent = currentUserLang === 'ar' ? `مرحباً، ${user.fullName || ''}` : `Hello, ${user.fullName || ''}`;
 
             try {
                 // Fetch full fresh user details
@@ -395,21 +395,21 @@
                         if (planText === 'Pro Plan' && isActive) {
                             upgBtn.style.display = 'none';
                         } else if (!isActive) {
-                            upgBtn.textContent = currentLang === 'ar' ? 'تجديد الباقة 🚀' : 'Renew Plan 🚀';
+                            upgBtn.textContent = currentUserLang === 'ar' ? 'تجديد الباقة 🚀' : 'Renew Plan 🚀';
                             upgBtn.style.background = '#dc2626'; // Alert color
                         }
                     }
 
                     if (planText === 'Free Trial') {
                         const daysLeft = Math.floor((endDate - new Date()) / (1000 * 60 * 60 * 24));
-                        planText = currentLang === 'ar' ? `تجربة مجانية (${daysLeft > 0 ? daysLeft : 0} يوم)` : `Free Trial (${daysLeft > 0 ? daysLeft : 0} days left)`;
+                        planText = currentUserLang === 'ar' ? `تجربة مجانية (${daysLeft > 0 ? daysLeft : 0} يوم)` : `Free Trial (${daysLeft > 0 ? daysLeft : 0} days left)`;
                         planBadge.style.background = '#fef3c7';
                         planBadge.style.color = '#92400e';
                     } else {
                         planBadge.style.background = '#dbeafe';
                         planBadge.style.color = '#1e40af';
-                        planText = currentLang === 'ar' && planText === 'Basic Plan' ? 'الباقة الأساسية' :
-                            currentLang === 'ar' && planText === 'Pro Plan' ? 'الباقة الاحترافية' : planText;
+                        planText = currentUserLang === 'ar' && planText === 'Basic Plan' ? 'الباقة الأساسية' :
+                            currentUserLang === 'ar' && planText === 'Pro Plan' ? 'الباقة الاحترافية' : planText;
                     }
                     planBadge.textContent = planText;
                 }
@@ -422,8 +422,9 @@
                 document.getElementById('stats-low-stock').textContent = data.products.lowStock;
                 document.getElementById('stats-products').textContent = data.products.total;
 
-                Chart.defaults.color = savedTheme === 'dark' ? '#94a3b8' : '#64748b';
-                Chart.defaults.borderColor = savedTheme === 'dark' ? '#334155' : '#e2e8f0';
+                const themeStr = typeof getTheme === 'function' ? getTheme() : localStorage.getItem('sg_theme') || 'light';
+                Chart.defaults.color = themeStr === 'dark' ? '#94a3b8' : '#64748b';
+                Chart.defaults.borderColor = themeStr === 'dark' ? '#334155' : '#e2e8f0';
                 Chart.defaults.font.family = 'Cairo, sans-serif';
 
                 // Monthly Revenue — Premium Gradient Bar Chart
@@ -435,7 +436,7 @@
                 const monthKeys = Object.keys(data.monthlyRevenue);
                 const shortMonths = monthKeys.map(m => {
                     const parts = m.split('-');
-                    const monthNames = currentLang === 'ar' 
+                    const monthNames = currentUserLang === 'ar' 
                         ? ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
                         : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                     return monthNames[parseInt(parts[1]) - 1] || m;
@@ -446,7 +447,7 @@
                     data: {
                         labels: shortMonths,
                         datasets: [{
-                            label: currentLang === 'ar' ? 'المبيعات' : 'Sales',
+                            label: currentUserLang === 'ar' ? 'المبيعات' : 'Sales',
                             data: Object.values(data.monthlyRevenue),
                             backgroundColor: barGrad,
                             borderRadius: 10,
@@ -468,13 +469,13 @@
                                 cornerRadius: 10,
                                 padding: 12,
                                 callbacks: {
-                                    label: ctx => (currentLang === 'ar' ? 'المبيعات: ' : 'Sales: ') + ctx.parsed.y.toLocaleString()
+                                    label: ctx => (currentUserLang === 'ar' ? 'المبيعات: ' : 'Sales: ') + ctx.parsed.y.toLocaleString()
                                 }
                             }
                         },
                         scales: {
                             x: { grid: { display: false } },
-                            y: { beginAtZero: true, grid: { color: savedTheme === 'dark' ? '#1e293b' : '#f1f5f9' }, ticks: { callback: v => v.toLocaleString() } }
+                            y: { beginAtZero: true, grid: { color: themeStr === 'dark' ? '#1e293b' : '#f1f5f9' }, ticks: { callback: v => v.toLocaleString() } }
                         }
                     }
                 });
@@ -494,7 +495,7 @@
                             data: catValues,
                             backgroundColor: catColors.slice(0, catLabels.length),
                             borderWidth: 3,
-                            borderColor: savedTheme === 'dark' ? '#1e293b' : '#ffffff',
+                            borderColor: themeStr === 'dark' ? '#1e293b' : '#ffffff',
                             hoverOffset: 8
                         }]
                     },
@@ -512,10 +513,10 @@
                                 }
                             },
                             tooltip: {
-                                backgroundColor: savedTheme === 'dark' ? '#1e293b' : '#fff',
-                                titleColor: savedTheme === 'dark' ? '#e2e8f0' : '#1e293b',
-                                bodyColor: savedTheme === 'dark' ? '#94a3b8' : '#64748b',
-                                borderColor: savedTheme === 'dark' ? '#334155' : '#e2e8f0',
+                                backgroundColor: themeStr === 'dark' ? '#1e293b' : '#fff',
+                                titleColor: themeStr === 'dark' ? '#e2e8f0' : '#1e293b',
+                                bodyColor: themeStr === 'dark' ? '#94a3b8' : '#64748b',
+                                borderColor: themeStr === 'dark' ? '#334155' : '#e2e8f0',
                                 borderWidth: 1,
                                 cornerRadius: 10,
                                 padding: 12,

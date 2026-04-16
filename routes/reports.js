@@ -132,21 +132,47 @@ Write a professional HTML report in ${isAr ? 'Arabic' : 'English'}.
 Include: performance summary, low stock alert, 3 actionable tips.
 Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
 
-        const aiRes = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-            model: 'meta-llama/llama-3.3-70b-instruct:free',
-            messages: [
-                { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
-                { role: 'user', content: prompt }
-            ],
-            max_tokens: 600
-        }, {
-            headers: {
-                'Authorization': 'Bearer ' + apiKey,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://smartgrocer.me',
-                'X-Title': 'SmartGrocer AI'
+        const modelsToTry = [
+            'meta-llama/llama-3.3-70b-instruct:free',
+            'deepseek/deepseek-r1:free',
+            'google/gemini-2.5-flash:free',
+            'huggingfaceh4/zephyr-7b-beta:free'
+        ];
+
+        let aiRes = null;
+        let lastError = null;
+
+        for (const model of modelsToTry) {
+            try {
+                aiRes = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+                    model: model,
+                    messages: [
+                        { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    max_tokens: 600
+                }, {
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': 'https://smartgrocer.me',
+                        'X-Title': 'SmartGrocer AI'
+                    }
+                });
+                // If successful, break out of loop
+                if (aiRes && aiRes.data && aiRes.data.choices) {
+                    break;
+                }
+            } catch (err) {
+                console.error(`AI Model ${model} failed:`, err.response?.data?.error?.message || err.message);
+                lastError = err;
+                continue; // Try next model
             }
-        });
+        }
+
+        if (!aiRes || !aiRes.data || !aiRes.data.choices) {
+            throw lastError || new Error("All fallback AI models failed due to rate limits.");
+        }
 
         const aiData = aiRes.data;
         let analysisHtml = aiData.choices[0].message.content;

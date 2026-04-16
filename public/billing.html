@@ -224,19 +224,19 @@
             const pPro = document.getElementById('proPriceEgp');
 
             try {
-                // Free Exchange Rate API v4
-                const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                // Fetch rate from our own backend to avoid AdBlockers/CORS on client side
+                const res = await fetch('/api/settings/public');
                 const data = await res.json();
                 
-                if(data && data.rates && data.rates.EGP) {
-                    const egpRate = data.rates.EGP;
+                if(data && data.success && data.usdEgpRate) {
+                    const egpRate = parseFloat(data.usdEgpRate);
                     rateDisplay.textContent = `1$ = ${egpRate.toFixed(2)} ج.م`;
                     
                     // Dynamic calculation
                     pBasic.textContent = Math.ceil(basicPriceUsd * egpRate).toLocaleString('ar-EG');
                     pPro.textContent = Math.ceil(proPriceUsd * egpRate).toLocaleString('ar-EG');
                 } else {
-                    throw new Error('Invalid rate data');
+                    throw new Error('Invalid rate data from backend');
                 }
             } catch (error) {
                 console.error("Exchange rate fetch failed:", error);

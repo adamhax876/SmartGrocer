@@ -89,15 +89,34 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err.message));
 
+let cachedUsdRate = null;
+let lastRateFetch = 0;
+
 // Public Settings Route
 app.get('/api/settings/public', async (req, res) => {
   const { getSettings } = require('./utils/settings');
   const settings = await getSettings();
+
+  // Fetch exchange rate on backend securely
+  try {
+      if (Date.now() - lastRateFetch > 1000 * 60 * 60 * 4) { // Cache for 4 hours
+          const axios = require('axios');
+          const xr = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
+          if (xr.data && xr.data.rates && xr.data.rates.EGP) {
+              cachedUsdRate = xr.data.rates.EGP;
+              lastRateFetch = Date.now();
+          }
+      }
+  } catch (e) {
+      console.warn("Backend exchange rate fetch failed:", e.message);
+  }
+
   res.json({
     success: true,
     currency: settings.currency || '$',
     siteName: settings.site_name || 'Smart Grocer',
-    paymentMethods: settings.paymentMethods || null
+    paymentMethods: settings.paymentMethods || null,
+    usdEgpRate: cachedUsdRate || 50.85 // Secure fallback
   });
 });
 
