@@ -166,6 +166,14 @@
             document.getElementById('detailsModal').classList.remove('active');
         });
 
+        // Event delegation for View buttons inside the table
+        document.getElementById('salesTableBody').addEventListener('click', (e) => {
+            const btn = e.target.closest('.view-sale-btn');
+            if (btn) {
+                showSaleDetails(btn.getAttribute('data-sale-id'));
+            }
+        });
+
         let allSales = [];
 
         async function loadSales() {
@@ -207,12 +215,7 @@
                 `;
             }).join('');
 
-            // Attach event listeners to view buttons (CSP-safe, no inline handlers)
-            document.querySelectorAll('.view-sale-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    showSaleDetails(this.getAttribute('data-sale-id'));
-                });
-            });
+
         }
 
         function showSaleDetails(saleId) {

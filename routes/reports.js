@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
-const fetch = require('node-fetch');
 const axios = require('axios');
+const auth = require('../middleware/auth');
+
+router.use(auth);
+
 router.get('/overview', async (req, res) => {
     try {
         const userId = req.user._id;
