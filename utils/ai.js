@@ -31,7 +31,7 @@ async function generateAIReport(storeData) {
                 'X-Title': 'SmartGrocer AI Cron'
             },
             body: JSON.stringify({
-                model: 'meta-llama/llama-4-maverick:free',
+                model: 'meta-llama/llama-3.3-70b-instruct:free',
                 messages: [
                     { role: 'system', content: 'أنت محلل أعمال تجزئة خبير. اكتب بالعربية فقط.' },
                     { role: 'user', content: prompt }

@@ -142,7 +142,7 @@ Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
                 'X-Title': 'SmartGrocer AI'
             },
             body: JSON.stringify({
-                model: 'meta-llama/llama-4-maverick:free',
+                model: 'meta-llama/llama-3.3-70b-instruct:free',
                 messages: [
                     { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
                     { role: 'user', content: prompt }

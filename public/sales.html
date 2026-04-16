@@ -7,269 +7,40 @@
     <title>SmartGrocer — المبيعات</title>
     <link rel="stylesheet" href="/css/global.css">
     <style>
-        .app {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 260px;
-            background: var(--bg-card);
-            border-inline-end: 1px solid var(--border);
-            padding: 1.5rem 1rem;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            overflow-y: auto;
-            z-index: 100;
-            transition: all 0.3s;
-        }
-
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 2rem;
-            padding: 0 .5rem;
-        }
-
-        .sidebar-logo-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--primary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-logo-text {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            padding: .7rem .85rem;
-            border-radius: 10px;
-            font-size: .92rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            transition: all .2s;
-            text-decoration: none;
-        }
-
-        .sidebar-link:hover {
-            background: var(--bg-secondary);
-            color: var(--text);
-        }
-
-        .sidebar-link.active {
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .sidebar-link span:first-child {
-            font-size: 1.15rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        .sidebar-bottom {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .main {
-            flex: 1;
-            margin-inline-start: 260px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .topbar-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .content {
-            padding: 2rem;
-            flex: 1;
-            background: var(--bg);
-        }
-
-        .filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-            padding: 0.75rem 1rem;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--text);
-            outline: none;
-            flex: 1;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-        }
-
-        .table-wrapper {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            overflow-x: auto;
-            box-shadow: var(--shadow-sm);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-        }
-
-        [dir="ltr"] table {
-            text-align: left;
-        }
-
-        th {
-            padding: 1.2rem 1.5rem;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        tr:hover td {
-            background: var(--bg-secondary);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-
-        .items-list-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-
-        .items-list-modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            width: 100%;
-            max-width: 500px;
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            position: relative;
-            border: 1px solid var(--border);
-        }
-
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 1.5rem;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        [dir="ltr"] .close-btn {
-            right: auto;
-            left: 1.5rem;
-        }
-
-        .modal-items-container {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .modal-item-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px dashed var(--border);
-        }
-
-        .modal-item-name {
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .modal-item-meta {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
+        .app { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: var(--bg-card); border-inline-end: 1px solid var(--border); padding: 1.5rem 1rem; display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; overflow-y: auto; z-index: 100; transition: all 0.3s; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; padding: 0 .5rem; }
+        .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-link { display: flex; align-items: center; gap: .75rem; padding: .7rem .85rem; border-radius: 10px; font-size: .92rem; font-weight: 600; color: var(--text-secondary); transition: all .2s; text-decoration: none; }
+        .sidebar-link:hover { background: var(--bg-secondary); color: var(--text); }
+        .sidebar-link.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
+        .sidebar-link span:first-child { font-size: 1.15rem; width: 24px; text-align: center; }
+        .sidebar-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+        .main { flex: 1; margin-inline-start: 260px; display: flex; flex-direction: column; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 50; }
+        .topbar-title { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+        .content { padding: 2rem; flex: 1; background: var(--bg); }
+        .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .form-control { padding: 0.75rem 1rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); outline: none; flex: 1; }
+        .form-control:focus { border-color: var(--primary); }
+        .table-wrapper { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow-x: auto; box-shadow: var(--shadow-sm); }
+        table { width: 100%; border-collapse: collapse; text-align: right; }
+        [dir="ltr"] table { text-align: left; }
+        th { padding: 1.2rem 1.5rem; background: var(--bg-secondary); color: var(--text-secondary); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); color: var(--text); font-weight: 500; font-size: 0.95rem; }
+        tr:hover td { background: var(--bg-secondary); }
+        .badge { display: inline-block; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .badge-success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .items-list-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .items-list-modal.active { display: flex; }
+        .modal-content { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: var(--radius-lg); padding: 2rem; position: relative; border: 1px solid var(--border); }
+        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; }
+        .close-btn { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; }
+        [dir="ltr"] .close-btn { right: auto; left: 1.5rem; }
+        .modal-items-container { max-height: 300px; overflow-y: auto; }
+        .modal-item-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px dashed var(--border); }
+        .modal-item-name { font-weight: 600; color: var(--text); }
+        .modal-item-meta { font-size: 0.9rem; color: var(--text-secondary); }
     </style>
 </head>
 
@@ -279,29 +50,19 @@
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="/images/logo.png" style="width: 100%; max-height: 100px; object-fit: contain;" alt="Logo">
-
             </div>
             <nav class="sidebar-nav">
-                <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span
-                        data-i18n="nav_dashboard">لوحة التحكم</span></a>
-                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span
-                        data-i18n="nav_products">المنتجات</span></a>
-                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span
-                        data-i18n="nav_inventory">المخزون</span></a>
-                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
-                        البيع (POS)</span></a>
-                <a href="/sales.html" class="sidebar-link active"><span class="icon">💰</span> <span
-                        data-i18n="nav_sales">المبيعات</span></a>
-                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span
-                        data-i18n="nav_reports">التقارير</span></a>
-                <a href="/support.html" class="sidebar-link"><span class="icon">🎧</span> <span
-                        data-i18n="nav_support">الدعم الفني</span></a>
+                <a href="/dashboard.html" class="sidebar-link"><span class="icon">📊</span> <span data-i18n="nav_dashboard">لوحة التحكم</span></a>
+                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span data-i18n="nav_products">المنتجات</span></a>
+                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span data-i18n="nav_inventory">المخزون</span></a>
+                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة البيع (POS)</span></a>
+                <a href="/sales.html" class="sidebar-link active"><span class="icon">💰</span> <span data-i18n="nav_sales">المبيعات</span></a>
+                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span data-i18n="nav_reports">التقارير</span></a>
+                <a href="/support.html" class="sidebar-link"><span class="icon">🎧</span> <span data-i18n="nav_support">الدعم الفني</span></a>
             </nav>
             <div class="sidebar-bottom">
-                <button onclick="window.location.href='/'" class="btn btn-primary"
-                    style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
-                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
-                    الخروج</button>
+                <a href="/" class="btn btn-primary" style="width: 100%; margin-bottom: 10px; display: block; text-align: center;" data-i18n="btn_home">🏠 الرئيسية</a>
+                <button class="btn btn-danger" style="width: 100%;" id="logoutBtn" data-i18n="btn_logout">تسجيل الخروج</button>
             </div>
         </aside>
 
@@ -309,18 +70,17 @@
             <header class="topbar">
                 <h1 class="topbar-title" data-i18n="title_sales">سجل المبيعات والفواتير</h1>
                 <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
-                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                    <button class="btn btn-outline" id="theme-toggle"
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
-                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                    <button class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
                 </div>
             </header>
 
             <div class="content">
                 <div class="filters">
-                    <input type="date" class="form-control" id="dateFilter" onchange="filterSales()">
-                    <button class="btn btn-outline" onclick="loadSales()" data-i18n="btn_refresh">تحديث السجل
-                        🔄</button>
+                    <input type="date" class="form-control" id="dateFilter">
+                    <button class="btn btn-outline" id="refreshBtn" data-i18n="btn_refresh">تحديث السجل 🔄</button>
                 </div>
 
                 <div class="table-wrapper">
@@ -349,11 +109,9 @@
     <!-- Details Modal -->
     <div class="items-list-modal" id="detailsModal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeDetails()">&times;</button>
+            <button class="close-btn" id="closeModalBtn">&times;</button>
             <h2 class="modal-title" id="modalTitle">تفاصيل الفاتورة</h2>
-            <div class="modal-items-container" id="modalItems">
-                <!-- Injected details -->
-            </div>
+            <div class="modal-items-container" id="modalItems"></div>
         </div>
     </div>
 
@@ -361,20 +119,24 @@
     <script>
         const translations = {
             en: {
-                nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports",
-                btn_theme: "Theme", btn_logout: "Logout",
-                title_sales: "Sales & Invoices History", btn_refresh: "Refresh Data 🔄",
-                th_invoice: "Invoice ID", th_date: "Date & Time", th_items: "Items Count", th_total: "Total", th_method: "Payment", th_details: "Action"
+                nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports", nav_support: "Support",
+                btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home",
+                title_sales: "Sales & Invoices History", btn_refresh: "Refresh 🔄",
+                th_invoice: "Invoice ID", th_date: "Date & Time", th_items: "Items", th_total: "Total", th_method: "Payment", th_details: "Details",
+                btn_view: "View", pay_cash: "Cash", no_sales: "No sales found", invoice_title: "Invoice"
             },
             ar: {
-                nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير",
-                btn_theme: "المظهر", btn_logout: "تسجيل الخروج",
+                nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
+                btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية",
                 title_sales: "سجل المبيعات والفواتير", btn_refresh: "تحديث السجل 🔄",
-                th_invoice: "رقم الفاتورة", th_date: "التاريخ والوقت", th_items: "عدد العناصر", th_total: "الإجمالي", th_method: "طريقة الدفع", th_details: "تفاصيل"
+                th_invoice: "رقم الفاتورة", th_date: "التاريخ والوقت", th_items: "عدد العناصر", th_total: "الإجمالي", th_method: "طريقة الدفع", th_details: "تفاصيل",
+                btn_view: "استعراض", pay_cash: "نقدي", no_sales: "لا توجد مبيعات", invoice_title: "الفاتورة"
             }
         };
 
         let currentLang = localStorage.getItem('sg_lang') || 'ar';
+        const t = (key) => (translations[currentLang] && translations[currentLang][key]) || key;
+
         document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = currentLang;
         document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
@@ -390,12 +152,19 @@
         }
         updateTexts();
 
-        function toggleLanguage() {
+        // Event listeners (no inline onclick — CSP safe)
+        document.getElementById('langToggle').addEventListener('click', () => {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
             localStorage.setItem('sg_lang', currentLang);
-            updateTexts();
             location.reload();
-        }
+        });
+        document.getElementById('theme-toggle').addEventListener('click', () => { if (typeof toggleTheme === 'function') toggleTheme(); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { if (typeof logout === 'function') logout(); });
+        document.getElementById('refreshBtn').addEventListener('click', () => loadSales());
+        document.getElementById('dateFilter').addEventListener('change', () => filterSales());
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('detailsModal').classList.remove('active');
+        });
 
         let allSales = [];
 
@@ -410,7 +179,6 @@
         function filterSales() {
             const dateVal = document.getElementById('dateFilter').value;
             if (!dateVal) return renderSales(allSales);
-
             const filtered = allSales.filter(s => s.createdAt.startsWith(dateVal));
             renderSales(filtered);
         }
@@ -418,15 +186,14 @@
         function renderSales(data) {
             const tbody = document.getElementById('salesTableBody');
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">لا توجد مبيعات في هذا التاريخ.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">${t('no_sales')}</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = data.map(sale => {
                 const d = new Date(sale.createdAt);
                 const itemsCount = sale.items.reduce((sum, item) => sum + item.quantity, 0);
-                // Safe JSON serialization for button onclick
-                const saleStr = JSON.stringify(sale).replace(/"/g, '&quot;');
+                const payLabel = sale.paymentMethod === 'cash' ? t('pay_cash') : sale.paymentMethod;
 
                 return `
                     <tr>
@@ -434,39 +201,49 @@
                         <td>${d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')} - ${d.toLocaleTimeString()}</td>
                         <td>${itemsCount}</td>
                         <td style="color: var(--primary); font-weight: bold;">${sale.total.toFixed(2)}</td>
-                        <td><span class="badge badge-success">${sale.paymentMethod === 'cash' ? 'نقدي' : sale.paymentMethod}</span></td>
-                        <td><button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;" onclick="showDetails('${sale._id}')">استعراض</button></td>
+                        <td><span class="badge badge-success">${payLabel}</span></td>
+                        <td><button class="btn btn-outline view-sale-btn" data-sale-id="${sale._id}" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">${t('btn_view')}</button></td>
                     </tr>
                 `;
             }).join('');
+
+            // Attach event listeners to view buttons (CSP-safe, no inline handlers)
+            document.querySelectorAll('.view-sale-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    showSaleDetails(this.getAttribute('data-sale-id'));
+                });
+            });
         }
 
-        window.showDetails = function (saleId) {
+        function showSaleDetails(saleId) {
             const sale = allSales.find(s => s._id === saleId);
             if (!sale) return;
-            const rData = document.getElementById('modalItems');
-            document.getElementById('modalTitle').textContent = `الفاتورة #${sale._id.substring(18)}`;
+            const container = document.getElementById('modalItems');
+            document.getElementById('modalTitle').textContent = `${t('invoice_title')} #${sale._id.substring(18)}`;
 
-            rData.innerHTML = sale.items.map(i => `
+            container.innerHTML = sale.items.map(i => `
                 <div class="modal-item-row">
                     <div>
-                        <div class="modal-item-name">${i.product ? i.product.name : 'منتج محذوف'}</div>
-                        <div class="modal-item-meta">${i.quantity} x ${i.price.toFixed(2)}</div>
+                        <div class="modal-item-name">${i.product ? i.product.name : '—'}</div>
+                        <div class="modal-item-meta">${i.quantity} × ${i.price.toFixed(2)}</div>
                     </div>
                     <div style="font-weight: bold; color: var(--text);">${(i.quantity * i.price).toFixed(2)}</div>
                 </div>
             `).join('');
 
-            rData.innerHTML += `
+            container.innerHTML += `
                 <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: var(--primary);">
-                    <span>الإجمالي</span>
+                    <span>${t('th_total')}</span>
                     <span>${sale.total.toFixed(2)}</span>
                 </div>
             `;
             document.getElementById('detailsModal').classList.add('active');
         }
 
-        function closeDetails() { document.getElementById('detailsModal').classList.remove('active'); }
+        // Close modal when clicking outside
+        document.getElementById('detailsModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!getToken()) window.location.href = '/login.html';
