@@ -180,7 +180,7 @@ Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
         }
 
         const aiData = aiRes.data;
-        let analysisHtml = aiData.choices[0].message.content;
+        let analysisHtml = (aiData.choices && aiData.choices[0] && aiData.choices[0].message && aiData.choices[0].message.content) ? aiData.choices[0].message.content : "";
         analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '').trim();
 
         const { sendAIReportEmail } = require('../utils/email');

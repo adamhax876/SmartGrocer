@@ -58,13 +58,6 @@
                         <span id="liveRateDisplay" class="font-bold text-green-400"><div class="loader w-4 h-4 border-2"></div></span>
                     </div>
                     
-                    <button id="theme-toggle" class="text-gray-400 hover:text-white transition w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-800" title="Toggle Theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button id="langToggle" class="text-gray-400 hover:text-white transition w-14 h-10 flex items-center justify-center rounded-lg hover:bg-gray-800 font-bold" title="Language">
-                        English
-                    </button>
-
                     <a href="/dashboard.html" class="text-gray-300 hover:text-white transition font-semibold" data-i18n="nav_dashboard">لوحة التحكم</a>
                     <button id="logoutBtn" class="text-sm font-bold text-white bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/50 px-5 py-2.5 rounded-xl transition-all">
                         خروج <i class="fas fa-sign-out-alt ml-2"></i>
@@ -325,26 +318,6 @@
         }
 
         // UI Features integration
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            const currentTheme = typeof getTheme === 'function' ? getTheme() : localStorage.getItem('sg_theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            if (typeof setTheme === 'function') setTheme(newTheme);
-            else {
-                localStorage.setItem('sg_theme', newTheme);
-                document.body.className = newTheme;
-            }
-        });
-
-        document.getElementById('langToggle').addEventListener('click', () => {
-            let currentLang = localStorage.getItem('sg_lang') || 'ar';
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            localStorage.setItem('sg_lang', currentLang);
-            location.reload();
-        });
-
-        const initialLang = localStorage.getItem('sg_lang') || 'ar';
-        document.getElementById('langToggle').textContent = initialLang === 'ar' ? 'English' : 'عربي';
-
         // Initialize All
         updateExchangeRates();
         loadUserData();
