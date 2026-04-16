@@ -511,11 +511,11 @@
             </div>
 
             <div class="categories-scroll" id="catContainer">
-                <button class="cat-btn active" onclick="filterCat('all')">الكل</button>
-                <button class="cat-btn" onclick="filterCat('groceries')">بقالة</button>
-                <button class="cat-btn" onclick="filterCat('dairy')">ألبان</button>
-                <button class="cat-btn" onclick="filterCat('beverages')">مشروبات</button>
-                <button class="cat-btn" onclick="filterCat('snacks')">تسالي</button>
+                <button class="cat-btn active" onclick="filterCat('all')" data-i18n="cat_all">الكل</button>
+                <button class="cat-btn" onclick="filterCat('groceries')" data-i18n="cat_groceries">بقالة</button>
+                <button class="cat-btn" onclick="filterCat('dairy')" data-i18n="cat_dairy">ألبان</button>
+                <button class="cat-btn" onclick="filterCat('beverages')" data-i18n="cat_beverages">مشروبات</button>
+                <button class="cat-btn" onclick="filterCat('snacks')" data-i18n="cat_snacks">تسالي</button>
             </div>
 
             <div class="products-grid" id="productsGrid">
@@ -588,15 +588,31 @@
                 cart_title: "Shopping Cart", cart_empty: "Cart is empty. Add products to start.",
                 sum_subtotal: "Subtotal", sum_tax: "Tax (14%)", sum_total: "Total Due",
                 btn_pay: "Pay & Print Receipt", pay_hint: "Press F8 for quick pay",
-                search_placeholder: "Search by name or scan barcode..."
+                search_placeholder: "Search by name or scan barcode...",
+                cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks"
             },
             ar: {
                 cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
                 sum_subtotal: "المجموع الفرعي", sum_tax: "الضريبة (14%)", sum_total: "الإجمالي المطلوب",
                 btn_pay: "دفع وإصدار الفاتورة", pay_hint: "اضغط F8 للدفع السريع",
-                search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر..."
+                search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر...",
+                cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي"
             }
         };
+
+        function updateTexts() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'text') {
+                        el.placeholder = translations[currentLang][key];
+                    } else {
+                        el.textContent = translations[currentLang][key];
+                    }
+                }
+            });
+            document.getElementById('barcodeInput').placeholder = translations[currentLang].search_placeholder;
+        }
 
         let currentLang = localStorage.getItem('sg_lang') || 'ar';
         document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -604,15 +620,6 @@
         document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
         document.body.className = localStorage.getItem('sg_theme') || 'light';
 
-        function updateTexts() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[currentLang] && translations[currentLang][key]) {
-                    el.textContent = translations[currentLang][key];
-                }
-            });
-            document.getElementById('barcodeInput').placeholder = translations[currentLang].search_placeholder;
-        }
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';

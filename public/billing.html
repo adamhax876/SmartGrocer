@@ -261,25 +261,31 @@
 
                 if (data.user) {
                     const u = data.user;
-                    document.getElementById('currentPlanName').textContent = u.subscriptionPlan || 'باقة تجريبية';
+                    document.getElementById('currentPlanName').textContent = u.subscriptionPlan || 'باقة مجانية';
                     
-                    const expiryDate = new Date(u.subscriptionEndDate);
-                    document.getElementById('currentPlanExpiry').textContent = expiryDate.toLocaleDateString('ar-EG');
-
                     const statusBadge = document.getElementById('statusBadge');
-                    
-                    // Midnight check logic fixes any hour diff bugs
-                    const now = new Date();
-                    now.setHours(0,0,0,0);
-                    const eDate = new Date(expiryDate);
-                    eDate.setHours(0,0,0,0);
+                    if (u.subscriptionEndDate) {
+                        const expiryDate = new Date(u.subscriptionEndDate);
+                        const loc = (typeof currentUserLang !== 'undefined' ? currentUserLang : (localStorage.getItem('sg_lang') || 'ar')) === 'ar' ? 'ar-EG' : 'en-US';
+                        document.getElementById('currentPlanExpiry').textContent = expiryDate.toLocaleDateString(loc);
 
-                    if (eDate >= now) {
-                        statusBadge.innerHTML = `<i class="fas fa-check-circle text-lg"></i> ${typeof t === 'function' ? t('bil_active') : 'باقة نشطة'}`;
-                        statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-green-500/20 text-green-400 border-green-500/30';
+                        // Midnight check logic fixes any hour diff bugs
+                        const now = new Date();
+                        now.setHours(0,0,0,0);
+                        const eDate = new Date(expiryDate);
+                        eDate.setHours(0,0,0,0);
+
+                        if (eDate >= now) {
+                            statusBadge.innerHTML = `<i class="fas fa-check-circle text-lg"></i> ${typeof t === 'function' ? t('bil_active') : 'باقة نشطة'}`;
+                            statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-green-500/20 text-green-400 border-green-500/30';
+                        } else {
+                            statusBadge.innerHTML = `<i class="fas fa-exclamation-triangle text-lg"></i> ${typeof t === 'function' ? t('bil_expire') : 'منتهية الصلاحية'}`;
+                            statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-red-500/20 text-red-400 border-red-500/30 animate-pulse';
+                        }
                     } else {
-                        statusBadge.innerHTML = `<i class="fas fa-exclamation-triangle text-lg"></i> ${typeof t === 'function' ? t('bil_expire') : 'منتهية الصلاحية'}`;
-                        statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-red-500/20 text-red-400 border-red-500/30 animate-pulse';
+                        document.getElementById('currentPlanExpiry').textContent = 'غير محدد';
+                        statusBadge.innerHTML = `<i class="fas fa-info-circle text-lg"></i> ${typeof t === 'function' ? t('bil_active') : 'باقة نشطة (بدون تاريخ)'}`;
+                        statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-blue-500/20 text-blue-400 border-blue-500/30';
                     }
                 }
             } catch (err) {
@@ -330,6 +336,8 @@
             if (typeof applyUserLang === 'function') {
                 currentUserLang = currentLang;
                 applyUserLang();
+                updateExchangeRates();
+                loadUserData();
             } else {
                 location.reload();
             }

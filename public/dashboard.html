@@ -482,7 +482,9 @@
 
                 // Category Chart — Premium Doughnut with Legend
                 const catData = data.categories;
-                const catLabels = Object.keys(catData);
+                const catMapAr = { 'groceries': 'بقالة', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات' };
+                const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets' };
+                const catLabels = Object.keys(catData).map(k => currentUserLang === 'ar' ? (catMapAr[k] || k) : (catMapEn[k] || k));
                 const catValues = Object.values(catData).map(c => c.products);
                 const catColors = ['#4F46E5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6'];
 

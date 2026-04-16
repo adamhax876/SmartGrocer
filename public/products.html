@@ -387,7 +387,7 @@
                 </div>
                 <div class="form-group">
                     <label data-i18n="label_pbarcode">الباركود (اختياري)</label>
-                    <input type="text" class="form-control" id="p_barcode" placeholder="امسح الباركود هنا...">
+                    <input type="text" class="form-control" id="p_barcode" data-i18n-ph="ph_barcode" placeholder="امسح الباركود هنا...">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"
                     data-i18n="btn_save">حفظ المنتج</button>
@@ -415,7 +415,7 @@
                 </ul>
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <button class="btn btn-primary" style="flex: 1;" onclick="document.getElementById('importInstructionsModal').classList.remove('active'); document.getElementById('excelUpload').click();">رفع الملف الآن</button>
-                    <button class="btn btn-outline" style="flex: 1; border-style: dashed;" onclick="window.location.href='/api/products/template'">📥 تحميل قالب جاهز</button>
+                    <button class="btn btn-outline" style="flex: 1; border-style: dashed;" onclick="downloadExcelTemplate()">📥 تحميل قالب جاهز</button>
                 </div>
             </div>
         </div>
@@ -423,6 +423,25 @@
 
     <script src="/js/app.js"></script>
     <script>
+        async function downloadExcelTemplate() {
+            try {
+                const res = await fetch('/api/products/template', {
+                    headers: { 'Authorization': 'Bearer ' + getToken() }
+                });
+                if (!res.ok) throw new Error('فشل تحميل القالب');
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'SmartGrocer_Template.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
         const translations = {
             en: {
                 nav_dashboard: "Dashboard", nav_products: "Products", nav_pos: "POS System", nav_reports: "Reports",
@@ -455,6 +474,12 @@
                     el.textContent = translations[currentLang][key];
                 }
             });
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.placeholder = translations[currentLang][key];
+                }
+            });
         }
         updateTexts();
 
@@ -480,14 +505,18 @@
 
                 tbody.innerHTML = res.products.map(p => {
                     let statusHtml = '';
-                    if (p.quantity === 0) statusHtml = `<span class="badge badge-error">نفذت الكمية</span>`;
-                    else if (p.quantity <= 10) statusHtml = `<span class="badge badge-warning">قاربت على النفاذ</span>`;
-                    else statusHtml = `<span class="badge badge-success">متوفر</span>`;
+                    if (p.quantity === 0) statusHtml = `<span class="badge badge-error">${translations[currentLang].status_out || 'نفذت الكمية'}</span>`;
+                    else if (p.quantity <= 10) statusHtml = `<span class="badge badge-warning">${translations[currentLang].status_low || 'قاربت على النفاذ'}</span>`;
+                    else statusHtml = `<span class="badge badge-success">${translations[currentLang].status_in || 'متوفر'}</span>`;
+                    
+                    const catMapAr = { 'groceries': 'بقالة', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات' };
+                    const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets' };
+                    const translatedCat = currentLang === 'ar' ? (catMapAr[p.category] || p.category) : (catMapEn[p.category] || p.category);
 
                     return `
                         <tr>
                             <td><strong>${p.name}</strong></td>
-                            <td style="color: var(--text-secondary);">${p.category}</td>
+                            <td style="color: var(--text-secondary);">${translatedCat}</td>
                             <td style="color: var(--primary); font-weight: bold;">${p.price.toFixed(2)}</td>
                             <td>${(p.costPrice || 0).toFixed(2)}</td>
                             <td>${p.quantity}</td>

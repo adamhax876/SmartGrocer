@@ -89,6 +89,14 @@ async function api(url, options = {}) {
     const data = await resp.json();
 
     if (resp.status === 401 || resp.status === 403) {
+        if (data.isLocked) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'غير مسموح 🔒', text: data.message });
+            } else {
+                alert(data.message);
+            }
+            throw new Error(data.message);
+        }
         if (data.isSuspended) {
             alert('تم إيقاف حسابك من قبل الإدارة. يرجى التواصل مع الدعم.');
         }
