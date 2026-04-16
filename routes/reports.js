@@ -28,11 +28,10 @@ router.get('/overview', async (req, res) => {
         const totalDiscount = sales.reduce((sum, s) => sum + s.discount, 0);
         const totalTransactions = sales.length;
 
-        // Calculate Cost of Goods Sold (COGS) based on actual sales, not entire unsold inventory
+        // Calculate Cost of Goods Sold (COGS) based on actual sales
         let totalCOGS = 0;
         sales.forEach(sale => {
             sale.items.forEach(item => {
-                // Safely handle missing product ID or old schema data
                 const pId = item.productId || item._id;
                 const product = pId ? products.find(p => p._id.toString() === pId.toString()) : null;
                 const unitCost = product && product.costPrice ? product.costPrice : ((item.unitPrice || item.price || 0) * 0.7);
@@ -103,70 +102,74 @@ router.get('/inventory', async (req, res) => {
     }
 });
 
-// POST /api/reports/ai-analysis — generate and email AI report on demand
+// POST /api/reports/ai-analysis — generate AI report via OpenRouter
 router.post('/ai-analysis', async (req, res) => {
     try {
         const { lang } = req.body;
         const user = req.user;
-        const plan = user.subscriptionPlan || 'Free Trial';
 
         const now = new Date();
         const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
 
-        // Get recent sales
-        const recentSales = await Sale.find({
-            userId: user._id,
-            createdAt: { $gte: thirtyDaysAgo }
-        });
-
+        const recentSales = await Sale.find({ userId: user._id, createdAt: { $gte: thirtyDaysAgo } });
         const totalRevenue = recentSales.reduce((sum, s) => sum + s.total, 0);
-
-        // Count low stock products
         const products = await Product.find({ userId: user._id });
         const lowStockCount = products.filter(p => p.quantity <= p.lowStockThreshold).length;
 
-        // Call Gemini API
-        const { GoogleGenerativeAI } = require("@google/generative-ai");
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) throw new Error("GEMINI_API_KEY is missing in server environment");
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) throw new Error("OPENROUTER_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
-        const prompt = `
-You are an expert financial and retail business consultant for SmartGrocer SaaS. 
-Analyze the following data for a supermarket shop owner named "${user.fullName}".
-- Total Revenue (Last 30 Days): ${totalRevenue.toFixed(2)} EGP
-- Number of Sales Transactions: ${recentSales.length}
-- Average Order Value: ${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP
-- Low Stock Products Count: ${lowStockCount}
+        const prompt = `You are an expert retail business consultant for SmartGrocer SaaS.
+Analyze this data for store owner "${user.fullName}":
+- Revenue (30 days): ${totalRevenue.toFixed(2)} EGP
+- Transactions: ${recentSales.length}
+- Avg Order: ${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP
+- Low Stock Items: ${lowStockCount}
+- Total Products: ${products.length}
 
-Write a professional email format report (in HTML) in ${isAr ? 'Arabic' : 'English'}.
-Highlight the good performance, note the low stock items urgently, and give 2 short actionable marketing/business advice to increase sales basket sizes or manage inventory.
-Keep it strictly under 150 words. Do not include a subject line in the text, just the HTML body starting with an <h3> tag. 
-Format it nicely with emojis, <strong> tags for numbers, and unordered lists for actionable advice.
-`;
+Write a professional HTML report in ${isAr ? 'Arabic' : 'English'}.
+Include: performance summary, low stock alert, 3 actionable tips.
+Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
 
-        const result = await model.generateContent(prompt);
-        // Clean up markdown block if the AI returns it wrapped in ```html
-        let analysisHtml = result.response.text();
-        analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '');
+        const aiRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + apiKey,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': 'https://smartgrocer.me',
+                'X-Title': 'SmartGrocer AI'
+            },
+            body: JSON.stringify({
+                model: 'meta-llama/llama-4-maverick:free',
+                messages: [
+                    { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
+                    { role: 'user', content: prompt }
+                ],
+                max_tokens: 600
+            })
+        });
+
+        if (!aiRes.ok) {
+            const errBody = await aiRes.text();
+            throw new Error('OpenRouter error ' + aiRes.status + ': ' + errBody);
+        }
+
+        const aiData = await aiRes.json();
+        let analysisHtml = aiData.choices[0].message.content;
+        analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '').trim();
 
         const { sendAIReportEmail } = require('../utils/email');
-        const subject = isAr ? '📊 تقريرك التحليلي الذكي من SmartGrocer' : '📊 Your SmartGrocer AI Analysis Report';
-
-        // Attempt to send email, but don't crash if Brevo account is unactivated
+        const subject = isAr ? '📊 تقريرك التحليلي من SmartGrocer' : '📊 Your SmartGrocer AI Report';
         try {
             await sendAIReportEmail(user.email, subject, analysisHtml);
         } catch (emailErr) {
-            console.warn("[EMAIL WARNING] AI Report generated but email failed to send:", emailErr.message);
+            console.warn("[EMAIL] AI report email failed:", emailErr.message);
         }
 
-        // Always return the generated HTML back to the frontend so the user can see it immediately
-        res.json({ message: 'AI Report generated successfully', reportHtml: analysisHtml });
+        res.json({ message: 'AI Report generated', reportHtml: analysisHtml });
     } catch (error) {
-        console.error("[AI ANALYSIS ERROR]:", error);
-        require('fs').writeFileSync('ai_error.log', error.stack || error.message);
+        console.error("[AI ERROR]:", error.message);
         res.status(500).json({ message: 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي', error: error.message });
     }
 });
@@ -177,11 +180,9 @@ router.get('/export-excel', async (req, res) => {
         const userId = req.user._id;
         const XLSX = require('xlsx');
 
-        // Fetch user data
         const sales = await Sale.find({ userId }).populate('items.productId');
         const products = await Product.find({ userId });
 
-        // Build Sales Worksheet
         const salesData = sales.map(s => ({
             'Invoice ID': s._id.toString(),
             'Date': s.createdAt.toLocaleDateString(),
@@ -190,7 +191,6 @@ router.get('/export-excel', async (req, res) => {
             'Status': s.status
         }));
         
-        // Build Products Worksheet
         const inventoryData = products.map(p => ({
             'Barcode': p.barcode || 'N/A',
             'Name': p.name,
