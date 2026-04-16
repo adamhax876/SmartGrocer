@@ -212,20 +212,28 @@ router.get('/export-excel', async (req, res) => {
         const products = await Product.find({ userId });
 
         const salesData = sales.map(s => ({
-            'Invoice ID': s._id.toString(),
-            'Date': s.createdAt.toLocaleDateString(),
-            'Total Amount': s.total,
-            'Payment Method': s.paymentMethod,
-            'Status': s.status
+            'رقم الفاتورة (Invoice ID)': s._id.toString().slice(-8),
+            'التاريخ (Date)': s.createdAt.toLocaleDateString('ar-EG'),
+            'الوقت (Time)': s.createdAt.toLocaleTimeString('ar-EG'),
+            'عدد العناصر (Items)': s.items.reduce((acc, curr) => acc + curr.quantity, 0),
+            'المجموع الفرعي (Subtotal)': parseFloat((s.subtotal || (s.total / 1.14)).toFixed(2)),
+            'الضريبة (Tax 14%)': parseFloat((s.tax || (s.total - (s.total / 1.14))).toFixed(2)),
+            'خصم النقاط (Loyalty Discount)': s.discount || 0,
+            'الإجمالي النهائي (Total)': s.total,
+            'طريقة الدفع (Payment Method)': s.paymentMethod === 'cash' ? 'نقدي' : s.paymentMethod
         }));
         
         const inventoryData = products.map(p => ({
-            'Barcode': p.barcode || 'N/A',
-            'Name': p.name,
-            'Category': p.category,
-            'Price': p.price,
-            'Cost': p.costPrice,
-            'Stock': p.quantity
+            'الباركود (Barcode)': p.barcode || 'N/A',
+            'اسم المنتج (Name)': p.name,
+            'الفئة (Category)': p.category,
+            'الوحدة (Unit)': p.unit === 'piece' ? 'قطعة' : (p.unit === 'kg' ? 'كيلو' : p.unit),
+            'الكمية الحالية (Stock)': p.quantity,
+            'تكلفة الشراء (Cost)': p.costPrice || 0,
+            'سعر البيع (Price)': p.price || 0,
+            'إجمالي التكلفة بالمخزون (Total Cost)': parseFloat(((p.costPrice || 0) * p.quantity).toFixed(2)),
+            'قيمة المبيعات المتوقعة (Expected Revenue)': parseFloat(((p.price || 0) * p.quantity).toFixed(2)),
+            'تنبيهات (Alerts)': p.quantity === 0 ? 'نفذت الكمية' : (p.quantity <= 10 ? 'أوشك على النفاذ' : 'متوفر')
         }));
 
         const wb = XLSX.utils.book_new();

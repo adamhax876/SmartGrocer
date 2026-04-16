@@ -469,13 +469,17 @@
                 </div>
                 <div class="summary-total">
                     <span data-i18n="sum_total">الإجمالي المطلوب</span>
-                    <span id="finalTotal">0.00 ج.م</span>
+                    <span id="finalTotal"></span>
                 </div>
 
                 <div
                     style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4);">
-                    <input type="tel" id="customerPhone" placeholder="رقم هاتف العميل (نظام الولاء)"
-                        style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <input type="tel" id="customerPhone" placeholder="رقم هاتف العميل (نظام الولاء)"
+                            style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
+                        <button class="btn btn-outline" style="padding: 0 0.5rem; font-size: 0.85rem;" onclick="checkCustomerPoints()" type="button" data-i18n="btn_check_pts">فحص</button>
+                    </div>
+                    <div id="pointsDisplay" style="font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; display: none; color: var(--primary);"></div>
                     <label
                         style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
                         <input type="checkbox" id="usePoints">
@@ -624,6 +628,10 @@
         document.addEventListener('DOMContentLoaded', async () => {
             if (!getToken()) { window.location.href = '/login.html'; return; }
             updateTexts();
+            // Wait for app.js settings to load before rendering UI with currency
+            await new Promise(r => setTimeout(r, 200)); 
+            document.getElementById('finalTotal').innerHTML = formatMoney(0);
+            
             await fetchProducts();
 
             // Global Hotkeys
@@ -676,7 +684,7 @@
             grid.innerHTML = products.map(p => `
                 <div class="product-card" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
                     <div class="product-name">${p.name}</div>
-                    <div class="product-price">${p.price.toFixed(2)}</div>
+                    <div class="product-price">${formatMoney(p.price)}</div>
                     <div class="product-stock">متبقي: ${p.quantity}</div>
                 </div>
             `).join('');
@@ -749,7 +757,7 @@
                 <div class="cart-item">
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${item.price.toFixed(2)}</div>
+                        <div class="cart-item-price">${formatMoney(item.price)}</div>
                     </div>
                     <div class="cart-item-qty">
                         <button class="qty-btn" onclick="updateItemQty('${item._id}', 1)">+</button>

@@ -31,16 +31,25 @@
         tr:hover td { background: var(--bg-secondary); }
         .badge { display: inline-block; padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
         .badge-success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .items-list-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        /* Receipt Print Styles */
+        .items-list-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .items-list-modal.active { display: flex; }
-        .modal-content { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: var(--radius-lg); padding: 2rem; position: relative; border: 1px solid var(--border); }
-        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; }
-        .close-btn { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; }
-        [dir="ltr"] .close-btn { right: auto; left: 1.5rem; }
-        .modal-items-container { max-height: 300px; overflow-y: auto; }
-        .modal-item-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px dashed var(--border); }
-        .modal-item-name { font-weight: 600; color: var(--text); }
-        .modal-item-meta { font-size: 0.9rem; color: var(--text-secondary); }
+        .modal-content { background: #fff; width: 350px; padding: 2rem; border-radius: 0; position: relative; color: #000; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
+        .receipt-header { text-align: center; margin-bottom: 1.5rem; border-bottom: 2px dashed #ccc; padding-bottom: 1rem; }
+        .receipt-header h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+        .receipt-items { margin-bottom: 1.5rem; font-family: monospace; font-size: 0.9rem; }
+        .r-item { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+        .r-total-sec { border-top: 2px dashed #ccc; padding-top: 1rem; margin-bottom: 1.5rem; }
+        .r-total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; }
+        .close-btn { position: absolute; right: 10px; top: 10px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            .modal-content, .modal-content * { visibility: visible; }
+            .modal-content { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; padding: 0; border: none; max-height: none; overflow: visible; }
+            .no-print { display: none !important; }
+            .items-list-modal.active { background: transparent; backdrop-filter: none; position: static; }
+        }
     </style>
 </head>
 
@@ -106,12 +115,25 @@
         </main>
     </div>
 
-    <!-- Details Modal -->
+    <!-- Details Modal (Printable Receipt) -->
     <div class="items-list-modal" id="detailsModal">
         <div class="modal-content">
-            <button class="close-btn" id="closeModalBtn">&times;</button>
-            <h2 class="modal-title" id="modalTitle">تفاصيل الفاتورة</h2>
-            <div class="modal-items-container" id="modalItems"></div>
+            <button class="close-btn no-print" id="closeModalBtn">&times;</button>
+            <div class="receipt-header">
+                <h2>Smart Grocer POS</h2>
+                <div style="font-size: 0.8rem; color: #555;">
+                    مبيعات تجزئة - فاتورة ضريبية مبسطة<br>
+                    <span id="modalTitle"></span>
+                </div>
+            </div>
+            
+            <div class="receipt-items" id="modalItems"></div>
+            
+            <div class="no-print" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="btn btn-primary" onclick="window.print()" style="width: 100%; padding: 1rem;">
+                    🖨️ طباعة الفاتورة
+                </button>
+            </div>
         </div>
     </div>
 
@@ -222,26 +244,52 @@
             const sale = allSales.find(s => s._id === saleId);
             if (!sale) return;
             const container = document.getElementById('modalItems');
-            document.getElementById('modalTitle').textContent = `${t('invoice_title')} #${sale._id.substring(18)}`;
+            
+            const d = new Date(sale.createdAt);
+            document.getElementById('modalTitle').innerHTML = `التاريخ: ${d.toLocaleDateString('ar-EG')} ${d.toLocaleTimeString('ar-EG')}<br>رقم: #${sale._id.substring(18)}`;
 
-            container.innerHTML = sale.items.map(i => {
+            let html = sale.items.map(i => {
                 const itemPrice = i.price || i.unitPrice || 0;
                 return `
-                <div class="modal-item-row">
-                    <div>
-                        <div class="modal-item-name">${i.product ? i.product.name : '—'}</div>
-                        <div class="modal-item-meta">${i.quantity} × ${itemPrice.toFixed(2)}</div>
-                    </div>
-                    <div style="font-weight: bold; color: var(--text);">${(i.quantity * itemPrice).toFixed(2)}</div>
+                <div class="r-item">
+                    <span style="flex:1;">${i.product ? i.product.name : '—'}</span>
+                    <span style="width:30px;text-align:center;">${i.quantity}</span>
+                    <span style="width:60px;text-align:left;">${(i.quantity * itemPrice).toFixed(2)}</span>
                 </div>
-            `}).join('');
+                `;
+            }).join('');
 
-            container.innerHTML += `
-                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: var(--primary);">
-                    <span>${t('th_total')}</span>
+            const taxRate = 0.14;
+            // Support older records where total might just be subtotal basically. 
+            // We approximate it to look like a receipt. If the total included tax, then subtotal = total / 1.14.
+            // Let's assume sale.total is the grand final amount.
+            let subT = sale.subtotal || (sale.total / (1 + taxRate));
+            let taxValue = sale.tax || (sale.total - subT);
+            
+            html += `
+            </div>
+            <div class="r-total-sec">
+                <div class="r-item" style="color: #666; font-size: 0.85rem;">
+                    <span>المجموع قبل الضريبة:</span>
+                    <span>${subT.toFixed(2)}</span>
+                </div>
+                <div class="r-item" style="color: #666; font-size: 0.85rem;">
+                    <span>الضريبة (14%):</span>
+                    <span>${taxValue.toFixed(2)}</span>
+                </div>
+                <div class="r-total-row" style="margin-top: 0.5rem; color: #000;">
+                    <span>الإجمالي (شامل الضريبة):</span>
                     <span>${sale.total.toFixed(2)}</span>
                 </div>
             `;
+            
+            if (sale.discount && sale.discount > 0) {
+                html += `<div style="color: #16a34a; font-weight: bold; margin-top: 5px; font-size:0.9rem;">خصم (نقاط/ولاء): ${sale.discount.toFixed(2)}- ج.م</div>`;
+            }
+
+            html += `<div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;">شكراً لزيارتكم! 🌟<br>النظام مدعوم بواسطة SmartGrocer</div>`;
+
+            container.innerHTML = html;
             document.getElementById('detailsModal').classList.add('active');
         }
 
