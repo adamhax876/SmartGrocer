@@ -125,11 +125,11 @@
 
                 <div class="stat-card bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center gap-4" style="border-right: 4px solid #f59e0b;">
                     <div class="h-14 w-14 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 text-2xl">
-                        <i class="fas fa-layer-group"></i>
+                        <i class="fas fa-headset"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500 mb-0.5" data-translate="statPlans">إجمالي الباقات</p>
-                        <h3 class="text-3xl font-bold text-gray-800" id="stat-plans">—</h3>
+                        <p class="text-sm text-gray-500 mb-0.5" data-translate="statTickets">تذاكر الدعم المفتوحة</p>
+                        <h3 class="text-3xl font-bold text-gray-800" id="stat-tickets">—</h3>
                     </div>
                 </div>
             </div>
@@ -184,7 +184,7 @@
             ar: {
                 langBtn: 'English', dir: 'rtl', overview: 'نظرة عامة',
                 nav_dashboard: 'الرئيسية', nav_stores: 'المتاجر المشتركة', nav_payments: 'طرق الدفع', nav_settings: 'إعدادات النظام', nav_logout: 'تسجيل خروج', nav_tickets: 'تذاكر الدعم',
-                statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statPlans: 'إجمالي الباقات',
+                statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statTickets: 'تذاكر الدعم المفتوحة',
                 chartTitle: 'نمو المشتركين', latest: 'أحدث المتاجر', viewAll: 'عرض الكل →', th_name: 'اسم المتجر', th_status: 'الحالة', th_plan: 'الباقة', active: 'نشط', suspended: 'موقوف',
                 noStores: 'لا توجد متاجر مسجلة بعد', noGrowth: 'لا توجد بيانات نمو بعد',
                 chartLabel: 'مشتركين جدد'
@@ -192,7 +192,7 @@
             en: {
                 langBtn: 'عربي', dir: 'ltr', overview: 'Overview',
                 nav_dashboard: 'Dashboard', nav_stores: 'Stores', nav_payments: 'Payments', nav_settings: 'Settings', nav_logout: 'Logout', nav_tickets: 'Support Tickets',
-                statStores: 'Active Stores', statSubs: 'Active Subscriptions', statPlans: 'Total Plans',
+                statStores: 'Active Stores', statSubs: 'Active Subscriptions', statTickets: 'Open Support Tickets',
                 chartTitle: 'Subscriber Growth', latest: 'Latest Stores', viewAll: 'View All →', th_name: 'Store Name', th_status: 'Status', th_plan: 'Plan', active: 'Active', suspended: 'Suspended',
                 noStores: 'No stores registered yet', noGrowth: 'No growth data yet',
                 chartLabel: 'New Subscribers'
@@ -235,7 +235,6 @@
                 if (data.success) {
                     document.getElementById('stat-stores').textContent = data.data.totalUsers || 0;
                     document.getElementById('stat-subs').textContent = data.data.activeSubscriptions || 0;
-                    document.getElementById('stat-plans').textContent = data.data.totalPlans || 0;
                     renderGrowthChart(data.data.growthData);
                 }
 
@@ -245,6 +244,18 @@
                 });
                 const usersData = await usersRes.json();
                 renderLatestStores(usersData.success ? usersData.data : []);
+
+                // Fetch open tickets count
+                try {
+                    const ticketsRes = await fetch('/api/admin/tickets', { headers: { 'Authorization': 'Bearer ' + token } });
+                    const ticketsData = await ticketsRes.json();
+                    if (ticketsData.success) {
+                        const openCount = ticketsData.data.filter(t => t.status === 'open' || t.status === 'pending').length;
+                        document.getElementById('stat-tickets').textContent = openCount;
+                    } else {
+                        document.getElementById('stat-tickets').textContent = '0';
+                    }
+                } catch(e) { document.getElementById('stat-tickets').textContent = '0'; }
 
             } catch (err) {
                 console.error("Error fetching stats:", err);

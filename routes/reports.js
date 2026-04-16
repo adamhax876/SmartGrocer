@@ -3,6 +3,7 @@ const router = express.Router();
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
+const fetch = require('node-fetch');
 
 router.use(auth);
 
