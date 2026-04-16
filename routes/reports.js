@@ -2,12 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
-const auth = require('../middleware/auth');
 const fetch = require('node-fetch');
-
-router.use(auth);
-
-// GET /api/reports/overview — main dashboard report
+const axios = require('axios');
 router.get('/overview', async (req, res) => {
     try {
         const userId = req.user._id;
@@ -133,30 +129,23 @@ Write a professional HTML report in ${isAr ? 'Arabic' : 'English'}.
 Include: performance summary, low stock alert, 3 actionable tips.
 Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
 
-        const aiRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
+        const aiRes = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+            model: 'meta-llama/llama-3.3-70b-instruct:free',
+            messages: [
+                { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
+                { role: 'user', content: prompt }
+            ],
+            max_tokens: 600
+        }, {
             headers: {
                 'Authorization': 'Bearer ' + apiKey,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': 'https://smartgrocer.me',
                 'X-Title': 'SmartGrocer AI'
-            },
-            body: JSON.stringify({
-                model: 'meta-llama/llama-3.3-70b-instruct:free',
-                messages: [
-                    { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 600
-            })
+            }
         });
 
-        if (!aiRes.ok) {
-            const errBody = await aiRes.text();
-            throw new Error('OpenRouter error ' + aiRes.status + ': ' + errBody);
-        }
-
-        const aiData = await aiRes.json();
+        const aiData = aiRes.data;
         let analysisHtml = aiData.choices[0].message.content;
         analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '').trim();
 
@@ -170,8 +159,12 @@ Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
 
         res.json({ message: 'AI Report generated', reportHtml: analysisHtml });
     } catch (error) {
-        console.error("[AI ERROR]:", error.message);
-        res.status(500).json({ message: 'حدث خطأ أثناء الاتصال بالذكاء الاصطناعي', error: error.message });
+        let msg = error.message;
+        if (error.response && error.response.data) {
+            msg = JSON.stringify(error.response.data);
+        }
+        console.error("[AI ERROR]:", msg);
+        res.status(500).json({ message: 'حدث خطأ (AI Error): ' + msg, error: msg });
     }
 });
 

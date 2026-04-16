@@ -140,7 +140,7 @@
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
                     <div class="flex items-center justify-between mb-4">
                         <h4 class="font-semibold text-gray-800" data-translate="chartTitle">نمو المشتركين</h4>
-                        <span class="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-semibold">📈 آخر 6 أشهر</span>
+                        <span class="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-semibold" data-translate="last6months">📈 آخر 6 أشهر</span>
                     </div>
                     <div class="relative flex-1 w-full" style="min-height: 280px;">
                         <canvas id="growthChart"></canvas>
@@ -166,6 +166,7 @@
         </div>
     </main>
 
+    <script src="/js/admin-lang.js"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) {
@@ -178,44 +179,9 @@
             if (navElements.length > 0) navElements[0].style.display = 'none';
         }
 
-        // Localization
-        let adminLang = localStorage.getItem('sg_admin_lang') || 'ar';
-        const dict = {
-            ar: {
-                langBtn: 'English', dir: 'rtl', overview: 'نظرة عامة',
-                nav_dashboard: 'الرئيسية', nav_stores: 'المتاجر المشتركة', nav_payments: 'طرق الدفع', nav_settings: 'إعدادات النظام', nav_logout: 'تسجيل خروج', nav_tickets: 'تذاكر الدعم',
-                statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statTickets: 'تذاكر الدعم المفتوحة',
-                chartTitle: 'نمو المشتركين', latest: 'أحدث المتاجر', viewAll: 'عرض الكل →', th_name: 'اسم المتجر', th_status: 'الحالة', th_plan: 'الباقة', active: 'نشط', suspended: 'موقوف',
-                noStores: 'لا توجد متاجر مسجلة بعد', noGrowth: 'لا توجد بيانات نمو بعد',
-                chartLabel: 'مشتركين جدد'
-            },
-            en: {
-                langBtn: 'عربي', dir: 'ltr', overview: 'Overview',
-                nav_dashboard: 'Dashboard', nav_stores: 'Stores', nav_payments: 'Payments', nav_settings: 'Settings', nav_logout: 'Logout', nav_tickets: 'Support Tickets',
-                statStores: 'Active Stores', statSubs: 'Active Subscriptions', statTickets: 'Open Support Tickets',
-                chartTitle: 'Subscriber Growth', latest: 'Latest Stores', viewAll: 'View All →', th_name: 'Store Name', th_status: 'Status', th_plan: 'Plan', active: 'Active', suspended: 'Suspended',
-                noStores: 'No stores registered yet', noGrowth: 'No growth data yet',
-                chartLabel: 'New Subscribers'
-            }
-        };
+        // Localization is now handled by /js/admin-lang.js
 
-        function applyAdminLang() {
-            document.documentElement.dir = dict[adminLang].dir;
-            document.getElementById('adminLangBtn').textContent = dict[adminLang].langBtn;
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (dict[adminLang][key]) el.textContent = dict[adminLang][key];
-            });
-        }
 
-        function toggleAdminLang() {
-            adminLang = adminLang === 'ar' ? 'en' : 'ar';
-            localStorage.setItem('sg_admin_lang', adminLang);
-            applyAdminLang();
-            window.location.reload();
-        }
-
-        applyAdminLang();
 
         function logout() {
             localStorage.removeItem('adminToken');

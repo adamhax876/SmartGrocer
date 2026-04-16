@@ -7,37 +7,59 @@
     <title>الباقات والاشتراكات | Smart Grocer</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#2563eb', secondary: '#1e40af', accent: '#f59e0b' }
+                }
+            }
+        }
+    </script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f3f4f6;
-        }
+        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .lux-gradient { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); }
+        .lux-text-gradient { background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-hover:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.25); border-color: rgba(96, 165, 250, 0.5); }
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top-color: #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 
-<body class="bg-gray-50 flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen relative overflow-x-hidden">
+    <!-- Animated Background Blobs -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden opacity-30">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[100px] animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
 
-    <!-- Navigation (Simple for Dashboard) -->
-    <nav class="bg-white shadow relative z-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/" class="flex-shrink-0 flex items-center gap-2">
-                        <i class="fas fa-shopping-basket text-blue-600 text-2xl"></i>
-                        <span class="font-bold text-xl text-gray-800">Smart Grocer</span>
-                    </a>
-                </div>
-                <div class="flex items-center gap-4">
-                    <a href="/products.html" class="text-gray-600 hover:text-blue-600 transition">لوحة التحكم</a>
-                    <button id="logoutBtn"
-                        class="text-sm font-medium text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition">
-                        تسجيل الخروج <i class="fas fa-sign-out-alt ml-1"></i>
+    <!-- Navigation -->
+    <nav class="glass-panel sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center h-12">
+                <a href="/dashboard.html" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-xl lux-gradient flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fas fa-shopping-basket text-white"></i>
+                    </div>
+                    <span class="font-bold text-2xl tracking-wide">Smart Grocer</span>
+                </a>
+                <div class="flex items-center gap-6">
+                    <div class="text-sm px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 flex items-center gap-2">
+                        <i class="fas fa-exchange-alt text-blue-400"></i>
+                        <span>سعر الصرف الحي: </span>
+                        <span id="liveRateDisplay" class="font-bold text-green-400"><div class="loader w-4 h-4 border-2"></div></span>
+                    </div>
+                    <a href="/dashboard.html" class="text-gray-300 hover:text-white transition font-semibold">لوحة التحكم</a>
+                    <button id="logoutBtn" class="text-sm font-bold text-white bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/50 px-5 py-2.5 rounded-xl transition-all">
+                        خروج <i class="fas fa-sign-out-alt ml-2"></i>
                     </button>
                 </div>
             </div>
@@ -45,204 +67,259 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
-        <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">باقات الاشتراك</h1>
-            <p class="text-gray-600 text-lg">اختر الباقة المناسبة لحجم تجارتك وانطلق نحو النجاح</p>
+    <main class="flex-grow container mx-auto px-4 py-12 max-w-6xl relative z-10">
+        
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold mb-6 lux-text-gradient">ارتقِ بتجارتك للمستوى التالي</h1>
+            <p class="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed">اختر الباقة التي تناسب طموحك. تقنيات سحابية متقدمة، ذكاء اصطناعي، وتحليلات دقيقة بين يديك.</p>
         </div>
 
-        <!-- Current Subscription Status -->
-        <div id="currentSubscriptionBox"
-            class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white mb-8 shadow-lg">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div>
-                    <p class="text-blue-100 text-sm mb-1">باقتك الحالية</p>
-                    <h2 class="text-2xl font-bold" id="currentPlanName">جاري التحميل...</h2>
-                    <p class="text-sm mt-2 opacity-90"><i class="fas fa-calendar-alt ml-1"></i> تنتهي في: <span
-                            id="currentPlanExpiry">-</span></p>
+        <!-- Current Status -->
+        <div class="glass-panel rounded-3xl p-8 mb-16 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-full h-1 lux-gradient"></div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/50 text-blue-400 text-2xl">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm font-semibold tracking-wider mb-1 uppercase">باقتك الحالية</p>
+                        <h2 class="text-3xl font-bold text-white" id="currentPlanName">جاري التحميل...</h2>
+                        <div class="flex gap-4 mt-3">
+                            <span class="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full"><i class="fas fa-calendar-alt ml-1 text-blue-400"></i> تنتهي: <span id="currentPlanExpiry" class="text-white">-</span></span>
+                        </div>
+                    </div>
                 </div>
+                <div id="statusBadge" class="px-6 py-3 rounded-xl font-bold flex items-center gap-2 border">
+                    <div class="loader"></div> التحقق من الحالة
+                </div>
+            </div>
+        </div>
 
+        <!-- Pricing Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto mb-20">
+            
+            <!-- Standard Plan -->
+            <div class="card-hover glass-panel rounded-3xl border border-gray-700/50 overflow-hidden flex flex-col">
+                <div class="p-10 border-b border-gray-700/50">
+                    <h3 class="text-2xl font-bold text-white mb-2">الباقة الأساسية</h3>
+                    <p class="text-gray-400 text-sm mb-6">مثالية للمتاجر الناشئة والمتوسطة</p>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-5xl font-black text-white" id="basicPriceEgp">...</span>
+                        <span class="text-lg text-gray-400 font-semibold">ج.م /شهرياً</span>
+                    </div>
+                    <div class="text-green-400 font-semibold text-sm bg-green-400/10 inline-block px-3 py-1 rounded-lg">يعادل 15$ شهرياً (تحديث حي)</div>
+                </div>
+                <div class="p-10 flex-1 flex flex-col bg-gray-800/30">
+                    <ul class="space-y-5 mb-10 flex-1">
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
+                            <span>إدارة حتى <strong class="text-white">3,000 منتج</strong> بسهولة تامة</span>
+                        </li>
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
+                            <span>إصدار <strong class="text-white">10,000 فاتورة</strong> شهرياً</span>
+                        </li>
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
+                            <span>دعم فني عبر البريد الإلكتروني</span>
+                        </li>
+                    </ul>
+                    <a href="https://wa.me/201024155762?text=أرغب%20في%20تفعيل%20الباقة%20الأساسية" target="_blank" class="w-full py-4 rounded-xl font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition text-center flex justify-center items-center gap-2">
+                        <i class="fab fa-whatsapp text-green-400 text-xl"></i> تفعيل عبر واتساب
+                    </a>
+                </div>
+            </div>
 
-
-                <div class="text-center md:text-left">
-                    <span id="statusBadge"
-                        class="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm border border-white/30">
-                        <i class="fas fa-spinner fa-spin ml-1"></i> جاري التحميل
-                    </span>
+            <!-- Preimum Plan -->
+            <div class="card-hover glass-panel rounded-3xl border-2 border-blue-500/80 overflow-hidden flex flex-col relative transform md:-translate-y-4 shadow-[0_0_40px_rgba(59,130,246,0.3)]">
+                <div class="absolute top-5 right-5 bg-gradient-to-r from-yellow-400 to-amber-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                    <i class="fas fa-star mr-1"></i> الأكثر اختياراً
+                </div>
+                <div class="p-10 border-b border-gray-700/50 lux-gradient relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MCcgaGVpZ2h0PSc0MCc+PGNpcmNsZSBjeD0nMjAnIGN5PScyMCcgcj0nMicgZmlsbD0nI2ZmZicgZmlsbC1vcGFjaXR5PScwLjInLz48L3N2Zz4=')] opacity-30"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-2xl font-bold text-white mb-2">الباقة الاحترافية</h3>
+                        <p class="text-blue-100 text-sm mb-6">الطاقة القصوى لتوسيع إمبراطوريتك</p>
+                        <div class="flex items-baseline gap-2 mb-2">
+                            <span class="text-5xl font-black text-white" id="proPriceEgp">...</span>
+                            <span class="text-lg text-blue-100 font-semibold">ج.م /شهرياً</span>
+                        </div>
+                        <div class="text-white font-semibold text-sm bg-black/20 inline-block px-3 py-1 rounded-lg">يعادل 25$ شهرياً (تحديث حي)</div>
+                    </div>
+                </div>
+                <div class="p-10 flex-1 flex flex-col bg-gray-900/60">
+                    <ul class="space-y-5 mb-10 flex-1">
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-infinity text-xs"></i></div>
+                            <span><strong class="text-white">منتجات ومبيعات بلا حدود</strong></span>
+                        </li>
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs"></i></div>
+                            <span>تحليلات ذكية بالـ <strong class="text-white">AI</strong> للبيانات</span>
+                        </li>
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center shrink-0"><i class="fab fa-whatsapp text-xs"></i></div>
+                            <span>إرسال الفواتير للعملاء عبر <strong class="text-white">واتساب</strong></span>
+                        </li>
+                        <li class="flex items-start gap-4 text-gray-300">
+                            <div class="mt-1 w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0"><i class="fas fa-cloud-upload-alt text-xs"></i></div>
+                            <span>نسخ احتياطي سحابي، ولاء العملاء وإدارة الفروع</span>
+                        </li>
+                    </ul>
+                    <a href="https://wa.me/201024155762?text=أرغب%20في%20تفعيل%20الباقة%20الاحترافية" target="_blank" class="w-full py-4 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 shadow-[0_0_20px_rgba(37,99,235,0.4)] text-white transition text-center flex justify-center items-center gap-2 transform hover:-translate-y-1">
+                        <i class="fab fa-whatsapp text-xl"></i> تفعيل الباقة الفاخرة
+                    </a>
                 </div>
             </div>
         </div>
 
         <!-- Payment Instructions Box -->
-        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 mb-12 shadow-sm">
-            <h3 class="text-lg font-bold text-yellow-800 mb-3"><i class="fas fa-info-circle ml-2"></i> طريقة تفعيل أو
-                تجديد الاشتراك</h3>
-            <p
-                class="text-yellow-700 mb-4 text-sm leading-relaxed text-center font-semibold bg-white p-4 rounded border border-yellow-100">
-                يرجى تحويل قيمة الباقة المطلوبة لأحد الحسابات التالية، ثم أرسل <strong
-                    class="text-red-600 font-bold decoration-underline">إيصال الدفع مع توضيح مدة الاشتراك المطلوبة
-                    (مثلاً شهر أو أكثر)</strong> عبر واتساب.
-                <br>سيتم تفعيل حسابك في أسرع وقت وستصلك رسالة تأكيد على بريدك الإلكتروني فور التفعيل.
-            </p>
-
-            <div id="paymentMethodsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                <div class="col-span-full text-center text-gray-500 py-4"><i class="fas fa-spinner fa-spin mr-2"></i>
-                    جاري تحميل تفاصيل الدفع...</div>
+        <div class="glass-panel rounded-3xl p-8 md:p-12 border-t-4 border-yellow-500">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/30">
+                    <i class="fas fa-wallet text-3xl text-yellow-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-3">كيفية الدفع والتفعيل</h3>
+                <p class="text-gray-400 max-w-2xl mx-auto">قم بتحويل المبلغ المطلوب عبر أحد الطرق التالية، ثم شاركنا إيصال التحويل عبر الواتساب لاختصار الوقت وتفعيل حسابك في دقائق.</p>
             </div>
 
-            <div class="mt-8 text-center">
-                <a href="https://wa.me/201024155762" target="_blank"
-                    class="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg shadow-green-500/30 text-lg">
-                    <i class="fab fa-whatsapp ml-2 text-xl"></i> أرسل الإيصال على واتساب هنا
-                </a>
-            </div>
-        </div>
-
-        <!-- Pricing Cards Container -->
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">ترقية أو تجديد الباقة</h2>
-        <div id="plansContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-
-            <!-- Basic Tier -->
-            <div
-                class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col relative">
-                <div class="p-8 text-center border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">الباقة الأساسية (Startups)</h3>
-                    <div class="text-4xl font-extrabold text-blue-600 mb-1">
-                        750 <span class="text-base font-normal text-gray-500">ج.م/شهرياً ($15)</span>
-                    </div>
-                </div>
-                <div class="p-8 flex-1 flex flex-col">
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center text-gray-600"><i
-                                class="fas fa-check text-green-500 ml-3 shrink-0"></i><span class="text-sm">حتى 3,000
-                                منتج و 10,000 فاتورة</span></li>
-                    </ul>
-                    <a href="https://wa.me/201024155762" target="_blank"
-                        class="w-full text-center mt-auto bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-6 rounded-xl transition duration-300">
-                        <i class="fab fa-whatsapp ml-1"></i> تواصل لتفعيل الباقة
-                    </a>
+            <div id="paymentMethodsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="col-span-full text-center text-gray-500 py-8">
+                    <div class="loader mb-2"></div><br>جاري تحميل طرق الدفع...
                 </div>
             </div>
-
-            <!-- Pro Tier -->
-            <div
-                class="bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-blue-500 overflow-hidden flex flex-col relative scale-105 z-10">
-                <div
-                    class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-20">
-                    الأكثر اختياراً</div>
-                <div class="p-8 text-center border-b border-gray-100">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">الباقة الاحترافية (Enterprise)</h3>
-                    <div class="text-4xl font-extrabold text-blue-600 mb-1">
-                        1250 <span class="text-base font-normal text-gray-500">ج.م/شهرياً ($25)</span>
-                    </div>
-                </div>
-                <div class="p-8 flex-1 flex flex-col">
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center text-gray-600"><i
-                                class="fas fa-infinity text-blue-500 ml-3 shrink-0"></i><span
-                                class="text-sm font-semibold text-gray-800">منتجات ومبيعات بلا حدود</span></li>
-                        <li class="flex items-center text-gray-600"><i
-                                class="fas fa-robot text-purple-500 ml-3 shrink-0"></i><span class="text-sm">تقارير ذكية
-                                (AI) دورية عبر الإيميل</span></li>
-                        <li class="flex items-center text-gray-600"><i
-                                class="fab fa-whatsapp text-green-500 ml-3 shrink-0"></i><span class="text-sm">الفواتير
-                                عبر الواتساب ونظام نقاط الولاء</span></li>
-                        <li class="flex items-center text-gray-600"><i
-                                class="fas fa-cloud-upload-alt text-blue-400 ml-3 shrink-0"></i><span
-                                class="text-sm">إدارة الفروع والنسخ الاحتياطي السحابي</span></li>
-                    </ul>
-                    <a href="https://wa.me/201024155762" target="_blank"
-                        class="w-full text-center mt-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition duration-300 shadow-lg shadow-blue-500/30">
-                        <i class="fab fa-whatsapp ml-1"></i> تواصل لتفعيل الباقة
-                    </a>
-                </div>
-            </div>
-
         </div>
 
     </main>
 
-    <footer class="bg-white border-t py-6 text-center text-gray-500 text-sm">
-        <p>© 2026 Smart Grocer. جميع الحقوق محفوظة.</p>
+    <footer class="glass-panel border-t-0 mt-auto py-8 relative z-10">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex justify-center gap-6 mb-4">
+                <a href="#" class="text-gray-500 hover:text-white transition text-xl"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition text-xl"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition text-xl"><i class="fab fa-instagram"></i></a>
+            </div>
+            <p class="text-gray-500 text-sm font-semibold tracking-wide">© 2026 Smart Grocer. صنع بشغف لرواد التجزئة.</p>
+        </div>
     </footer>
 
     <script>
         const token = localStorage.getItem('sg_token');
-        if (!token) {
-            window.location.href = '/login.html';
-        }
+        if (!token) window.location.href = '/login.html';
 
-        // Handle Logout
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('sg_token');
-            localStorage.removeItem('sg_user');
-            window.location.href = '/login.html';
+             localStorage.removeItem('sg_token');
+             localStorage.removeItem('sg_user');
+             window.location.href = '/login.html';
         });
 
-        // Load Current Subscription & Wallet Info
+        // 1. Fetch Real-time USD/EGP Exchange Rate
+        async function updateExchangeRates() {
+            const basicPriceUsd = 15;
+            const proPriceUsd = 25;
+            const rateDisplay = document.getElementById('liveRateDisplay');
+            const pBasic = document.getElementById('basicPriceEgp');
+            const pPro = document.getElementById('proPriceEgp');
+
+            try {
+                // Free Exchange Rate API v4
+                const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await res.json();
+                
+                if(data && data.rates && data.rates.EGP) {
+                    const egpRate = data.rates.EGP;
+                    rateDisplay.textContent = `1$ = ${egpRate.toFixed(2)} ج.م`;
+                    
+                    // Dynamic calculation
+                    pBasic.textContent = Math.ceil(basicPriceUsd * egpRate).toLocaleString('ar-EG');
+                    pPro.textContent = Math.ceil(proPriceUsd * egpRate).toLocaleString('ar-EG');
+                } else {
+                    throw new Error('Invalid rate data');
+                }
+            } catch (error) {
+                console.error("Exchange rate fetch failed:", error);
+                rateDisplay.innerHTML = `<span class="text-red-400 text-xs">تعذر جلب السعر الحي</span>`;
+                // Fallback fixed rates
+                pBasic.textContent = "750";
+                pPro.textContent = "1,250";
+            }
+        }
+
+        // 2. Load User Profile (Subscription End Date)
         async function loadUserData() {
             try {
-                const res = await fetch('/api/auth/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await res.json();
 
                 if (data.user) {
                     const u = data.user;
-                    document.getElementById('currentPlanName').textContent = u.subscriptionPlan || 'Free Trial';
-
+                    document.getElementById('currentPlanName').textContent = u.subscriptionPlan || 'باقة تجريبية';
+                    
                     const expiryDate = new Date(u.subscriptionEndDate);
                     document.getElementById('currentPlanExpiry').textContent = expiryDate.toLocaleDateString('ar-EG');
 
                     const statusBadge = document.getElementById('statusBadge');
-                    if (expiryDate > new Date()) {
-                        statusBadge.innerHTML = '<i class="fas fa-check-circle text-green-300 ml-1"></i> باقة نشطة';
+                    
+                    // Midnight check logic fixes any hour diff bugs
+                    const now = new Date();
+                    now.setHours(0,0,0,0);
+                    const eDate = new Date(expiryDate);
+                    eDate.setHours(0,0,0,0);
+
+                    if (eDate >= now) {
+                        statusBadge.innerHTML = '<i class="fas fa-check-circle text-lg"></i> باقة نشطة';
+                        statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-green-500/20 text-green-400 border-green-500/30';
                     } else {
-                        statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle text-red-300 ml-1"></i> الباقة منتهية';
-                        statusBadge.classList.replace('bg-white/20', 'bg-red-500/40');
+                        statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle text-lg"></i> منتهية الصلاحية';
+                        statusBadge.className = 'px-6 py-3 rounded-xl font-bold flex items-center gap-2 border bg-red-500/20 text-red-400 border-red-500/30 animate-pulse';
                     }
                 }
-                // Extracting payment methods fetching alongside user data loading 
             } catch (err) {
                 console.error('Error loading user data', err);
             }
         }
 
+        // 3. Load Payment Methods dynamically from backend
         async function loadPaymentMethods() {
             try {
                 const res = await fetch('/api/settings/public');
                 const data = await res.json();
-
                 const container = document.getElementById('paymentMethodsContainer');
+
                 if (data.success && data.paymentMethods) {
                     let methods = [];
                     try { methods = typeof data.paymentMethods === 'string' ? JSON.parse(data.paymentMethods) : data.paymentMethods; }
-                    catch (e) { /* ignore */ }
+                    catch (e) {}
 
                     if (methods && methods.length > 0) {
                         container.innerHTML = methods.map(m => `
-                            <div class="bg-white p-3 rounded border border-yellow-100 shadow-sm transition hover:shadow-md">
-                                <div class="font-bold text-gray-800 mb-1"><i class="${m.icon || 'fas fa-wallet'} ${m.color || 'text-gray-600'} ml-1"></i> ${m.name}</div>
-                                <div class="text-gray-700 select-all font-mono bg-gray-50 p-1 rounded text-xs" dir="ltr" style="word-break: break-all; overflow-wrap: break-word;">${m.details}</div>
+                            <div class="bg-gray-800/50 border border-gray-700 p-5 rounded-2xl hover:bg-gray-800 transition">
+                                <div class="font-bold text-white mb-2 flex items-center gap-2 text-lg">
+                                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-xl ${m.color || 'text-white'}">
+                                        <i class="${m.icon || 'fas fa-wallet'}"></i>
+                                    </div>
+                                    ${m.name}
+                                </div>
+                                <div class="text-gray-300 font-mono bg-gray-900/80 p-3 rounded-xl tracking-wider select-all cursor-copy text-center border border-gray-700 mt-3" dir="ltr">
+                                    ${m.details}
+                                </div>
                             </div>
                         `).join('');
                         return;
                     }
                 }
-                container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-4">لم يتم تحديد طرق دفع بعد. يرجى التواصل مع الدعم.</div>';
+                container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">لا توجد طرق دفع مسجلة حالياً.</div>';
             } catch (err) {
-                console.error('Error loading payment methods:', err);
-                document.getElementById('paymentMethodsContainer').innerHTML = '<div class="col-span-full text-center text-red-500 py-4">فشل تحميل طرق الدفع.</div>';
+                console.error('Error loading payments', err);
             }
         }
 
-        // Initialize Page
+        // Initialize All
+        updateExchangeRates();
         loadUserData();
         loadPaymentMethods();
-
-        // Init
-        loadUserData();
     </script>
 </body>
-
 </html>
