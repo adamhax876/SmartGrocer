@@ -399,23 +399,23 @@
     <div class="modal" id="importInstructionsModal">
         <div class="modal-content" style="max-width: 600px;">
             <button class="close-btn" onclick="document.getElementById('importInstructionsModal').classList.remove('active')">&times;</button>
-            <h2 class="modal-title">تعليمات استيراد الإكسيل 📊</h2>
+            <h2 class="modal-title" data-i18n="modal_excel_title">تعليمات استيراد الإكسيل 📊</h2>
             <div style="line-height: 1.6; color: var(--text-secondary);">
-                <p style="margin-bottom: 1rem;"><strong style="color: var(--text);">لضمان استيراد المنتجات بنجاح، يرجى تجهيز ملف الإكسيل بحيث يحتوي الصف الأول على العناوين التالية بالضبط:</strong></p>
-                <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: Tahoma, Arial, sans-serif; text-align: center; margin-bottom: 1.5rem; font-weight: bold; color: var(--primary); font-size: 0.9rem; overflow-x: auto; white-space: nowrap;">
+                <p style="margin-bottom: 1rem;"><strong style="color: var(--text);" data-i18n="modal_excel_desc">لضمان استيراد المنتجات بنجاح، يرجى تجهيز ملف الإكسيل بحيث يحتوي الصف الأول على العناوين التالية بالضبط:</strong></p>
+                <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); font-family: Tahoma, Arial, sans-serif; text-align: center; margin-bottom: 1.5rem; font-weight: bold; color: var(--primary); font-size: 0.9rem; overflow-x: auto; white-space: nowrap;" data-i18n="modal_excel_header">
                     اسم المنتج | الباركود | الفئة | الوحدة | الكمية | سعر التكلفة | السعر | تاريخ الانتهاء
                 </div>
                 <ul style="padding-inline-start: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem; font-size: 0.95rem;">
-                    <li><strong style="color: var(--text);">اسم المنتج:</strong> (إلزامي) اكتب اسم المنتج.</li>
-                    <li><strong style="color: var(--text);">الباركود:</strong> (اختياري) أرقام باركود المنتج.</li>
-                    <li><strong style="color: var(--text);">الفئة:</strong> بقالة، ألبان، لحوم، مشروبات، أو تسالي.</li>
-                    <li><strong style="color: var(--text);">الوحدة:</strong> قطعة، كيلو، لتر، كرتونة، أو عبوة.</li>
-                    <li><strong style="color: var(--text);">الأسعار والكمية:</strong> يُسمح فقط بكتابة أرقام (مثال: 15.50). لا تكتب أي نصوص مع الرقم.</li>
-                    <li><strong style="color: var(--text);">تاريخ الانتهاء:</strong> (اختياري) بصيغة يوم/شهر/سنة.</li>
+                    <li><strong style="color: var(--text);" data-i18n="excel_p1">اسم المنتج:</strong> <span data-i18n="excel_v1">(إلزامي) اكتب اسم المنتج.</span></li>
+                    <li><strong style="color: var(--text);" data-i18n="excel_p2">الباركود:</strong> <span data-i18n="excel_v2">(اختياري) أرقام باركود المنتج.</span></li>
+                    <li><strong style="color: var(--text);" data-i18n="excel_p3">الفئة:</strong> <span data-i18n="excel_v3">بقالة، ألبان، لحوم، مشروبات، أو تسالي.</span></li>
+                    <li><strong style="color: var(--text);" data-i18n="excel_p4">الوحدة:</strong> <span data-i18n="excel_v4">قطعة، كيلو، لتر، كرتونة، أو عبوة.</span></li>
+                    <li><strong style="color: var(--text);" data-i18n="excel_p5">الأسعار والكمية:</strong> <span data-i18n="excel_v5">يُسمح فقط بكتابة أرقام (مثال: 15.50). لا تكتب أي نصوص مع الرقم.</span></li>
+                    <li><strong style="color: var(--text);" data-i18n="excel_p6">تاريخ الانتهاء:</strong> <span data-i18n="excel_v6">(اختياري) بصيغة يوم/شهر/سنة.</span></li>
                 </ul>
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button class="btn btn-primary" style="flex: 1;" onclick="document.getElementById('importInstructionsModal').classList.remove('active'); document.getElementById('excelUpload').click();">رفع الملف الآن</button>
-                    <button class="btn btn-outline" style="flex: 1; border-style: dashed;" onclick="downloadExcelTemplate()">📥 تحميل قالب جاهز</button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="document.getElementById('importInstructionsModal').classList.remove('active'); document.getElementById('excelUpload').click();" data-i18n="btn_upload_now">رفع الملف الآن</button>
+                    <button class="btn btn-outline" style="flex: 1; border-style: dashed;" onclick="downloadExcelTemplate()" data-i18n="btn_dl_template">📥 تحميل قالب جاهز</button>
                 </div>
             </div>
         </div>
@@ -444,12 +444,16 @@
 
         const translations = {
             en: {
-                nav_dashboard: "Dashboard", nav_products: "Products", nav_pos: "POS System", nav_reports: "Reports",
+                nav_dashboard: "Dashboard", nav_products: "Products", nav_pos: "POS System", nav_reports: "Reports", nav_support: "Support",
                 btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home",
                 title_products: "Products Inventory", btn_add_product: "Add Product +", btn_import_excel: "Import Excel 📊",
                 th_name: "Product Name", th_category: "Category", th_price: "Selling Price", th_cost: "Cost Price", th_qty: "Stock Qty", th_status: "Status",
                 modal_title: "Add New Product", label_pname: "Product Name", label_pcat: "Category", label_pcost: "Cost Price", label_pprice: "Selling Price", label_pqty: "Initial Quantity", btn_save: "Save Product",
-                label_punit: "Unit", unit_piece: "Piece", unit_kg: "Kg", unit_liter: "Liter", unit_box: "Box", unit_pack: "Pack", label_pbarcode: "Barcode (Optional)"
+                label_punit: "Unit", unit_piece: "Piece", unit_kg: "Kg", unit_liter: "Liter", unit_box: "Box", unit_pack: "Pack", label_pbarcode: "Barcode (Optional)", ph_barcode: "Scan barcode here...",
+                status_out: "Out of Stock", status_low: "Low Stock", status_in: "In Stock",
+                modal_excel_title: "Excel Import Instructions 📊", modal_excel_desc: "To ensure successful import, prepare your Excel sheet exactly with these headers:", modal_excel_header: "Product Name | Barcode | Category | Unit | Quantity | Cost Price | Price | Expiry Date",
+                excel_p1: "Product Name:", excel_v1: "(Required) Write the product name.", excel_p2: "Barcode:", excel_v2: "(Optional) Product barcode numbers.", excel_p3: "Category:", excel_v3: "groceries, dairy, meat, beverages, or snacks.", excel_p4: "Unit:", excel_v4: "piece, kg, liter, box, or pack.", excel_p5: "Prices and Qty:", excel_v5: "Use numbers only (e.g. 15.50). Do not write any text.", excel_p6: "Expiry Date:", excel_v6: "(Optional) In DD/MM/YYYY format.",
+                btn_upload_now: "Upload Now", btn_dl_template: "📥 Download Template"
             },
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_pos: "نقطة البيع (POS)", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -457,7 +461,11 @@
                 title_products: "قائمة المنتجات", btn_add_product: "إضافة منتج +", btn_import_excel: "استيراد من إكسيل 📊",
                 th_name: "اسم المنتج", th_category: "الفئة", th_price: "سعر البيع", th_cost: "التكلفة", th_qty: "الكمية بالمخزون", th_status: "الحالة",
                 modal_title: "إضافة منتج جديد", label_pname: "اسم المنتج", label_pcat: "الفئة", label_pcost: "التكلفة", label_pprice: "سعر البيع", label_pqty: "الكمية الابتدائية", btn_save: "حفظ المنتج",
-                label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)"
+                label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)", ph_barcode: "امسح الباركود هنا...",
+                status_out: "نفذت الكمية", status_low: "قاربت على النفاذ", status_in: "متوفر",
+                modal_excel_title: "تعليمات استيراد الإكسيل 📊", modal_excel_desc: "لضمان استيراد المنتجات بنجاح، يرجى تجهيز ملف الإكسيل بحيث يحتوي الصف الأول على العناوين التالية بالضبط:", modal_excel_header: "اسم المنتج | الباركود | الفئة | الوحدة | الكمية | سعر التكلفة | السعر | تاريخ الانتهاء",
+                excel_p1: "اسم المنتج:", excel_v1: "(إلزامي) اكتب اسم المنتج.", excel_p2: "الباركود:", excel_v2: "(اختياري) أرقام باركود المنتج.", excel_p3: "الفئة:", excel_v3: "بقالة، ألبان، لحوم، مشروبات، أو تسالي.", excel_p4: "الوحدة:", excel_v4: "قطعة، كيلو، لتر، كرتونة، أو عبوة.", excel_p5: "الأسعار والكمية:", excel_v5: "يُسمح فقط بكتابة أرقام (مثال: 15.50). لا تكتب أي نصوص مع الرقم.", excel_p6: "تاريخ الانتهاء:", excel_v6: "(اختياري) بصيغة يوم/شهر/سنة.",
+                btn_upload_now: "رفع الملف الآن", btn_dl_template: "📥 تحميل قالب جاهز"
             }
         };
 

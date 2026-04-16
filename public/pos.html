@@ -475,7 +475,7 @@
                 <div
                     style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4);">
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="tel" id="customerPhone" placeholder="رقم هاتف العميل (نظام الولاء)"
+                        <input type="tel" id="customerPhone" data-i18n-ph="ph_customer_phone" placeholder="رقم هاتف العميل (نظام الولاء)"
                             style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
                         <button class="btn btn-outline" style="padding: 0 0.5rem; font-size: 0.85rem;" onclick="checkCustomerPoints()" type="button" data-i18n="btn_check_pts">فحص</button>
                     </div>
@@ -483,7 +483,7 @@
                     <label
                         style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
                         <input type="checkbox" id="usePoints">
-                        استبدال النقاط المتاحة بخصم
+                        <span data-i18n="label_use_pts">استبدال النقاط المتاحة بخصم</span>
                     </label>
                 </div>
 
@@ -589,14 +589,16 @@
                 sum_subtotal: "Subtotal", sum_tax: "Tax (14%)", sum_total: "Total Due",
                 btn_pay: "Pay & Print Receipt", pay_hint: "Press F8 for quick pay",
                 search_placeholder: "Search by name or scan barcode...",
-                cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks"
+                cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks",
+                btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:"
             },
             ar: {
                 cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
                 sum_subtotal: "المجموع الفرعي", sum_tax: "الضريبة (14%)", sum_total: "الإجمالي المطلوب",
                 btn_pay: "دفع وإصدار الفاتورة", pay_hint: "اضغط F8 للدفع السريع",
                 search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر...",
-                cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي"
+                cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي",
+                btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:"
             }
         };
 
@@ -692,7 +694,7 @@
                 <div class="product-card" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
                     <div class="product-name">${p.name}</div>
                     <div class="product-price">${formatMoney(p.price)}</div>
-                    <div class="product-stock">متبقي: ${p.quantity}</div>
+                    <div class="product-stock">${translations[currentLang].lbl_remaining} ${p.quantity}</div>
                 </div>
             `).join('');
         }
@@ -741,6 +743,34 @@
 
         function clearCart() {
             if (confirm('تأكيد مسح السلة؟')) { cart = []; renderCart(); }
+        }
+
+        async function checkCustomerPoints() {
+            const phone = document.getElementById('customerPhone').value.trim();
+            const display = document.getElementById('pointsDisplay');
+            if (!phone) {
+                display.style.display = 'block';
+                display.style.color = 'var(--error)';
+                display.textContent = 'الرجاء إدخال رقم الهاتف أولاً';
+                return;
+            }
+
+            try {
+                // To fetch customer stats assuming we have such an endpoint. We will use /api/reports/customer-points later if needed, but for now we map it. 
+                const res = await api(`/api/sales/customer/${phone}`);
+                display.style.display = 'block';
+                if (res && res.stats) {
+                    display.style.color = 'var(--success)';
+                    display.textContent = `النقاط المتاحة: ${res.stats.points}`;
+                } else {
+                    display.style.color = 'var(--error)';
+                    display.textContent = 'العميل غير مسجل أو لا يملك نقاط';
+                }
+            } catch (e) {
+                display.style.display = 'block';
+                display.style.color = 'var(--error)';
+                display.textContent = 'تعذر فحص النقاط';
+            }
         }
 
         function renderCart() {
