@@ -24,44 +24,64 @@
 
 <body class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+    <aside class="sidebar w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
             <h1 class="text-xl font-bold"><i class="fas fa-bolt text-yellow-400 mr-2"></i> SmartGrocer SaaS</h1>
         </div>
         <nav class="flex-1 overflow-y-auto py-4">
             <ul class="space-y-2 px-3">
-                <li><a href="/admin/dashboard.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-tachometer-alt"></i><span>الرئيسية</span></a></li>
-                <li><a href="/admin/stores.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-store"></i><span>المتاجر المشتركة</span></a></li>
-                <li><a href="/admin/payments.html"
-                        class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white"><i
-                            class="fas fa-money-check-alt"></i><span>طرق الدفع</span></a></li>
-                <li><a href="/admin/settings.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-cogs"></i><span>إعدادات النظام</span></a></li>
-                <li><a href="/admin/tickets.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition"><i
-                            class="fas fa-life-ring"></i><span>تذاكر الدعم</span></a></li>
+                <li>
+                    <a href="/admin/dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> <span data-translate="nav_dashboard">الرئيسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/stores.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="stores">
+                        <i class="fas fa-users"></i> <span data-translate="nav_stores">المتاجر المشتركة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="payments">
+                        <i class="fas fa-money-check-alt"></i><span data-translate="nav_payments">طرق الدفع</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/settings.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="nav_settings">إعدادات النظام</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/tickets.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="tickets">
+                        <i class="fas fa-life-ring"></i> <span data-translate="nav_tickets">تذاكر الدعم</span>
+                    </a>
+                </li>
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-800">
             <button onclick="logout()"
-                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
-                    class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
+                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-translate="nav_logout">تسجيل خروج</span>
+            </button>
         </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="h-16 bg-white border-b flex items-center justify-between px-6">
-            <h2 class="text-xl font-semibold text-gray-800">إدارة طرق الدفع</h2>
-            <button onclick="addPaymentMethod()"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
-                <i class="fas fa-plus mr-1"></i> إضافة طريقة جديدة
-            </button>
+            <div class="flex items-center gap-4">
+                <button id="mobileMenuBtn" class="md:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-xl font-semibold text-gray-800" data-translate="title_payments">إدارة طرق الدفع</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminLang()" id="adminLangBtn" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition border">English</button>
+                <button onclick="addPaymentMethod()"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
+                    <i class="fas fa-plus mr-1"></i> <span data-translate="btn_addPay">إضافة طريقة جديدة</span>
+                </button>
+            </div>
         </header>
 
         <div class="flex-1 overflow-y-auto p-6">
@@ -75,12 +95,13 @@
             <div class="mt-8 max-w-4xl mx-auto flex justify-end">
                 <button onclick="savePaymentMethods()" id="saveBtn" style="display: none;"
                     class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold flex items-center gap-2 transition shadow-lg">
-                    <i class="fas fa-save"></i> حفظ جميع التعديلات
+                    <i class="fas fa-save"></i> <span data-translate="saveAllBtn">حفظ جميع التعديلات</span>
                 </button>
             </div>
         </div>
     </main>
 
+    <script src="/js/admin-lang.js"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
@@ -120,7 +141,7 @@
         function renderMethods() {
             const container = document.getElementById('paymentsContainer');
             if (paymentMethods.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 bg-white rounded-xl border border-dashed">لا توجد طرق دفع مضافة. اضغط على أضف طريقة جديدة.</div>';
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 bg-white rounded-xl border border-dashed">${adminDict[adminLang].no_payments}</div>`;
                 return;
             }
 

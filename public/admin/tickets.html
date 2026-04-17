@@ -33,49 +33,45 @@
 
 <body class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+    <aside class="sidebar w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-                <i class="fas fa-bolt text-yellow-400"></i> SmartGrocer SaaS
-            </h2>
+            <h1 class="text-xl font-bold"><i class="fas fa-bolt text-yellow-400 mr-2"></i> SmartGrocer SaaS</h1>
         </div>
-        <nav class="p-4 space-y-2 flex-1 overflow-y-auto">
-            <!-- Navigation Tabs -->
-            <a href="/admin/dashboard.html" id="navHome"
-                class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
-                <div class="flex items-center gap-3"><i
-                        class="fas fa-chart-pie w-6 text-center group-hover:scale-110 transition"></i>
-                    <span>الرئيسية</span>
-                </div>
-            </a>
-            <a href="/admin/stores.html" id="navStores"
-                class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
-                <div class="flex items-center gap-3"><i
-                        class="fas fa-store w-6 text-center group-hover:scale-110 transition"></i> <span>المتاجر المشتركة</span>
-                </div>
-            </a>
-
-            <div class="h-px bg-gray-800 my-4 mx-4"></div>
-
-            <a href="/admin/settings.html" id="navSettings"
-                class="block px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-800 hover:text-white transition group flex items-center justify-between">
-                <div class="flex items-center gap-3"><i
-                        class="fas fa-money-check-alt w-6 text-center group-hover:scale-110 transition"></i>
-                    <span>إعدادات النظام</span>
-                </div>
-            </a>
-            <a href="/admin/tickets.html" id="navSupport"
-                class="block px-4 py-3 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-900/20 flex items-center justify-between group">
-                <div class="flex items-center gap-3"><i
-                        class="fas fa-life-ring w-6 text-center group-hover:scale-110 transition"></i> <span>تذاكر
-                        الدعم</span>
-                </div>
-            </a>
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-2 px-3">
+                <li>
+                    <a href="/admin/dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> <span data-translate="nav_dashboard">الرئيسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/stores.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="stores">
+                        <i class="fas fa-users"></i> <span data-translate="nav_stores">المتاجر المشتركة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="payments">
+                        <i class="fas fa-money-check-alt"></i><span data-translate="nav_payments">طرق الدفع</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/settings.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="nav_settings">إعدادات النظام</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/tickets.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="tickets">
+                        <i class="fas fa-life-ring"></i> <span data-translate="nav_tickets">تذاكر الدعم</span>
+                    </a>
+                </li>
+            </ul>
         </nav>
         <div class="p-4 border-t border-gray-800">
             <button onclick="logout()"
-                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition"><i
-                    class="fas fa-sign-out-alt"></i><span>تسجيل خروج</span></button>
+                class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600/10 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-translate="nav_logout">تسجيل خروج</span>
+            </button>
         </div>
     </aside>
 
@@ -88,18 +84,26 @@
             <div class="w-1/3 lg:w-1/4 border-l border-gray-200 bg-white flex flex-col h-full shrink-0">
                 <!-- Search/Filter -->
                 <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-gray-800">المحادثات</h2>
-                    <span id="unreadAdminCount"
-                        class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
+                    <div class="flex items-center gap-2">
+                        <button id="mobileMenuBtn" class="md:hidden text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h2 class="text-xl font-bold text-gray-800" data-translate="tk_conversations">المحادثات</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="unreadAdminCount"
+                            class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
+                        <button onclick="toggleAdminLang()" id="adminLangBtn" class="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs font-semibold hover:bg-gray-300 transition border">En</button>
+                    </div>
                 </div>
 
                 <div class="flex border-b border-gray-100 text-sm font-semibold">
                     <button class="flex-1 py-3 text-blue-600 border-b-2 border-blue-600" onclick="filterTickets('all')"
-                        id="btnFilterAll">الكل</button>
+                        id="btnFilterAll" data-translate="tk_all">الكل</button>
                     <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('open')"
-                        id="btnFilterOpen">تنتظر الرد</button>
+                        id="btnFilterOpen" data-translate="tk_open">تنتظر الرد</button>
                     <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('answered')"
-                        id="btnFilterAns">مجابة</button>
+                        id="btnFilterAns" data-translate="tk_answered">مجابة</button>
                 </div>
 
                 <!-- Conversation List -->
@@ -119,8 +123,8 @@
                             <i class="fas fa-user-circle text-2xl"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-gray-800 text-lg" id="chatUserName">اختر محادثة</h3>
-                            <p class="text-xs text-gray-500" id="chatStoreName">للرد على العميل</p>
+                            <h3 class="font-bold text-gray-800 text-lg" id="chatUserName" data-translate="tk_select">اختر محادثة</h3>
+                            <p class="text-xs text-gray-500" id="chatStoreName" data-translate="tk_reply_hint">للرد على العميل</p>
                         </div>
                     </div>
                 </div>
@@ -140,7 +144,7 @@
                         class="flex gap-2 max-w-4xl mx-auto items-end bg-white p-2 rounded-2xl shadow-sm border border-gray-300">
                         <textarea id="replyMessage"
                             class="flex-1 outline-none resize-none px-3 py-2 text-gray-700 bg-transparent min-h-[44px] max-h-32"
-                            rows="1" placeholder="اكتب ردك هنا..."
+                            rows="1" placeholder="اكتب ردك هنا..." data-translate="tk_placeholder"
                             oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
                         <button onclick="sendReply()"
                             class="bg-blue-600 text-white rounded-xl w-11 h-11 flex items-center justify-center hover:bg-blue-700 transition shrink-0 self-end">
@@ -153,6 +157,7 @@
         </div>
     </main>
 
+    <script src="/js/admin-lang.js"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
@@ -160,9 +165,11 @@
         // Block UI Elements if user is only Support
         const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
         if (adminData.role === 'support') {
-            document.getElementById('navHome').style.display = 'none';
-            document.getElementById('navStores').style.display = 'none';
-            document.getElementById('navSettings').style.display = 'none';
+            const getLink = (page) => document.querySelector(`[data-page="${page}"]`);
+            if(getLink('dashboard')) getLink('dashboard').parentElement.style.display = 'none';
+            if(getLink('stores')) getLink('stores').parentElement.style.display = 'none';
+            if(getLink('payments')) getLink('payments').parentElement.style.display = 'none';
+            if(getLink('settings')) getLink('settings').parentElement.style.display = 'none';
             // Also hide the global Search toggle if it exists
             const searchBox = document.querySelector('.fa-search');
             if (searchBox) searchBox.parentElement.style.display = 'none';

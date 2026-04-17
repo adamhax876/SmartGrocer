@@ -356,6 +356,9 @@
         .receipt-card {
             background: #fff;
             width: 350px;
+            max-height: 90vh; /* Prevent modal from exceeding screen height */
+            display: flex;
+            flex-direction: column;
             padding: 2rem;
             border-radius: 0;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -368,6 +371,7 @@
             margin-bottom: 1.5rem;
             border-bottom: 2px dashed #ccc;
             padding-bottom: 1rem;
+            flex-shrink: 0;
         }
 
         .receipt-header h2 {
@@ -380,6 +384,9 @@
             margin-bottom: 1.5rem;
             font-family: monospace;
             font-size: 0.9rem;
+            overflow-y: auto; /* Scroll internally if there are many items */
+            flex: 1; /* Allow stretching */
+            padding-right: 5px; /* Space for the scrollbar */
         }
 
         .r-item {
@@ -392,6 +399,7 @@
             border-top: 2px dashed #ccc;
             padding-top: 1rem;
             margin-bottom: 1.5rem;
+            flex-shrink: 0;
         }
 
         .r-total-row {
@@ -416,8 +424,14 @@
                 left: 0;
                 top: 0;
                 width: 100%;
+                max-height: none; /* Allow it to span multiple pages */
                 box-shadow: none;
                 padding: 0;
+                display: block; /* Remove flex constraint */
+            }
+
+            .receipt-items {
+                overflow: visible; /* Print all items */
             }
 
             .no-print {
@@ -635,7 +649,7 @@
                     if (el.tagName === 'INPUT' && el.type === 'text') {
                         el.placeholder = translations[currentLang][key];
                     } else {
-                        el.textContent = translations[currentLang][key];
+                        el.innerHTML = translations[currentLang][key];
                     }
                 }
             });

@@ -26,44 +26,35 @@
 <body class="flex h-screen overflow-hidden">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+    <aside class="sidebar w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
         <div class="h-16 flex items-center justify-center border-b border-gray-800">
             <h1 class="text-xl font-bold"><i class="fas fa-bolt text-yellow-400 mr-2"></i> SmartGrocer SaaS</h1>
         </div>
         <nav class="flex-1 overflow-y-auto py-4">
             <ul class="space-y-2 px-3">
                 <li>
-                    <a href="/admin/dashboard.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span data-translate="nav_dashboard">الرئيسية</span>
+                    <a href="/admin/dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> <span data-translate="nav_dashboard">الرئيسية</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/stores.html"
-                        class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white">
-                        <i class="fas fa-store"></i>
-                        <span data-translate="nav_stores">المتاجر المشتركة</span>
+                    <a href="/admin/stores.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="stores">
+                        <i class="fas fa-users"></i> <span data-translate="nav_stores">المتاجر المشتركة</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/payments.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
+                    <a href="/admin/payments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="payments">
                         <i class="fas fa-money-check-alt"></i><span data-translate="nav_payments">طرق الدفع</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/settings.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
-                        <i class="fas fa-cogs"></i>
-                        <span data-translate="nav_settings">إعدادات النظام</span>
+                    <a href="/admin/settings.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="nav_settings">إعدادات النظام</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/tickets.html"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition">
-                        <i class="fas fa-life-ring"></i>
-                        <span data-translate="nav_tickets">تذاكر الدعم</span>
+                    <a href="/admin/tickets.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300 hover:text-white" data-page="tickets">
+                        <i class="fas fa-life-ring"></i> <span data-translate="nav_tickets">تذاكر الدعم</span>
                     </a>
                 </li>
             </ul>
@@ -92,11 +83,11 @@
                     class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition border">English</button>
                 <button onclick="inviteSupportModal()"
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
-                    <i class="fas fa-headset"></i> دعوة فريق دعم
+                    <i class="fas fa-headset"></i> <span data-translate="btn_inviteSupport">دعوة فريق دعم</span>
                 </button>
                 <button onclick="openMessageModal('all')"
                     class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
-                    <i class="fas fa-paper-plane"></i> إرسال إشعار للجميع
+                    <i class="fas fa-paper-plane"></i> <span data-translate="btn_sendAll">إرسال إشعار للجميع</span>
                 </button>
                 <div class="relative w-full md:w-96">
                     <input type="text" id="searchInput" placeholder="ابحث باسم المتجر..."
@@ -115,7 +106,7 @@
                     <div>
                         <button onclick="openMessageModal('all')"
                             class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold shadow-sm flex items-center gap-2">
-                            <i class="fas fa-paper-plane"></i> إرسال إشعار للجميع
+                            <i class="fas fa-paper-plane"></i> <span data-translate="btn_sendAll">إرسال إشعار للجميع</span>
                         </button>
                     </div>
                 </div>
@@ -212,62 +203,10 @@
 
     </main>
 
+    <script src="/js/admin-lang.js"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
-
-        // Basic Localization Logic
-        let adminLang = localStorage.getItem('sg_admin_lang') || 'ar';
-        const dict = {
-            ar: {
-                langBtn: 'English', dir: 'rtl', users: 'المتاجر المشتركة',
-                nav_dashboard: 'الرئيسية', nav_stores: 'المتاجر المشتركة', nav_payments: 'طرق الدفع', nav_settings: 'إعدادات النظام', nav_logout: 'تسجيل خروج',
-                th_store: 'المتجر / المالك', th_email: 'البريد الإلكتروني', th_type: 'النوع', th_join: 'تاريخ الانضمام', th_plan: 'الباقة وانتهاء الصلاحية', th_ip: 'IP الدخول', th_status: 'الحالة', th_action: 'إجراءات',
-                search_placeholder: 'ابحث باسم المتجر...'
-            },
-            en: {
-                langBtn: 'عربي', dir: 'ltr', users: 'Stores',
-                nav_dashboard: 'Dashboard', nav_stores: 'Stores', nav_payments: 'Payments', nav_settings: 'Settings', nav_logout: 'Logout',
-                th_store: 'Store / Owner', th_email: 'Email', th_type: 'Type', th_join: 'Joined At', th_plan: 'Plan & Expiry', th_ip: 'Login IP', th_status: 'Status', th_action: 'Actions',
-                search_placeholder: 'Search by store name...'
-            }
-        };
-
-        function applyAdminLang() {
-            document.documentElement.dir = dict[adminLang].dir;
-            document.getElementById('adminLangBtn').textContent = dict[adminLang].langBtn;
-
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (dict[adminLang][key]) {
-                    el.textContent = dict[adminLang][key];
-                }
-            });
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) searchInput.placeholder = dict[adminLang].search_placeholder;
-
-            // Fix text alignment for LTR
-            if (adminLang === 'en') {
-                document.querySelectorAll('.text-right').forEach(el => {
-                    el.classList.remove('text-right');
-                    el.classList.add('text-left');
-                });
-            } else {
-                document.querySelectorAll('.text-left').forEach(el => {
-                    el.classList.remove('text-left');
-                    el.classList.add('text-right');
-                });
-            }
-        }
-
-        function toggleAdminLang() {
-            adminLang = adminLang === 'ar' ? 'en' : 'ar';
-            localStorage.setItem('sg_admin_lang', adminLang);
-            applyAdminLang();
-            window.location.reload();
-        }
-
-        applyAdminLang();
 
         function logout() {
             localStorage.removeItem('adminToken');
@@ -315,7 +254,7 @@
                     <td class="px-4 py-4 font-mono text-xs text-blue-600 font-bold" dir="ltr">${user.lastIpAddress || '-'}</td>
                     <td class="px-4 py-4">
                         <span class="px-2 py-1 rounded-full text-xs font-medium ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                            ${user.status === 'active' ? 'نشط' : 'موقوف'}
+                            ${user.status === 'active' ? adminDict[adminLang].statusActive : adminDict[adminLang].statusSuspended}
                         </span>
                     </td>
                     <td class="px-4 py-4 flex justify-center gap-2">
