@@ -273,3 +273,7 @@ img { max-width: 100%; }
   .topbar-title { font-size: 1.1rem; }
   .theme-toggle, .lang-switch { width: auto; justify-content: center; }
 }
+
+/* --- Hide Sidebar Scrollbar Globally --- */
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar { -ms-overflow-style: none; scrollbar-width: none; }
