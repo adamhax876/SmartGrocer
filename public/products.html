@@ -330,11 +330,12 @@
                                 <th data-i18n="th_cost">التكلفة</th>
                                 <th data-i18n="th_qty">الكمية بالمخزون</th>
                                 <th data-i18n="th_status">الحالة</th>
+                                <th data-i18n="th_actions" style="text-align: center;">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="productsTableBody">
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 2rem;">جاري التحميل...</td>
+                                <td colspan="7" style="text-align: center; padding: 2rem;">جاري التحميل...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -513,7 +514,7 @@
                 const tbody = document.getElementById('productsTableBody');
 
                 if (res.products.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">لا توجد منتجات حالياً. أضف منتجك الأول!</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem;">لا توجد منتجات حالياً. أضف منتجك الأول!</td></tr>`;
                     return;
                 }
 
@@ -535,10 +536,23 @@
                             <td>${(p.costPrice || 0).toFixed(2)}</td>
                             <td>${p.quantity}</td>
                             <td>${statusHtml}</td>
+                            <td style="text-align: center;">
+                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.6rem; font-size: 0.8rem;" title="حذف المنتج">🗑️</button>
+                            </td>
                         </tr>
                     `;
                 }).join('');
             } catch (e) { console.error(e); }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm(currentLang === 'ar' ? 'هل أنت متأكد من حذف هذا المنتج نهائياً؟' : 'Are you sure you want to delete this product?')) return;
+            try {
+                await api(`/api/products/${id}`, { method: 'DELETE' });
+                loadProducts();
+            } catch (e) {
+                alert('خطأ في حذف المنتج');
+            }
         }
 
         async function saveProduct(e) {
