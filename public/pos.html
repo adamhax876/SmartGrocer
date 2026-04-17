@@ -533,8 +533,8 @@
             <div class="receipt-header">
                 <h2 id="rStoreName">Smart Grocer POS</h2>
                 <div style="font-size: 0.8rem; color: #555;">
-                    مبيعات تجزئة - فاتورة ضريبية مبسطة<br>
-                    التاريخ: <span id="rDate"></span>
+                    <span data-i18n="receipt_title">مبيعات تجزئة - فاتورة ضريبية مبسطة</span><br>
+                    <span data-i18n="receipt_date">التاريخ:</span> <span id="rDate"></span>
                 </div>
             </div>
 
@@ -544,32 +544,32 @@
 
             <div class="r-total-sec">
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span>المجموع قبل الضريبة:</span>
+                    <span data-i18n="receipt_subtotal">المجموع قبل الضريبة:</span>
                     <span id="rSub">0.00</span>
                 </div>
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span>الضريبة (14%):</span>
+                    <span data-i18n="receipt_tax">الضريبة (14%):</span>
                     <span id="rTax">0.00</span>
                 </div>
                 <div class="r-total-row" style="margin-top: 0.5rem;">
-                    <span>الإجمالي (شامل الضريبة):</span>
+                    <span data-i18n="receipt_total">الإجمالي (شامل الضريبة):</span>
                     <span id="rTotal">0.00</span>
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;">
+            <div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;" data-i18n="receipt_footer">
                 شكراً لزيارتكم! 🌟<br>
                 النظام مدعوم بواسطة SmartGrocer
             </div>
 
             <div class="no-print" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem;">
                 <button class="btn btn-primary" onclick="window.print()" style="width: 100%; padding: 1rem;">
-                    🖨️ طباعة الفاتورة
+                    🖨️ <span data-i18n="btn_print">طباعة الفاتورة</span>
                 </button>
                 <button class="btn"
                     style="background-color: #25D366; color: white; width: 100%; padding: 1rem; border: none; font-weight: bold; border-radius: var(--radius);"
                     onclick="sendWhatsAppReceipt()">
-                    <i class="fab fa-whatsapp"></i> إرسال عبر واتساب (Pro)
+                    <i class="fab fa-whatsapp"></i> <span data-i18n="btn_whatsapp">إرسال عبر واتساب (Pro)</span>
                 </button>
             </div>
         </div>
@@ -591,7 +591,7 @@
                 search_placeholder: "Search by name or scan barcode...",
                 cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks",
                 btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:", lbl_no_products: "No matching products found",
-                receipt_title: "Retail Sales - Simplified Tax INVOICE", receipt_date: "Date:", receipt_subtotal: "Subtotal before tax:", receipt_tax: "Tax (14%):", receipt_total: "Total (including tax):", receipt_discount: "Points Discount:", receipt_points: "Current Customer Points:"
+                receipt_title: "Retail Sales - Simplified Tax INVOICE", receipt_date: "Date:", receipt_subtotal: "Subtotal before tax:", receipt_tax: "Tax (14%):", receipt_total: "Total (incl. tax):", receipt_discount: "Points Discount:", receipt_points: "Current Customer Points:", receipt_footer: "Thank you for visiting! 🌟<br>Powered by SmartGrocer", btn_print: "Print Receipt", btn_whatsapp: "Send via WhatsApp (Pro)"
             },
             ar: {
                 cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
@@ -600,7 +600,7 @@
                 search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر...",
                 cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي",
                 btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:", lbl_no_products: "لا توجد منتجات متطابقة",
-                receipt_title: "مبيعات تجزئة - فاتورة ضريبية مبسطة", receipt_date: "التاريخ:", receipt_subtotal: "المجموع قبل الضريبة:", receipt_tax: "الضريبة (14%):", receipt_total: "الإجمالي (شامل الضريبة):", receipt_discount: "خصم النقاط:", receipt_points: "نقاط العميل الحالية:"
+                receipt_title: "مبيعات تجزئة - فاتورة ضريبية مبسطة", receipt_date: "التاريخ:", receipt_subtotal: "المجموع قبل الضريبة:", receipt_tax: "الضريبة (14%):", receipt_total: "الإجمالي (شامل الضريبة):", receipt_discount: "خصم النقاط:", receipt_points: "نقاط العميل الحالية:", receipt_footer: "شكراً لزيارتكم! 🌟<br>النظام مدعوم بواسطة SmartGrocer", btn_print: "طباعة الفاتورة", btn_whatsapp: "إرسال عبر واتساب (Pro)"
             }
         };
 
