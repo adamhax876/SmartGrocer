@@ -590,7 +590,7 @@
                 btn_pay: "Pay & Print Receipt", pay_hint: "Press F8 for quick pay",
                 search_placeholder: "Search by name or scan barcode...",
                 cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks",
-                btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:"
+                btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:", lbl_no_products: "No matching products found"
             },
             ar: {
                 cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
@@ -598,7 +598,7 @@
                 btn_pay: "دفع وإصدار الفاتورة", pay_hint: "اضغط F8 للدفع السريع",
                 search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر...",
                 cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي",
-                btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:"
+                btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:", lbl_no_products: "لا توجد منتجات متطابقة"
             }
         };
 
@@ -693,7 +693,7 @@
         function renderProducts(products) {
             const grid = document.getElementById('productsGrid');
             if (products.length === 0) {
-                grid.innerHTML = `<div class="no-data">لا توجد منتجات متطابقة</div>`;
+                grid.innerHTML = `<div class="no-data">${translations[currentLang].lbl_no_products || 'لا توجد منتجات متطابقة'}</div>`;
                 return;
             }
             grid.innerHTML = products.map(p => `
