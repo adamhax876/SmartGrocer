@@ -50,11 +50,12 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.5rem 5%;
-      background: var(--bg-card);
+      background: var(--navbar-bg);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 999;
     }
 
     .brand {
@@ -137,6 +138,7 @@
         flex-direction: column;
         gap: 1rem;
         padding: 1rem;
+        position: relative; /* Prevent sticky header from overlapping and eating screen text on scroll */
       }
       .brand img {
         max-height: 60px !important;
@@ -387,6 +389,7 @@
         feat_3k_prod: "Up to 3,000 Products",
         feat_10k_sales: "Up to 10,000 Sales Invoices",
         feat_std_reports: "Standard Inventory & Sales Reports",
+        feat_basic_support: "Standard Support (Business Hours)",
         btn_sub_basic: "Subscribe to Basic",
         badge_recommended: "Most Popular & Profitable",
         plan_pro: "Pro Plan (Enterprise)",

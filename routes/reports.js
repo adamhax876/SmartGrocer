@@ -116,8 +116,8 @@ router.post('/ai-analysis', async (req, res) => {
         const products = await Product.find({ userId: user._id });
         const lowStockCount = products.filter(p => p.quantity <= p.lowStockThreshold).length;
 
-        const apiKey = process.env.OPENROUTER_API_KEY;
-        if (!apiKey) throw new Error("OPENROUTER_API_KEY is missing in server environment");
+        const apiKey = process.env.GROQ_API_KEY;
+        if (!apiKey) throw new Error("GROQ_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
         const prompt = `You are an expert retail business consultant for SmartGrocer SaaS.
@@ -132,47 +132,29 @@ Write a professional HTML report in ${isAr ? 'Arabic' : 'English'}.
 Include: performance summary, low stock alert, 3 actionable tips.
 Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
 
-        const modelsToTry = [
-            'meta-llama/llama-3.3-70b-instruct:free',
-            'google/gemma-3-27b-it:free',
-            'openai/gpt-oss-120b:free',
-            'deepseek/deepseek-r1:free'
-        ];
-
         let aiRes = null;
-        let lastError = null;
-
-        for (const model of modelsToTry) {
-            try {
-                aiRes = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                    model: model,
-                    messages: [
-                        { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
-                        { role: 'user', content: prompt }
-                    ],
-                    max_tokens: 600
-                }, {
-                    headers: {
-                        'Authorization': 'Bearer ' + apiKey,
-                        'Content-Type': 'application/json',
-                        'HTTP-Referer': 'https://smartgrocer.me',
-                        'X-Title': 'SmartGrocer AI'
-                    },
-                    timeout: 8000 // Force 8-second timeout per model to prevent infinite hanging
-                });
-                // If successful, break out of loop
-                if (aiRes && aiRes.data && aiRes.data.choices) {
-                    break;
-                }
-            } catch (err) {
-                console.error(`AI Model ${model} failed:`, err.response?.data?.error?.message || err.message);
-                lastError = err;
-                continue; // Try next model
-            }
+        try {
+            aiRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
+                    { role: 'user', content: prompt }
+                ],
+                max_tokens: 600
+            }, {
+                headers: {
+                    'Authorization': 'Bearer ' + apiKey,
+                    'Content-Type': 'application/json'
+                },
+                timeout: 8000
+            });
+        } catch (err) {
+            console.error('Groq AI Model failed:', err.response?.data?.error?.message || err.message);
+            throw new Error("Groq AI failed to generate the report.");
         }
 
         if (!aiRes || !aiRes.data || !aiRes.data.choices) {
-            throw lastError || new Error("All fallback AI models failed due to rate limits.");
+            throw new Error("Invalid response from Groq AI.");
         }
 
         const aiData = aiRes.data;

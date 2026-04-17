@@ -8,9 +8,9 @@ const axios = require('axios');
  */
 async function generateAIReport(storeData) {
     try {
-        const apiKey = process.env.OPENROUTER_API_KEY;
+        const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
-            console.log('No OPENROUTER_API_KEY found. Generating a standard text report instead.');
+            console.log('No GROQ_API_KEY found. Generating a standard text report instead.');
             return `تقرير المتجر الآلي:\nإجمالي المبيعات: ${storeData.totalSales}\nالمنتج الأكثر مبيعاً: ${storeData.topProduct}\nالمنتج الأقل مبيعاً: ${storeData.worstProduct}\n\nتوصيات النظام: يرجى مراجعة مخزون المنتجات الأكثر مبيعاً وعمل خصومات على المنتجات الأقل لزيادة السيولة.`;
         }
 
@@ -22,8 +22,8 @@ async function generateAIReport(storeData) {
 - المنتجات التي أوشكت على النفاذ: ${storeData.lowStock}
 اكتب تقريراً باللغة العربية، بأسلوب احترافي ومشجع لصاحب المتجر.`;
 
-        const aiRes = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-            model: 'meta-llama/llama-3.3-70b-instruct:free',
+        const aiRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
+            model: 'llama-3.3-70b-versatile',
             messages: [
                 { role: 'system', content: 'أنت محلل أعمال تجزئة خبير. اكتب بالعربية فقط.' },
                 { role: 'user', content: prompt }
@@ -32,9 +32,7 @@ async function generateAIReport(storeData) {
         }, {
             headers: {
                 'Authorization': 'Bearer ' + apiKey,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://smartgrocer.me',
-                'X-Title': 'SmartGrocer AI Cron'
+                'Content-Type': 'application/json'
             }
         });
 
@@ -46,7 +44,7 @@ async function generateAIReport(storeData) {
         if (error.response && error.response.data) {
             msg = JSON.stringify(error.response.data);
         }
-        console.error('OpenRouter AI Error:', msg);
+        console.error('Groq AI Error:', msg);
         return "حدث خطأ أثناء التواصل مع خدمات الذكاء الاصطناعي.";
     }
 }
