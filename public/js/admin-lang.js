@@ -42,7 +42,7 @@ function applyAdminLang() {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 el.placeholder = adminDict[adminLang][key];
             } else {
-                el.textContent = adminDict[adminLang][key];
+                el.innerHTML = adminDict[adminLang][key];
             }
         }
     });

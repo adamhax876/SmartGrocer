@@ -112,7 +112,7 @@ function applyUserLang() {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 el.placeholder = userTranslations[currentUserLang][key];
             } else {
-                el.textContent = userTranslations[currentUserLang][key];
+                el.innerHTML = userTranslations[currentUserLang][key];
             }
         }
     });

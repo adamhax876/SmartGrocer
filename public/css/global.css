@@ -219,17 +219,18 @@ img { max-width: 100%; }
   body.ltr .sidebar { transform: translateX(-100%); }
   .sidebar.mobile-open { transform: translateX(0); }
 
-  /* Topbar wrap */
+  /* Topbar Fix */
   .topbar {
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1rem;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
     height: auto;
+    overflow-x: auto;
   }
   .topbar > div, .topbar-actions {
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: flex-start !important;
+    flex-wrap: nowrap;
+    width: auto;
+    justify-content: flex-start;
   }
 
   /* Content Padding Reduction */
@@ -270,6 +271,5 @@ img { max-width: 100%; }
 
 @media screen and (max-width: 480px) {
   .topbar-title { font-size: 1.1rem; }
-  .btn { width: 100%; justify-content: center; } /* Make buttons full width on tiny screens */
   .theme-toggle, .lang-switch { width: auto; justify-content: center; }
 }
