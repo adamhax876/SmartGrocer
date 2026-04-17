@@ -142,20 +142,32 @@
         max-height: 60px !important;
       }
       .nav-links {
-        gap: 0.5rem;
+        display: flex;
         flex-wrap: wrap;
         justify-content: center;
         width: 100%;
-      }
-      .nav-links a.btn, .nav-links button.btn {
-        padding: 0.5rem 0.8rem;
-        font-size: 0.9rem;
-        flex: 1;
-        white-space: nowrap;
-        text-align: center;
+        gap: 0.5rem;
       }
       .nav-links button[onclick="toggleTheme()"] {
-        flex: none;
+        flex: 0 0 40px !important;
+        width: 40px !important;
+        height: 40px !important;
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .nav-links button#lang-text {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        padding: 0.5rem 1rem;
+      }
+      .nav-links a.btn {
+        flex: 1 1 45%;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        text-align: center;
       }
 
       .hero { padding: 1.5rem; min-height: 60vh; }

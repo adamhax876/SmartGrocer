@@ -43,15 +43,15 @@
 
     <!-- Navigation -->
     <nav class="glass-panel sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center h-12">
+        <div class="container mx-auto px-4 py-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 md:h-12">
                 <a href="/dashboard.html" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 rounded-xl lux-gradient flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                         <i class="fas fa-shopping-basket text-white"></i>
                     </div>
                     <span class="font-bold text-2xl tracking-wide">Smart Grocer</span>
                 </a>
-                <div class="flex items-center gap-6">
+                <div class="flex flex-wrap justify-center items-center gap-3 md:gap-6 w-full md:w-auto">
                     <div class="text-sm px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 flex items-center gap-2 hidden md:flex">
                         <i class="fas fa-exchange-alt text-blue-400"></i>
                         <span data-i18n="live_rate">سعر الصرف الحي: </span>
@@ -75,28 +75,28 @@
     <main class="flex-grow container mx-auto px-4 py-12 max-w-6xl relative z-10">
         
         <!-- Header -->
-        <div class="text-center mb-16">
-            <h1 class="text-5xl font-extrabold mb-6 lux-text-gradient" data-i18n="bil_heading">ارتقِ بتجارتك للمستوى التالي</h1>
-            <p class="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed" data-i18n="bil_subheading">اختر الباقة التي تناسب طموحك. تقنيات سحابية متقدمة، ذكاء اصطناعي، وتحليلات دقيقة بين يديك.</p>
+        <div class="text-center mb-12 md:mb-16">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-4 md:mb-6 lux-text-gradient px-2" data-i18n="bil_heading">ارتقِ بتجارتك للمستوى التالي</h1>
+            <p class="text-base md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed px-4" data-i18n="bil_subheading">اختر الباقة التي تناسب طموحك. تقنيات سحابية متقدمة، ذكاء اصطناعي، وتحليلات دقيقة بين يديك.</p>
         </div>
 
         <!-- Current Status -->
-        <div class="glass-panel rounded-3xl p-8 mb-16 relative overflow-hidden">
+        <div class="glass-panel rounded-3xl p-6 md:p-8 mb-12 md:mb-16 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-full h-1 lux-gradient"></div>
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="flex items-center gap-6">
-                    <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/50 text-blue-400 text-2xl">
+            <div class="flex flex-col md:flex-row justify-between items-center text-center md:text-right gap-6 md:gap-8">
+                <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+                    <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/50 text-blue-400 text-2xl shrink-0">
                         <i class="fas fa-crown"></i>
                     </div>
                     <div>
                         <p class="text-gray-400 text-sm font-semibold tracking-wider mb-1 uppercase" data-i18n="bil_curr_plan">باقتك الحالية</p>
-                        <h2 class="text-3xl font-bold text-white" id="currentPlanName" data-i18n="bil_loading">جاري التحميل...</h2>
-                        <div class="flex gap-4 mt-3">
-                            <span class="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full"><i class="fas fa-calendar-alt ml-1 text-blue-400"></i> <span id="currentPlanExpiry" class="text-white">-</span></span>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white" id="currentPlanName" data-i18n="bil_loading">جاري التحميل...</h2>
+                        <div class="flex justify-center md:justify-start gap-4 mt-3">
+                            <span class="text-sm text-gray-400 bg-gray-800 px-4 py-1.5 rounded-full"><i class="fas fa-calendar-alt ml-1 text-blue-400"></i> <span id="currentPlanExpiry" class="text-white">-</span></span>
                         </div>
                     </div>
                 </div>
-                <div id="statusBadge" class="px-6 py-3 rounded-xl font-bold flex items-center gap-2 border">
+                <div id="statusBadge" class="px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border w-full md:w-auto">
                     <div class="loader"></div> <span data-i18n="bil_loading">التحقق من الحالة</span>
                 </div>
             </div>
@@ -106,17 +106,17 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto mb-20">
             
             <!-- Standard Plan -->
-            <div class="card-hover glass-panel rounded-3xl border border-gray-700/50 overflow-hidden flex flex-col">
-                <div class="p-10 border-b border-gray-700/50">
+            <div class="card-hover glass-panel rounded-3xl border border-gray-700/50 overflow-hidden flex flex-col mx-2 md:mx-0">
+                <div class="p-6 md:p-10 border-b border-gray-700/50">
                     <h3 class="text-2xl font-bold text-white mb-2" data-i18n="bil_basic">الباقة الأساسية</h3>
                     <p class="text-gray-400 text-sm mb-6" data-i18n="bil_basic_desc">مثالية للمتاجر الناشئة والمتوسطة</p>
                     <div class="flex items-baseline gap-2 mb-2">
-                        <span class="text-5xl font-black text-white" id="basicPriceEgp">...</span>
-                        <span class="text-lg text-gray-400 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
+                        <span class="text-4xl md:text-5xl font-black text-white" id="basicPriceEgp">...</span>
+                        <span class="text-base md:text-lg text-gray-400 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
                     </div>
                     <div class="text-green-400 font-semibold text-sm bg-green-400/10 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 15$ / month</div>
                 </div>
-                <div class="p-10 flex-1 flex flex-col bg-gray-800/30">
+                <div class="p-6 md:p-10 flex-1 flex flex-col bg-gray-800/30">
                     <ul class="space-y-5 mb-10 flex-1">
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
@@ -138,23 +138,23 @@
             </div>
 
             <!-- Preimum Plan -->
-            <div class="card-hover glass-panel rounded-3xl border-2 border-blue-500/80 overflow-hidden flex flex-col relative transform md:-translate-y-4 shadow-[0_0_40px_rgba(59,130,246,0.3)]">
+            <div class="card-hover glass-panel rounded-3xl border-2 border-blue-500/80 overflow-hidden flex flex-col relative transform md:-translate-y-4 shadow-[0_0_40px_rgba(59,130,246,0.3)] mx-2 md:mx-0">
                 <div class="absolute top-5 right-5 bg-gradient-to-r from-yellow-400 to-amber-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
                     <i class="fas fa-star mr-1"></i> <span data-i18n="bil_most">الأكثر اختياراً</span>
                 </div>
-                <div class="p-10 border-b border-gray-700/50 lux-gradient relative overflow-hidden">
+                <div class="p-6 md:p-10 border-b border-gray-700/50 lux-gradient relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0MCcgaGVpZ2h0PSc0MCc+PGNpcmNsZSBjeD0nMjAnIGN5PScyMCcgcj0nMicgZmlsbD0nI2ZmZicgZmlsbC1vcGFjaXR5PScwLjInLz48L3N2Zz4=')] opacity-30"></div>
                     <div class="relative z-10">
                         <h3 class="text-2xl font-bold text-white mb-2" data-i18n="bil_pro">الباقة الاحترافية</h3>
-                        <p class="text-blue-100 text-sm mb-6" data-i18n="bil_pro_desc">الطاقة القصوى لتوسيع إمبراطوريتك</p>
+                        <p class="text-blue-100 text-sm mb-6 pr-8 md:pr-0" data-i18n="bil_pro_desc">الطاقة القصوى لتوسيع إمبراطوريتك</p>
                         <div class="flex items-baseline gap-2 mb-2">
-                            <span class="text-5xl font-black text-white" id="proPriceEgp">...</span>
-                            <span class="text-lg text-blue-100 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
+                            <span class="text-4xl md:text-5xl font-black text-white" id="proPriceEgp">...</span>
+                            <span class="text-base md:text-lg text-blue-100 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
                         </div>
                         <div class="text-white font-semibold text-sm bg-black/20 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 25$ / month</div>
                     </div>
                 </div>
-                <div class="p-10 flex-1 flex flex-col bg-gray-900/60">
+                <div class="p-6 md:p-10 flex-1 flex flex-col bg-gray-900/60">
                     <ul class="space-y-5 mb-10 flex-1">
                         <li class="flex items-start gap-4 text-gray-300">
                             <div class="mt-1 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><i class="fas fa-infinity text-xs"></i></div>
