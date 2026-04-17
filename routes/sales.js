@@ -211,4 +211,20 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+// GET /api/sales/customer/:phone — check customer points
+router.get('/customer/:phone', async (req, res) => {
+    try {
+        const phone = req.params.phone;
+        const customer = await Customer.findOne({ userId: req.user._id, phone });
+        
+        if (customer) {
+            res.json({ success: true, stats: { points: customer.points || 0, totalSpent: customer.totalSpent || 0 } });
+        } else {
+            res.json({ success: true, stats: null });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ', error: error.message });
+    }
+});
+
 module.exports = router;

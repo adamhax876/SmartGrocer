@@ -351,11 +351,11 @@
                 <div class="form-group">
                     <label data-i18n="label_pcat">الفئة</label>
                     <select class="form-control" id="p_cat" required>
-                        <option value="groceries">بقالة عادية</option>
-                        <option value="dairy">ألبان وأجبان</option>
-                        <option value="meat">لحوم ومجمدات</option>
-                        <option value="beverages">مشروبات وعصائر</option>
-                        <option value="snacks">تسالي وحلويات</option>
+                        <option value="groceries" data-i18n="cat_groceries">بقالة عادية</option>
+                        <option value="dairy" data-i18n="cat_dairy">ألبان وأجبان</option>
+                        <option value="meat" data-i18n="cat_meat">لحوم ومجمدات</option>
+                        <option value="beverages" data-i18n="cat_beverages">مشروبات وعصائر</option>
+                        <option value="snacks" data-i18n="cat_snacks">تسالي وحلويات</option>
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -452,7 +452,8 @@
                 status_out: "Out of Stock", status_low: "Low Stock", status_in: "In Stock",
                 modal_excel_title: "Excel Import Instructions 📊", modal_excel_desc: "To ensure successful import, prepare your Excel sheet exactly with these headers:", modal_excel_header: "Product Name | Barcode | Category | Unit | Quantity | Cost Price | Price | Expiry Date",
                 excel_p1: "Product Name:", excel_v1: "(Required) Write the product name.", excel_p2: "Barcode:", excel_v2: "(Optional) Product barcode numbers.", excel_p3: "Category:", excel_v3: "groceries, dairy, meat, beverages, or snacks.", excel_p4: "Unit:", excel_v4: "piece, kg, liter, box, or pack.", excel_p5: "Prices and Qty:", excel_v5: "Use numbers only (e.g. 15.50). Do not write any text.", excel_p6: "Expiry Date:", excel_v6: "(Optional) In DD/MM/YYYY format.",
-                btn_upload_now: "Upload Now", btn_dl_template: "📥 Download Template"
+                btn_upload_now: "Upload Now", btn_dl_template: "📥 Download Template",
+                cat_groceries: "Groceries", cat_dairy: "Dairy & Cheese", cat_meat: "Meat & Frozen", cat_beverages: "Beverages & Juice", cat_snacks: "Snacks & Sweets"
             },
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_pos: "نقطة البيع (POS)", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -464,7 +465,8 @@
                 status_out: "نفذت الكمية", status_low: "قاربت على النفاذ", status_in: "متوفر",
                 modal_excel_title: "تعليمات استيراد الإكسيل 📊", modal_excel_desc: "لضمان استيراد المنتجات بنجاح، يرجى تجهيز ملف الإكسيل بحيث يحتوي الصف الأول على العناوين التالية بالضبط:", modal_excel_header: "اسم المنتج | الباركود | الفئة | الوحدة | الكمية | سعر التكلفة | السعر | تاريخ الانتهاء",
                 excel_p1: "اسم المنتج:", excel_v1: "(إلزامي) اكتب اسم المنتج.", excel_p2: "الباركود:", excel_v2: "(اختياري) أرقام باركود المنتج.", excel_p3: "الفئة:", excel_v3: "بقالة، ألبان، لحوم، مشروبات، أو تسالي.", excel_p4: "الوحدة:", excel_v4: "قطعة، كيلو، لتر، كرتونة، أو عبوة.", excel_p5: "الأسعار والكمية:", excel_v5: "يُسمح فقط بكتابة أرقام (مثال: 15.50). لا تكتب أي نصوص مع الرقم.", excel_p6: "تاريخ الانتهاء:", excel_v6: "(اختياري) بصيغة يوم/شهر/سنة.",
-                btn_upload_now: "رفع الملف الآن", btn_dl_template: "📥 تحميل قالب جاهز"
+                btn_upload_now: "رفع الملف الآن", btn_dl_template: "📥 تحميل قالب جاهز",
+                cat_groceries: "بقالة عادية", cat_dairy: "ألبان وأجبان", cat_meat: "لحوم ومجمدات", cat_beverages: "مشروبات وعصائر", cat_snacks: "تسالي وحلويات"
             }
         };
 
