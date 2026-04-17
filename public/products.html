@@ -279,8 +279,12 @@
                         data-i18n="nav_dashboard">لوحة التحكم</span></a>
                 <a href="/products.html" class="sidebar-link active"><span class="icon">📦</span> <span
                         data-i18n="nav_products">المنتجات</span></a>
+                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span
+                        data-i18n="nav_inventory">المخزون</span></a>
                 <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
                         البيع (POS)</span></a>
+                <a href="/sales.html" class="sidebar-link"><span class="icon">💰</span> <span
+                        data-i18n="nav_sales">المبيعات</span></a>
                 <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span
                         data-i18n="nav_reports">التقارير</span></a>
                 <a href="/support.html" class="sidebar-link"><span class="icon">🎧</span> <span
@@ -289,8 +293,9 @@
             <div class="sidebar-bottom">
                 <button onclick="window.location.href='/'" class="btn btn-primary"
                     style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
-                <button onclick="logout()" class="btn btn-danger" style="width: 100%;" data-i18n="btn_logout">تسجيل
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" data-i18n="btn_logout">تسجيل
                     الخروج</button>
+                <button onclick="promptDeleteAccount()" class="btn btn-outline" style="width: 100%; border-color: var(--error); color: var(--error);" data-i18n="btn_delete_account">حذف حساب المتجر</button>
             </div>
         </aside>
 

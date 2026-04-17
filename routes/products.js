@@ -17,12 +17,14 @@ const upload = multer({
     fileFilter: (req, file, cb) => {
         const allowed = [
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/vnd.ms-excel'
+            'application/vnd.ms-excel',
+            'text/csv',
+            'application/csv'
         ];
-        if (allowed.includes(file.mimetype) || file.originalname.match(/\.(xlsx|xls)$/)) {
+        if (allowed.includes(file.mimetype) || file.originalname.match(/\.(xlsx|xls|csv)$/i)) {
             cb(null, true);
         } else {
-            cb(new Error('Only Excel files (.xlsx, .xls) are allowed'));
+            cb(new Error('Only Excel/CSV files (.xlsx, .xls, .csv) are allowed'));
         }
     }
 });
