@@ -27,18 +27,15 @@ router.get('/stats', isAdmin, async (req, res) => {
             subscriptionEndDate: { $gt: new Date() }
         });
 
-        // Calculate subscription growth for the last 6 months (by new users)
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        const growthData = await User.aggregate([
-            { $match: { role: 'store_owner', createdAt: { $gte: sixMonthsAgo } } },
+        // Calculate subscription plan distribution
+        const planDistribution = await User.aggregate([
+            { $match: { role: 'store_owner' } },
             {
                 $group: {
-                    _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+                    _id: "$subscriptionPlan",
                     count: { $sum: 1 }
                 }
-            },
-            { $sort: { "_id.year": 1, "_id.month": 1 } }
+            }
         ]);
 
         res.json({
@@ -47,7 +44,7 @@ router.get('/stats', isAdmin, async (req, res) => {
                 totalUsers,
                 totalPlans,
                 activeSubscriptions,
-                growthData
+                planDistribution
             }
         });
     } catch (error) {

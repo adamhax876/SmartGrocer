@@ -84,7 +84,7 @@
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-6">
             <div class="flex items-center gap-4">
-                <button class="md:hidden text-gray-500 hover:text-gray-700">
+                <button id="mobileMenuBtn" class="md:hidden text-gray-500 hover:text-gray-700">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 <h2 class="text-xl font-semibold text-gray-800" data-translate="overview">نظرة عامة</h2>
@@ -136,11 +136,11 @@
 
             <!-- Charts + Table -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Growth Chart -->
+                <!-- Plan Distribution Chart -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
                     <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-semibold text-gray-800" data-translate="chartTitle">نمو المشتركين</h4>
-                        <span class="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-semibold" data-translate="last6months">📈 آخر 6 أشهر</span>
+                        <h4 class="font-semibold text-gray-800" data-translate="chartTitle">توزيع باقات المشتركين</h4>
+                        <span class="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-semibold" data-translate="chartBadge">📊 حسب الباقات النشطة</span>
                     </div>
                     <div class="relative flex-1 w-full" style="min-height: 280px;">
                         <canvas id="growthChart"></canvas>
@@ -201,7 +201,7 @@
                 if (data.success) {
                     document.getElementById('stat-stores').textContent = data.data.totalUsers || 0;
                     document.getElementById('stat-subs').textContent = data.data.activeSubscriptions || 0;
-                    renderGrowthChart(data.data.growthData);
+                    renderPlanDistribution(data.data.planDistribution);
                 }
 
                 // Fetch latest stores
@@ -264,65 +264,75 @@
             `).join('') + '</div>';
         }
 
-        fetchDashboardStats();
-
-        // Growth Chart
+        // Plan Distribution Chart
         let growthChartInstance = null;
 
-        function renderGrowthChart(growthData) {
+        function renderPlanDistribution(planData) {
             const ctx = document.getElementById('growthChart').getContext('2d');
-
-            const monthNames = adminLang === 'ar'
-                ? ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-                : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             
             let labels = [];
             let chartData = [];
+            let bgColors = [];
 
-            if (growthData && growthData.length > 0) {
-                growthData.forEach(item => {
-                    labels.push(monthNames[item._id.month - 1]);
+            const colorMap = {
+                'Free Trial': '#6366f1', // Indigo
+                'Basic Plan': '#10b981', // Green
+                'Pro Plan': '#f59e0b',   // Yellow
+                'default': '#94a3b8'
+            };
+
+            const translateMapAr = {
+                'Free Trial': 'فترة تجريبية',
+                'Basic Plan': 'الباقة الأساسية',
+                'Pro Plan': 'الباقة الاحترافية'
+            };
+            const translateMapEn = {
+                'Free Trial': 'Free Trial',
+                'Basic Plan': 'Basic Plan',
+                'Pro Plan': 'Pro Plan'
+            };
+
+            if (planData && planData.length > 0) {
+                planData.forEach(item => {
+                    const planName = item._id || 'Unknown';
+                    const localizedName = adminLang === 'ar' ? (translateMapAr[planName] || planName) : (translateMapEn[planName] || planName);
+                    labels.push(localizedName);
                     chartData.push(item.count);
+                    bgColors.push(colorMap[planName] || colorMap['default']);
                 });
             } else {
-                // Show last 6 months with 0 values
-                const now = new Date();
-                for (let i = 5; i >= 0; i--) {
-                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                    labels.push(monthNames[d.getMonth()]);
-                    chartData.push(0);
-                }
+                labels = [adminLang === 'ar' ? 'لا يوجد اشتراكات' : 'No Subscriptions'];
+                chartData = [1];
+                bgColors = ['#e2e8f0'];
             }
 
             if (growthChartInstance) growthChartInstance.destroy();
 
-            const grad = ctx.createLinearGradient(0, 0, 0, 280);
-            grad.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
-            grad.addColorStop(1, 'rgba(79, 70, 229, 0.01)');
-
             growthChartInstance = new Chart(ctx, {
-                type: 'line',
+                type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: adminDict[adminLang].chartLabel,
                         data: chartData,
-                        borderColor: '#4F46E5',
-                        backgroundColor: grad,
-                        tension: 0.4,
-                        fill: true,
-                        borderWidth: 2.5,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#4F46E5',
-                        pointHoverRadius: 7,
-                        pointHoverBackgroundColor: '#4F46E5',
+                        backgroundColor: bgColors,
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '75%',
                     plugins: {
-                        legend: { display: false },
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { family: 'Cairo', size: 13, weight: '600' },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
                         tooltip: {
                             backgroundColor: '#fff',
                             titleColor: '#1e293b',
@@ -332,18 +342,22 @@
                             cornerRadius: 10,
                             padding: 12,
                         }
-                    },
-                    scales: {
-                        x: { grid: { display: false } },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
-                            ticks: { stepSize: 1 }
-                        }
                     }
                 }
             });
         }
+
+        // Mobile Menu Toggle logic
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('absolute', 'z-40', 'h-full', 'w-64');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('absolute', 'z-40', 'h-full', 'w-64');
+            }
+        });
     </script>
 </body>
 
