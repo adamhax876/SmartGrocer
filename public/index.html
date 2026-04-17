@@ -109,6 +109,10 @@
       border-color: var(--primary-light);
     }
 
+    section {
+      scroll-margin-top: 100px; /* Offset for sticky header on Desktop */
+    }
+
     .feature-icon {
       font-size: 3rem;
       margin-bottom: 1.5rem;
@@ -172,12 +176,15 @@
         text-align: center;
       }
 
-      .hero { padding: 1.5rem; min-height: 60vh; }
+      .hero { padding: 4rem 1.5rem 2rem; min-height: 60vh; }
       .hero h1 { font-size: 2rem; }
       .hero p { font-size: 1.1rem; }
       .hero-btns { flex-direction: column; width: 100%; }
       .hero-btns .btn { width: 100%; padding: 0.8rem 1rem !important; }
       
+      section {
+        scroll-margin-top: 0; /* Header is relative on mobile, so no offset needed */
+      }
       section h2 { font-size: 1.8rem !important; }
       .pricing h3 { font-size: 1.3rem !important; }
       .pricing div[style*="font-size: 2.5rem"] { font-size: 2rem !important; }
