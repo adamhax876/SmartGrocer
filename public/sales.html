@@ -145,14 +145,16 @@
                 btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home",
                 title_sales: "Sales & Invoices History", btn_refresh: "Refresh 🔄",
                 th_invoice: "Invoice ID", th_date: "Date & Time", th_items: "Items", th_total: "Total", th_method: "Payment", th_details: "Details",
-                btn_view: "View", pay_cash: "Cash", no_sales: "No sales found", invoice_title: "Invoice"
+                btn_view: "View", pay_cash: "Cash", no_sales: "No sales found", invoice_title: "Invoice",
+                receipt_date: "Date:", receipt_invoice: "Invoice:", receipt_subtotal: "Subtotal before tax:", receipt_tax: "Tax (14%):", receipt_total: "Total (incl. tax):", receipt_discount: "Discount (Points/Loyalty):", receipt_footer: "Thank you for your visit! 🌟<br>Powered by SmartGrocer"
             },
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
                 btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية",
                 title_sales: "سجل المبيعات والفواتير", btn_refresh: "تحديث السجل 🔄",
                 th_invoice: "رقم الفاتورة", th_date: "التاريخ والوقت", th_items: "عدد العناصر", th_total: "الإجمالي", th_method: "طريقة الدفع", th_details: "تفاصيل",
-                btn_view: "استعراض", pay_cash: "نقدي", no_sales: "لا توجد مبيعات", invoice_title: "الفاتورة"
+                btn_view: "استعراض", pay_cash: "نقدي", no_sales: "لا توجد مبيعات", invoice_title: "الفاتورة",
+                receipt_date: "التاريخ:", receipt_invoice: "رقم:", receipt_subtotal: "المجموع قبل الضريبة:", receipt_tax: "الضريبة (14%):", receipt_total: "الإجمالي (شامل الضريبة):", receipt_discount: "خصم (نقاط/ولاء):", receipt_footer: "شكراً لزيارتكم! 🌟<br>النظام مدعوم بواسطة SmartGrocer"
             }
         };
 
@@ -246,7 +248,7 @@
             const container = document.getElementById('modalItems');
             
             const d = new Date(sale.createdAt);
-            document.getElementById('modalTitle').innerHTML = `التاريخ: ${d.toLocaleDateString('ar-EG')} ${d.toLocaleTimeString('ar-EG')}<br>رقم: #${sale._id.substring(18)}`;
+            document.getElementById('modalTitle').innerHTML = `${t('receipt_date')} ${d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')} ${d.toLocaleTimeString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}<br>${t('receipt_invoice')} #${sale._id.substring(18)}`;
 
             let html = sale.items.map(i => {
                 const itemPrice = i.price || i.unitPrice || 0;
@@ -270,24 +272,24 @@
             </div>
             <div class="r-total-sec">
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span>المجموع قبل الضريبة:</span>
+                    <span>${t('receipt_subtotal')}</span>
                     <span>${subT.toFixed(2)}</span>
                 </div>
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span>الضريبة (14%):</span>
+                    <span>${t('receipt_tax')}</span>
                     <span>${taxValue.toFixed(2)}</span>
                 </div>
                 <div class="r-total-row" style="margin-top: 0.5rem; color: #000;">
-                    <span>الإجمالي (شامل الضريبة):</span>
+                    <span>${t('receipt_total')}</span>
                     <span>${sale.total.toFixed(2)}</span>
                 </div>
             `;
             
             if (sale.discount && sale.discount > 0) {
-                html += `<div style="color: #16a34a; font-weight: bold; margin-top: 5px; font-size:0.9rem;">خصم (نقاط/ولاء): ${sale.discount.toFixed(2)}- ج.م</div>`;
+                html += `<div style="color: #16a34a; font-weight: bold; margin-top: 5px; font-size:0.9rem;">${t('receipt_discount')} ${sale.discount.toFixed(2)}-</div>`;
             }
 
-            html += `<div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;">شكراً لزيارتكم! 🌟<br>النظام مدعوم بواسطة SmartGrocer</div>`;
+            html += `<div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;">${t('receipt_footer')}</div>`;
 
             container.innerHTML = html;
             document.getElementById('detailsModal').classList.add('active');

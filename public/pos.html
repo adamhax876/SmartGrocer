@@ -590,7 +590,8 @@
                 btn_pay: "Pay & Print Receipt", pay_hint: "Press F8 for quick pay",
                 search_placeholder: "Search by name or scan barcode...",
                 cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks",
-                btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:", lbl_no_products: "No matching products found"
+                btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:", lbl_no_products: "No matching products found",
+                receipt_title: "Retail Sales - Simplified Tax INVOICE", receipt_date: "Date:", receipt_subtotal: "Subtotal before tax:", receipt_tax: "Tax (14%):", receipt_total: "Total (including tax):", receipt_discount: "Points Discount:", receipt_points: "Current Customer Points:"
             },
             ar: {
                 cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
@@ -598,7 +599,8 @@
                 btn_pay: "دفع وإصدار الفاتورة", pay_hint: "اضغط F8 للدفع السريع",
                 search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر...",
                 cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي",
-                btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:", lbl_no_products: "لا توجد منتجات متطابقة"
+                btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:", lbl_no_products: "لا توجد منتجات متطابقة",
+                receipt_title: "مبيعات تجزئة - فاتورة ضريبية مبسطة", receipt_date: "التاريخ:", receipt_subtotal: "المجموع قبل الضريبة:", receipt_tax: "الضريبة (14%):", receipt_total: "الإجمالي (شامل الضريبة):", receipt_discount: "خصم النقاط:", receipt_points: "نقاط العميل الحالية:"
             }
         };
 
@@ -869,8 +871,17 @@
         function generateReceipt(items, resData) {
             const saleData = resData.sale;
             const user = getUser();
+            const lang = translations[currentLang];
+            
             document.getElementById('rStoreName').textContent = user.storeName || 'SmartGrocer POS';
-            document.getElementById('rDate').textContent = new Date().toLocaleString('ar-EG');
+            
+            // Re-render fixed elements to support dynamic language changes without refreshing
+            const rHeaderDiv = document.querySelector('.receipt-header div');
+            if (rHeaderDiv) {
+                rHeaderDiv.innerHTML = `${lang.receipt_title}<br>${lang.receipt_date} <span id="rDate">${new Date().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}</span>`;
+            } else {
+                document.getElementById('rDate').textContent = new Date().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+            }
 
             const rList = document.getElementById('rItemsList');
             rList.innerHTML = items.map(i => `
@@ -881,22 +892,37 @@
                 </div>
             `).join('');
 
-            document.getElementById('rSub').textContent = saleData.subtotal.toFixed(2);
-            document.getElementById('rTax').textContent = (saleData.subtotal * TAX_RATE).toFixed(2);
-            document.getElementById('rTotal').textContent = saleData.total.toFixed(2);
+            // Also translate the labels of the subtotal section inside receipt modal
+            const rTotalSec = document.querySelectorAll('.r-total-sec .r-item span');
+            if (rTotalSec && rTotalSec.length >= 2) {
+                rTotalSec[0].textContent = lang.receipt_subtotal;
+                rTotalSec[2].textContent = lang.receipt_tax; // It's [0] and [2] because of pairs (label, value) if nested, but wait let's be safer:
+            }
+            
+            // safer approach: just rebuild the r-total-sec html entirely
+            const rTotalContainer = document.querySelector('.r-total-sec');
+            rTotalContainer.innerHTML = `
+                <div class="r-item" style="color: #666; font-size: 0.85rem;">
+                    <span>${lang.receipt_subtotal}</span>
+                    <span id="rSub">${saleData.subtotal.toFixed(2)}</span>
+                </div>
+                <div class="r-item" style="color: #666; font-size: 0.85rem;">
+                    <span>${lang.receipt_tax}</span>
+                    <span id="rTax">${(saleData.subtotal * TAX_RATE).toFixed(2)}</span>
+                </div>
+                <div class="r-total-row" style="margin-top: 0.5rem;">
+                    <span>${lang.receipt_total}</span>
+                    <span id="rTotal">${saleData.total.toFixed(2)}</span>
+                </div>
+            `;
 
             let extraInfo = '';
             if (saleData.discount > 0 && resData.appliedLoyalty) {
-                extraInfo += `<div style="color: #16a34a; font-weight: bold; margin-bottom: 5px;">خصم النقاط: ${saleData.discount.toFixed(2)}- ج.م</div>`;
+                extraInfo += `<div style="color: #16a34a; font-weight: bold; margin-bottom: 5px;">${lang.receipt_discount} ${(saleData.discount).toFixed(2)}-</div>`;
             }
             if (document.getElementById('customerPhone').value.trim()) {
-                extraInfo += `<div style="color: #555; font-size: 0.8rem;">نقاط العميل الحالية: ${resData.customerPoints || 0} نقطة</div>`;
+                extraInfo += `<div style="color: #555; font-size: 0.8rem;">${lang.receipt_points} ${resData.customerPoints || 0}</div>`;
             }
-
-            const totalRow = document.querySelector('.r-total-sec');
-            // Remove previous extra info if any
-            const existingExtra = document.getElementById('rExtraInfo');
-            if (existingExtra) existingExtra.remove();
 
             if (extraInfo) {
                 const infoDiv = document.createElement('div');
@@ -905,7 +931,7 @@
                 infoDiv.style.marginTop = '10px';
                 infoDiv.style.borderTop = '1px dashed #ccc';
                 infoDiv.style.paddingTop = '10px';
-                totalRow.appendChild(infoDiv);
+                rTotalContainer.appendChild(infoDiv);
             }
 
             document.getElementById('receiptModal').classList.add('active');
