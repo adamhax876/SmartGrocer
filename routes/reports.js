@@ -148,6 +148,20 @@ router.post('/ai-analysis', async (req, res) => {
             .slice(0, 5)
             .map(([name, d]) => `${name}: ${d.qty} units sold, revenue ${d.revenue.toFixed(0)} EGP`);
 
+        // Bottom 5 slow-selling products (products with stock but low/no sales)
+        const soldProductNames = new Set(Object.keys(productSalesMap));
+        const slowProducts = products
+            .filter(p => p.quantity > 0)
+            .map(p => ({
+                name: p.name,
+                stock: p.quantity,
+                sales: productSalesMap[p.name]?.qty || 0,
+                price: p.price
+            }))
+            .sort((a, b) => a.sales - b.sales)
+            .slice(0, 5)
+            .map(p => `${p.name}: only ${p.sales} sold (${p.stock} in stock, price ${p.price} EGP)`);
+
         // Category distribution
         const categoryMap = {};
         products.forEach(p => {
@@ -207,8 +221,11 @@ STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
 - Profit Margin: ${profitMargin}%
 - Payment Methods: ${paymentStr || 'N/A'}
 
-====== TOP 5 BEST-SELLING PRODUCTS ======
+====== TOP 5 BEST-SELLING PRODUCTS (HIGH DEMAND) ======
 ${topProducts.length ? topProducts.join('\n') : 'No sales data available'}
+
+====== BOTTOM 5 SLOW-SELLING PRODUCTS (LOW DEMAND) ======
+${slowProducts.length ? slowProducts.join('\n') : 'No data available'}
 
 ====== INVENTORY STATUS ======
 - Total Products: ${products.length}
@@ -233,14 +250,19 @@ Based on ALL the data above, write a comprehensive, professional, and DETAILED b
 The report MUST include these sections:
 1. 📊 **Executive Summary** — Overall health of the business with specific numbers
 2. 💰 **Revenue & Profit Analysis** — Trends, margin commentary, revenue per transaction insights
-3. 🏆 **Top Products Analysis** — What's selling, what's not, and why it matters
+3. 🏆 **Top Products Deep Dive** — Analyze EACH top-selling product individually. For example: "Product X was purchased ${topProducts.length > 0 ? 'in large quantities' : ''} — this means it is in high demand and you should ensure it stays well-stocked." Also analyze the slow-selling products and suggest actions (promotions, bundling, price adjustments).
 4. ⚠️ **Inventory Alerts** — Detailed low stock, out of stock, and expiry warnings with product names
-5. 📈 **Daily Trend Insights** — Identify peak days, slow days, patterns
-6. 🎯 **5 Actionable Recommendations** — Specific, data-driven tips (not generic advice)
+5. 📈 **Daily Trend Insights** — Identify peak days, slow days, patterns in the 7-day data
+6. 🎯 **5 Actionable Recommendations** — Each recommendation MUST reference a specific product or metric. Examples:
+   - "Product X has been selling fast — increase your order quantity by 20%"
+   - "Product Y has high stock but low sales — consider a 15% discount promotion"
+   - "Your peak day is Saturday — schedule staff and inventory deliveries accordingly"
+   - "Your profit margin is X% — consider renegotiating supplier costs for Product Z"
 
 IMPORTANT RULES:
-- Use SPECIFIC numbers from the data in every section
-- Do NOT give generic advice — every tip must reference actual data
+- Use SPECIFIC numbers and PRODUCT NAMES from the data in every section
+- Do NOT give generic advice like "improve marketing" — every tip must reference actual products or numbers
+- Analyze WHY certain products sell well and others don't
 - Use HTML tags: <h3>, <h4>, <p>, <strong>, <ul>, <li>, <span style="color:..."> for colored highlights
 - Use emojis to make it visually engaging
 - The report should be 500-800 words
