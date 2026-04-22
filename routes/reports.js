@@ -237,4 +237,90 @@ router.get('/export-excel', async (req, res) => {
     }
 });
 
+// GET /api/reports/low-stock — products running low
+router.get('/low-stock', async (req, res) => {
+    try {
+        const products = await Product.find({ userId: req.user._id })
+            .sort('quantity')
+            .limit(50);
+
+        const lowStockItems = products
+            .filter(p => p.quantity <= p.lowStockThreshold)
+            .slice(0, 10)
+            .map(p => ({
+                _id: p._id,
+                name: p.name,
+                quantity: p.quantity,
+                threshold: p.lowStockThreshold,
+                category: p.category,
+                unit: p.unit
+            }));
+
+        res.json({
+            success: true,
+            count: lowStockItems.length,
+            totalLow: products.filter(p => p.quantity <= p.lowStockThreshold).length,
+            items: lowStockItems
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ', error: error.message });
+    }
+});
+
+// GET /api/reports/monthly-comparison — current vs previous month
+router.get('/monthly-comparison', async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const now = new Date();
+
+        // Current month range
+        const currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const currentEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+        // Previous month range
+        const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const prevEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+        const [currentSales, prevSales] = await Promise.all([
+            Sale.find({ userId, createdAt: { $gte: currentStart, $lte: currentEnd } }),
+            Sale.find({ userId, createdAt: { $gte: prevStart, $lte: prevEnd } })
+        ]);
+
+        const currentRevenue = currentSales.reduce((s, sale) => s + sale.total, 0);
+        const prevRevenue = prevSales.reduce((s, sale) => s + sale.total, 0);
+        const currentOrders = currentSales.length;
+        const prevOrders = prevSales.length;
+        const currentAvg = currentOrders > 0 ? currentRevenue / currentOrders : 0;
+        const prevAvg = prevOrders > 0 ? prevRevenue / prevOrders : 0;
+
+        function calcChange(current, previous) {
+            if (previous === 0) return current > 0 ? 100 : 0;
+            return ((current - previous) / previous) * 100;
+        }
+
+        res.json({
+            success: true,
+            current: {
+                revenue: currentRevenue,
+                orders: currentOrders,
+                avgOrder: currentAvg,
+                monthLabel: currentStart.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' })
+            },
+            previous: {
+                revenue: prevRevenue,
+                orders: prevOrders,
+                avgOrder: prevAvg,
+                monthLabel: prevStart.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' })
+            },
+            change: {
+                revenue: calcChange(currentRevenue, prevRevenue).toFixed(1),
+                orders: calcChange(currentOrders, prevOrders).toFixed(1),
+                avgOrder: calcChange(currentAvg, prevAvg).toFixed(1)
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ', error: error.message });
+    }
+});
+
 module.exports = router;

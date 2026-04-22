@@ -56,14 +56,44 @@ function removeUser() { localStorage.removeItem('sg_user'); }
 // Sidebar Toggle for Mobile
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
-    const overlay = document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    const overlay = document.querySelector('.sidebar-overlay');
     
-    if (sidebar) {
-        sidebar.classList.toggle('open');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active');
+}
+
+// Auto-inject mobile hamburger button + overlay on every page
+function initMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const topbar = document.querySelector('.topbar');
+    if (!sidebar || !topbar) return;
+
+    // 1. Inject hamburger button at the start of topbar (if not already there)
+    if (!topbar.querySelector('.mobile-menu-btn')) {
+        const hamburger = document.createElement('button');
+        hamburger.className = 'mobile-menu-btn';
+        hamburger.setAttribute('aria-label', 'Menu');
+        hamburger.innerHTML = '☰';
+        hamburger.onclick = toggleSidebar;
+        topbar.insertBefore(hamburger, topbar.firstChild);
     }
-    if (overlay) {
-        overlay.classList.toggle('active');
+
+    // 2. Inject dark overlay behind sidebar (if not already there)
+    if (!document.querySelector('.sidebar-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        overlay.onclick = toggleSidebar;
+        document.body.appendChild(overlay);
     }
+
+    // 3. Close sidebar when clicking any sidebar link (navigate away)
+    sidebar.querySelectorAll('a.sidebar-link, .sidebar-bottom a, .sidebar-bottom button').forEach(link => {
+        link.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            const ov = document.querySelector('.sidebar-overlay');
+            if (ov) ov.classList.remove('active');
+        });
+    });
 }
 
 function logout() {
@@ -129,6 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setTheme(getTheme());
     // Apply saved language
     setLang(getLang());
+
+    // Auto-inject mobile sidebar hamburger + overlay
+    initMobileSidebar();
 
     // Fetch and apply public settings (Currency, Site Name)
     fetchPublicSettings();
