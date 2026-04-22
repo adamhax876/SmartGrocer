@@ -193,6 +193,7 @@
                 if (data.success) {
                     document.getElementById('stat-stores').textContent = data.data.totalUsers || 0;
                     document.getElementById('stat-subs').textContent = data.data.activeSubscriptions || 0;
+                    document.getElementById('stat-tickets').textContent = data.data.openTickets || 0;
                     renderPlanDistribution(data.data.planDistribution);
                 }
 
