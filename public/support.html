@@ -194,9 +194,19 @@
         }
 
         @media (max-width: 768px) {
-            .support-container {
-                grid-template-columns: 1fr;
-            }
+            .sidebar { display: none; }
+            .sidebar.open { display: flex; }
+            .main { margin-inline-start: 0 !important; }
+            #ticketSidePanel { width: 100% !important; position: absolute; z-index: 40; height: 100%; }
+            #ticketSidePanel.mobile-hidden { display: none !important; }
+            .mobile-back-btn { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+            .mobile-back-btn { display: none !important; }
+            .mobile-hamburger { display: none !important; }
+        }
+        .chat-bg-themed {
+            background: var(--bg-secondary, #e5ddd5);
         }
     </style>
 </head>
@@ -235,8 +245,10 @@
         <!-- Main Content -->
         <main class="main" style="flex-direction: column; overflow: hidden; height: 100vh;">
             <header class="topbar" style="flex-shrink: 0;">
-                <h1 class="topbar-title" data-i18n="title_support"><i class="fas fa-life-ring"></i> مركز الدعم الفني
-                </h1>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button class="btn btn-outline mobile-hamburger" onclick="document.querySelector('.sidebar').classList.toggle('open')" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;"><i class="fas fa-bars"></i></button>
+                    <h1 class="topbar-title" data-i18n="title_support"><i class="fas fa-life-ring"></i> مركز الدعم الفني</h1>
+                </div>
                 <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
                     <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
@@ -248,10 +260,10 @@
                 </div>
             </header>
 
-            <div style="flex: 1; display: flex; overflow: hidden; background: var(--bg);">
+            <div style="flex: 1; display: flex; overflow: hidden; background: var(--bg); position: relative;">
 
                 <!-- Left Sidebar: Tickets List -->
-                <div
+                <div id="ticketSidePanel"
                     style="width: 320px; border-inline-end: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg-card); flex-shrink: 0;">
                     <div
                         style="padding: 1rem; border-bottom: 1px solid var(--border); display:flex; justify-content: center;">
@@ -267,7 +279,7 @@
                 </div>
 
                 <!-- Right Side: Chat / Form -->
-                <div style="flex: 1; display: flex; flex-direction: column; background: #e5ddd5; position: relative;">
+                <div style="flex: 1; display: flex; flex-direction: column; background: var(--bg-secondary, #e5ddd5); position: relative;">
 
                     <!-- Default Welcome -->
                     <div id="defaultWelcome"
@@ -302,7 +314,8 @@
                     <!-- Active Chat -->
                     <div id="activeChat" style="display: none; flex: 1; flex-direction: column; height: 100%;">
                         <div
-                            style="padding: 1rem 1.5rem; border-bottom: 1px solid #ccc; background: #f0f2f5; display: flex; align-items: center; flex-shrink: 0;">
+                            style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border, #ccc); background: var(--bg-card, #f0f2f5); display: flex; align-items: center; flex-shrink: 0;">
+                            <button class="mobile-back-btn" onclick="mobileBackToList()" style="display:none; align-items:center; justify-content:center; width:36px; height:36px; border:none; background:none; cursor:pointer; color:var(--text); font-size:1.2rem; margin-inline-end:0.5rem;"><i class="fas fa-arrow-right"></i></button>
                             <div
                                 style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-inline-end: 1rem;">
                                 <i class="fas fa-life-ring"></i>
@@ -315,12 +328,12 @@
 
                         <!-- Chat Bubbles Area -->
                         <div id="messagesArea"
-                            style="flex: 1; overflow-y: auto; padding: 2rem 5%; display: flex; flex-direction: column; gap: 0.5rem; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-repeat: repeat; opacity: 0.95;">
+                            style="flex: 1; overflow-y: auto; padding: 2rem 5%; display: flex; flex-direction: column; gap: 0.5rem; background: var(--bg, #e5ddd5);">
                             <!-- Bubbles -->
                         </div>
 
                         <div id="chatInputArea"
-                            style="padding: 1rem; background: #f0f2f5; display: flex; gap: 0.5rem; flex-shrink: 0; align-items: flex-end;">
+                            style="padding: 1rem; background: var(--bg-card, #f0f2f5); display: flex; gap: 0.5rem; flex-shrink: 0; align-items: flex-end;">
                             <textarea id="replyMessage"
                                 style="flex: 1; border: none; border-radius: 20px; padding: 12px 16px; resize: none; outline: none; max-height: 100px; font-family: inherit; font-size: 15px;"
                                 rows="1" placeholder="اكتب ردك..."
@@ -446,11 +459,23 @@
             }).join('');
         }
 
+        function mobileBackToList() {
+            const panel = document.getElementById('ticketSidePanel');
+            if (panel) panel.classList.remove('mobile-hidden');
+            document.getElementById('activeChat').style.display = 'none';
+            document.getElementById('defaultWelcome').style.display = 'flex';
+        }
+
         async function openChat(id) {
             activeTicketId = id;
             document.getElementById('defaultWelcome').style.display = 'none';
             document.getElementById('newTicketForm').style.display = 'none';
             document.getElementById('activeChat').style.display = 'flex';
+            // On mobile, hide ticket list when chat is open
+            if (window.innerWidth <= 768) {
+                const panel = document.getElementById('ticketSidePanel');
+                if (panel) panel.classList.add('mobile-hidden');
+            }
 
             const t = allTickets.find(x => x._id === id);
 
@@ -563,6 +588,10 @@
             if (ticket.messages) {
                 ticket.messages.push({ role: 'user', content: replyText, createdAt: new Date() });
             }
+            ticket.status = 'open';
+            // Update chat header status badge
+            const statusText = currentLang === 'en' ? 'Pending' : 'قيد الانتظار';
+            document.getElementById('chatStatusBadge').innerHTML = `<span style="color: #ca8a04; font-weight: bold;">${statusText}</span>`;
             renderChat(ticket, false);
 
             try {

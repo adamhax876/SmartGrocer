@@ -27,8 +27,8 @@ router.get('/stats', isAdmin, async (req, res) => {
             subscriptionEndDate: { $gt: new Date() }
         });
 
-        // Count open support tickets
-        const openTickets = await Ticket.countDocuments({ status: { $in: ['open', 'pending'] } });
+        // Count open support tickets (only 'open' status exists in Ticket model)
+        const openTickets = await Ticket.countDocuments({ status: 'open' });
 
         // Calculate subscription plan distribution
         const planDistribution = await User.aggregate([
