@@ -106,25 +106,16 @@ async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textCon
 
 // ─── Master Fallback Router ────────────────────────────────────────────────
 async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, textContent) {
-  // 1. Try Gmail (Most reliable, no domain needed)
-  if (process.env.EMAIL_PASS) {
-    const gSuccess = await sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent);
-    if (gSuccess) {
-      console.log(`✅ [Gmail] Email sent → ${toEmail}`);
-      return true;
-    }
-  }
-
-  // 2. Try Resend (If they added an API key)
+  // 1. Try Resend FIRST (sends from custom domain: support@smartgrocer.me)
   if (process.env.RESEND_API_KEY) {
     const rSuccess = await sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent);
     if (rSuccess) {
-      console.log(`✅ [Resend] Email sent → ${toEmail}`);
+      console.log(`✅ [Resend/Domain] Email sent → ${toEmail}`);
       return true;
     }
   }
 
-  // 3. Fallback to Brevo
+  // 2. Try Brevo as second option (also supports custom domain)
   if (process.env.BREVO_API_KEY) {
     try {
       const bSuccess = await sendEmailViaAPI(toEmail, toName, subject, htmlContent, textContent);
@@ -133,11 +124,20 @@ async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, text
         return true;
       }
     } catch (e) {
-      console.error("[EMAIL CRASH] All providers failed. Last error from Brevo:", e.message);
+      console.warn("[Brevo ERROR]:", e.message);
     }
   }
 
-  throw new Error("No Email Provider Configured or All Failed (Check .env for EMAIL_PASS, RESEND_API_KEY, or BREVO_API_KEY)");
+  // 3. Gmail as LAST RESORT fallback only
+  if (process.env.EMAIL_PASS) {
+    const gSuccess = await sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent);
+    if (gSuccess) {
+      console.log(`⚠️ [Gmail Fallback] Email sent → ${toEmail}`);
+      return true;
+    }
+  }
+
+  throw new Error("No Email Provider Configured or All Failed (Check .env for RESEND_API_KEY, BREVO_API_KEY, or EMAIL_PASS)");
 }
 
 // ─── Public Functions ────────────────────────────────────────────────────────
