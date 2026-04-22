@@ -428,15 +428,31 @@
                     }
 
                     // Build countdown string for ALL plans
-                    let countdownStr = '';
-                    if (!isActive) {
-                        countdownStr = currentUserLang === 'ar' ? '0 يوم - منتهية' : '0 days - Expired';
-                    } else if (daysLeft < 1) {
-                        // Last day: show hours
-                        countdownStr = currentUserLang === 'ar' ? `${hoursLeft} ساعة متبقية` : `${hoursLeft} hours left`;
-                    } else {
-                        countdownStr = currentUserLang === 'ar' ? `${daysLeft} يوم` : `${daysLeft} days left`;
+                    const serverNow = new Date(meData.serverTime || Date.now());
+                    function updateCountdown() {
+                        const elapsed = Date.now() - serverNow.getTime();
+                        const adjustedNow = new Date(serverNow.getTime() + elapsed);
+                        const msLeft = endDate - adjustedNow;
+                        const daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+                        const hoursLeft = Math.floor(msLeft / (1000 * 60 * 60));
+                        const minsLeft = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        const isStillActive = msLeft > 0;
+
+                        let countdownStr = '';
+                        if (!isStillActive) {
+                            countdownStr = currentUserLang === 'ar' ? '0 يوم - منتهية' : '0 days - Expired';
+                        } else if (daysLeft < 1) {
+                            // Last day: show hours:minutes, ticking live
+                            countdownStr = currentUserLang === 'ar'
+                                ? `${hoursLeft} ساعة و ${minsLeft} دقيقة متبقية`
+                                : `${hoursLeft}h ${minsLeft}m left`;
+                        } else {
+                            countdownStr = currentUserLang === 'ar' ? `${daysLeft} يوم` : `${daysLeft} days left`;
+                        }
+                        return { countdownStr, isStillActive, daysLeft };
                     }
+                    let countdownResult = updateCountdown();
+                    let countdownStr = countdownResult.countdownStr;
 
                     if (planText === 'Free Trial') {
                         planText = currentUserLang === 'ar' ? `تجربة مجانية (${countdownStr})` : `Free Trial (${countdownStr})`;
@@ -450,6 +466,26 @@
                         planBadge.style.color = !isActive ? '#991b1b' : '#1e40af';
                     }
                     planBadge.textContent = planText;
+
+                    // Live ticker: update every 60s when less than 24 hours remain
+                    if (countdownResult.isStillActive && countdownResult.daysLeft < 1) {
+                        setInterval(() => {
+                            const r = updateCountdown();
+                            let liveText = meData.user.subscriptionPlan || 'Free Trial';
+                            if (liveText === 'Free Trial') {
+                                liveText = currentUserLang === 'ar' ? `تجربة مجانية (${r.countdownStr})` : `Free Trial (${r.countdownStr})`;
+                            } else {
+                                const ln = currentUserLang === 'ar' && liveText === 'Basic Plan' ? 'الباقة الأساسية' :
+                                    currentUserLang === 'ar' && liveText === 'Pro Plan' ? 'الباقة الاحترافية' : liveText;
+                                liveText = `${ln} (${r.countdownStr})`;
+                            }
+                            planBadge.textContent = liveText;
+                            if (!r.isStillActive) {
+                                planBadge.style.background = '#fee2e2';
+                                planBadge.style.color = '#991b1b';
+                            }
+                        }, 60000); // Tick every minute
+                    }
                 }
 
                 const data = await api('/api/reports/overview');

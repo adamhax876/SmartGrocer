@@ -112,43 +112,156 @@ router.post('/ai-analysis', async (req, res) => {
 
         const now = new Date();
         const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+        const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
 
-        const recentSales = await Sale.find({ userId: user._id, createdAt: { $gte: thirtyDaysAgo } });
+        // Gather comprehensive data
+        const [recentSales, products, allSales] = await Promise.all([
+            Sale.find({ userId: user._id, createdAt: { $gte: thirtyDaysAgo } }),
+            Product.find({ userId: user._id }),
+            Sale.find({ userId: user._id })
+        ]);
+
         const totalRevenue = recentSales.reduce((sum, s) => sum + s.total, 0);
-        const products = await Product.find({ userId: user._id });
-        const lowStockCount = products.filter(p => p.quantity <= p.lowStockThreshold).length;
+        const avgOrder = recentSales.length ? (totalRevenue / recentSales.length) : 0;
+
+        // Low stock & expiry analysis
+        const lowStockItems = products.filter(p => p.quantity <= p.lowStockThreshold);
+        const outOfStock = products.filter(p => p.quantity === 0);
+        const nearExpiry = products.filter(p => {
+            if (!p.expiryDate) return false;
+            const days = (p.expiryDate - now) / (1000 * 60 * 60 * 24);
+            return days <= 7 && days > 0;
+        });
+
+        // Top 5 best-selling products (by sales count)
+        const productSalesMap = {};
+        recentSales.forEach(sale => {
+            sale.items.forEach(item => {
+                const key = item.name || item.productId?.toString() || 'Unknown';
+                if (!productSalesMap[key]) productSalesMap[key] = { qty: 0, revenue: 0 };
+                productSalesMap[key].qty += item.quantity;
+                productSalesMap[key].revenue += (item.unitPrice || item.price || 0) * item.quantity;
+            });
+        });
+        const topProducts = Object.entries(productSalesMap)
+            .sort((a, b) => b[1].qty - a[1].qty)
+            .slice(0, 5)
+            .map(([name, d]) => `${name}: ${d.qty} units sold, revenue ${d.revenue.toFixed(0)} EGP`);
+
+        // Category distribution
+        const categoryMap = {};
+        products.forEach(p => {
+            if (!categoryMap[p.category]) categoryMap[p.category] = { count: 0, value: 0 };
+            categoryMap[p.category].count++;
+            categoryMap[p.category].value += p.price * p.quantity;
+        });
+        const categoryBreakdown = Object.entries(categoryMap)
+            .map(([cat, d]) => `${cat}: ${d.count} products, stock value ${d.value.toFixed(0)} EGP`)
+            .join('\n');
+
+        // Daily revenue trend (last 7 days)
+        const dailyRevenue = [];
+        for (let i = 6; i >= 0; i--) {
+            const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+            const dayEnd = new Date(day.getTime() + 24 * 60 * 60 * 1000);
+            const daySales = recentSales.filter(s => s.createdAt >= day && s.createdAt < dayEnd);
+            const dayLabel = day.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            dailyRevenue.push(`${dayLabel}: ${daySales.reduce((s, x) => s + x.total, 0).toFixed(0)} EGP (${daySales.length} orders)`);
+        }
+
+        // Payment methods
+        const paymentBreakdown = {};
+        recentSales.forEach(s => {
+            const m = s.paymentMethod || 'cash';
+            paymentBreakdown[m] = (paymentBreakdown[m] || 0) + s.total;
+        });
+        const paymentStr = Object.entries(paymentBreakdown)
+            .map(([m, v]) => `${m}: ${v.toFixed(0)} EGP`)
+            .join(', ');
+
+        // Profit estimation
+        let totalCost = 0;
+        recentSales.forEach(sale => {
+            sale.items.forEach(item => {
+                const product = products.find(p => p._id.toString() === (item.productId?.toString() || ''));
+                const cost = product?.costPrice || ((item.unitPrice || item.price || 0) * 0.7);
+                totalCost += cost * item.quantity;
+            });
+        });
+        const estimatedProfit = totalRevenue - totalCost;
+        const profitMargin = totalRevenue > 0 ? ((estimatedProfit / totalRevenue) * 100).toFixed(1) : 0;
 
         const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) throw new Error("GROQ_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
-        const prompt = `You are an expert retail business consultant for SmartGrocer SaaS.
-Analyze this data for store owner "${user.fullName}":
-- Revenue (30 days): ${totalRevenue.toFixed(2)} EGP
-- Transactions: ${recentSales.length}
-- Avg Order: ${recentSales.length ? (totalRevenue / recentSales.length).toFixed(2) : 0} EGP
-- Low Stock Items: ${lowStockCount}
-- Total Products: ${products.length}
+        const prompt = `You are a senior retail business consultant creating a detailed performance report for SmartGrocer SaaS platform.
 
-Write a professional HTML report in ${isAr ? 'Arabic' : 'English'}.
-Include: performance summary, low stock alert, 3 actionable tips.
-Under 200 words. Start with <h3>. Use <strong>, <ul>, <li>, emojis.`;
+STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
+
+====== FINANCIAL PERFORMANCE (LAST 30 DAYS) ======
+- Total Revenue: ${totalRevenue.toFixed(2)} EGP
+- Total Transactions: ${recentSales.length}
+- Average Order Value: ${avgOrder.toFixed(2)} EGP
+- Estimated Profit: ${estimatedProfit.toFixed(2)} EGP
+- Profit Margin: ${profitMargin}%
+- Payment Methods: ${paymentStr || 'N/A'}
+
+====== TOP 5 BEST-SELLING PRODUCTS ======
+${topProducts.length ? topProducts.join('\n') : 'No sales data available'}
+
+====== INVENTORY STATUS ======
+- Total Products: ${products.length}
+- Low Stock Items (need reorder): ${lowStockItems.length}${lowStockItems.length > 0 ? '\n  ⚠️ ' + lowStockItems.slice(0, 5).map(p => `${p.name}: only ${p.quantity} left`).join(', ') : ''}
+- Out of Stock: ${outOfStock.length}${outOfStock.length > 0 ? '\n  🔴 ' + outOfStock.slice(0, 3).map(p => p.name).join(', ') : ''}
+- Near Expiry (within 7 days): ${nearExpiry.length}${nearExpiry.length > 0 ? '\n  ⏰ ' + nearExpiry.slice(0, 3).map(p => p.name).join(', ') : ''}
+
+====== CATEGORY BREAKDOWN ======
+${categoryBreakdown || 'N/A'}
+
+====== DAILY REVENUE TREND (LAST 7 DAYS) ======
+${dailyRevenue.join('\n')}
+
+====== ALL-TIME CONTEXT ======
+- Total All-time Transactions: ${allSales.length}
+- All-time Revenue: ${allSales.reduce((s, x) => s + x.total, 0).toFixed(2)} EGP
+
+---
+
+Based on ALL the data above, write a comprehensive, professional, and DETAILED business analysis report in ${isAr ? 'Arabic' : 'English'}.
+
+The report MUST include these sections:
+1. 📊 **Executive Summary** — Overall health of the business with specific numbers
+2. 💰 **Revenue & Profit Analysis** — Trends, margin commentary, revenue per transaction insights
+3. 🏆 **Top Products Analysis** — What's selling, what's not, and why it matters
+4. ⚠️ **Inventory Alerts** — Detailed low stock, out of stock, and expiry warnings with product names
+5. 📈 **Daily Trend Insights** — Identify peak days, slow days, patterns
+6. 🎯 **5 Actionable Recommendations** — Specific, data-driven tips (not generic advice)
+
+IMPORTANT RULES:
+- Use SPECIFIC numbers from the data in every section
+- Do NOT give generic advice — every tip must reference actual data
+- Use HTML tags: <h3>, <h4>, <p>, <strong>, <ul>, <li>, <span style="color:..."> for colored highlights
+- Use emojis to make it visually engaging
+- The report should be 500-800 words
+- Start directly with <h3>`;
 
         let aiRes = null;
         try {
             aiRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
                 model: 'llama-3.3-70b-versatile',
                 messages: [
-                    { role: 'system', content: 'You are a retail analyst. Respond with clean HTML only, no markdown.' },
+                    { role: 'system', content: 'You are a premium retail business analyst. Respond ONLY with clean, styled HTML. No markdown. No code fences. No explanations outside the HTML. Make the report rich, data-driven, and actionable.' },
                     { role: 'user', content: prompt }
                 ],
-                max_tokens: 600
+                max_tokens: 1500,
+                temperature: 0.7
             }, {
                 headers: {
                     'Authorization': 'Bearer ' + apiKey,
                     'Content-Type': 'application/json'
                 },
-                timeout: 8000
+                timeout: 15000
             });
         } catch (err) {
             console.error('Groq AI Model failed:', err.response?.data?.error?.message || err.message);
