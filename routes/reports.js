@@ -4,8 +4,10 @@ const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 const axios = require('axios');
 const auth = require('../middleware/auth');
+const { enforceLockout } = require('../middleware/subscription');
 
 router.use(auth);
+router.use(enforceLockout);
 
 router.get('/overview', async (req, res) => {
     try {
