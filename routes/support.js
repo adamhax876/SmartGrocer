@@ -10,7 +10,7 @@ router.use(auth);
 // GET /api/support — fetch all user tickets
 router.get('/', async (req, res) => {
     try {
-        const tickets = await Ticket.find({ userId: req.user._id }).sort('-createdAt');
+        const tickets = await Ticket.find({ userId: req.user._id }).sort('-updatedAt');
         res.json({ tickets });
     } catch (error) {
         res.status(500).json({ message: 'حدث خطأ', error: error.message });

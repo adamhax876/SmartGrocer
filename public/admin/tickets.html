@@ -28,6 +28,15 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+        @media (max-width: 768px) {
+            aside.sidebar { display: none !important; }
+            #adminTicketSidebar { width: 100% !important; position: absolute; z-index: 30; height: 100%; }
+            #adminTicketSidebar.mobile-hidden { display: none !important; }
+            .admin-mobile-back { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+            .admin-mobile-back { display: none !important; }
+        }
     </style>
 </head>
 
@@ -81,7 +90,7 @@
         <div class="flex-1 flex overflow-hidden">
 
             <!-- Left Sidebar: Conversations -->
-            <div class="w-1/3 lg:w-1/4 border-l border-gray-200 bg-white flex flex-col h-full shrink-0">
+            <div id="adminTicketSidebar" class="w-1/3 lg:w-1/4 border-l border-gray-200 bg-white flex flex-col h-full shrink-0">
                 <!-- Search/Filter -->
                 <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                     <div class="flex items-center gap-2">
@@ -98,11 +107,11 @@
                 </div>
 
                 <div class="flex border-b border-gray-100 text-sm font-semibold">
-                    <button class="flex-1 py-3 text-blue-600 border-b-2 border-blue-600" onclick="filterTickets('all')"
+                    <button class="flex-1 py-3 text-blue-600 border-b-2 border-blue-600" onclick="filterTickets('all', this)"
                         id="btnFilterAll" data-translate="tk_all">الكل</button>
-                    <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('open')"
+                    <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('open', this)"
                         id="btnFilterOpen" data-translate="tk_open">تنتظر الرد</button>
-                    <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('answered')"
+                    <button class="flex-1 py-3 text-gray-500 hover:text-gray-700" onclick="filterTickets('answered', this)"
                         id="btnFilterAns" data-translate="tk_answered">مجابة</button>
                 </div>
 
@@ -117,6 +126,7 @@
                 <!-- Chat Header -->
                 <div id="activeChatHeader"
                     class="h-16 border-b border-gray-200 bg-white flex items-center px-6 shadow-sm z-10 shrink-0">
+                    <button class="admin-mobile-back" onclick="adminMobileBack()" style="display:none; align-items:center; justify-content:center; width:36px; height:36px; border:none; background:none; cursor:pointer; color:#374151; font-size:1.2rem; margin-inline-end:0.5rem;"><i class="fas fa-arrow-right"></i></button>
                     <div class="flex items-center gap-3">
                         <div
                             class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
@@ -219,7 +229,7 @@
             }
         }
 
-        function filterTickets(status) {
+        function filterTickets(status, btn) {
             currentFilter = status;
 
             const btnAll = document.getElementById('btnFilterAll');
@@ -230,7 +240,7 @@
                 b.className = 'flex-1 py-3 text-gray-500 hover:text-gray-700 font-semibold transition';
             });
 
-            event.currentTarget.className = 'flex-1 py-3 text-blue-600 border-b-2 border-blue-600 font-bold transition';
+            if (btn) btn.className = 'flex-1 py-3 text-blue-600 border-b-2 border-blue-600 font-bold transition';
             renderConversations();
         }
 
@@ -279,9 +289,25 @@
             }).join('');
         }
 
+        function adminMobileBack() {
+            const panel = document.getElementById('adminTicketSidebar');
+            if (panel) panel.classList.remove('mobile-hidden');
+            document.getElementById('chatInputArea').classList.add('hidden');
+            document.getElementById('chatUserName').textContent = 'اختر محادثة';
+            document.getElementById('chatStoreName').textContent = 'للرد على العميل';
+            document.getElementById('messagesArea').innerHTML = '<div class="flex h-full items-center justify-center text-gray-400 font-bold bg-white/80 rounded-xl w-fit mx-auto px-6 py-2">اضغط على تذكرة من القائمة الجانبية لبدء المحادثة</div>';
+            activeTicketId = null;
+            renderConversations();
+        }
+
         async function openChat(id) {
             activeTicketId = id;
             renderConversations(); // update active state instantly
+            // On mobile, hide sidebar
+            if (window.innerWidth <= 768) {
+                const panel = document.getElementById('adminTicketSidebar');
+                if (panel) panel.classList.add('mobile-hidden');
+            }
             const t = allTickets.find(x => x._id === id);
 
             // Mark read locally and persist to server

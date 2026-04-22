@@ -293,7 +293,7 @@ router.get('/tickets', isAdmin, async (req, res) => {
 
         const tickets = await Ticket.find(query)
             .populate('userId', 'fullName email storeName phone')
-            .sort({ status: 1, createdAt: -1 });
+            .sort({ updatedAt: -1 });
 
         res.json({ success: true, tickets });
     } catch (error) {
