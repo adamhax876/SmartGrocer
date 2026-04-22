@@ -1036,7 +1036,30 @@
                 window.open(`https://wa.me/${cleanPhone}?text=${encodedMsg}`, '_blank');
             }
         }
+
+        async function printReceipt() {
+            const element = document.querySelector('.receipt-content');
+            const opt = {
+                margin: 0.5,
+                filename: `receipt_${new Date().getTime()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            // New window approach for better printing
+            const originalContent = document.body.innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Print Receipt</title>');
+            printWindow.document.write('<style>body{font-family: Cairo, sans-serif; padding: 20px;} .receipt-content{width: 300px; margin: auto;} .r-item{display: flex; justify-content: space-between; margin-bottom: 5px;} .receipt-header{text-align: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;} .receipt-footer{text-align: center; margin-top: 20px; font-size: 0.8rem; color: #666;}</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(element.outerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 
 </html>
