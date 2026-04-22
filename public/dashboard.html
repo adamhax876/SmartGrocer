@@ -387,7 +387,11 @@
 
                     let planText = meData.user.subscriptionPlan || 'Free Trial';
                     const endDate = new Date(meData.user.subscriptionEndDate);
-                    const isActive = endDate > new Date();
+                    const now = new Date(meData.serverTime || Date.now()); // Use server time if available
+                    const msLeft = endDate - now;
+                    const daysLeft = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+                    const hoursLeft = Math.floor(msLeft / (1000 * 60 * 60));
+                    const isActive = msLeft > 0;
                     const upgBtn = document.getElementById('btnUpgrade');
 
                     if (upgBtn) {
@@ -399,16 +403,27 @@
                         }
                     }
 
-                    if (planText === 'Free Trial') {
-                        const daysLeft = Math.floor((endDate - new Date()) / (1000 * 60 * 60 * 24));
-                        planText = currentUserLang === 'ar' ? `تجربة مجانية (${daysLeft > 0 ? daysLeft : 0} يوم)` : `Free Trial (${daysLeft > 0 ? daysLeft : 0} days left)`;
-                        planBadge.style.background = '#fef3c7';
-                        planBadge.style.color = '#92400e';
+                    // Build countdown string for ALL plans
+                    let countdownStr = '';
+                    if (!isActive) {
+                        countdownStr = currentUserLang === 'ar' ? '0 يوم - منتهية' : '0 days - Expired';
+                    } else if (daysLeft < 1) {
+                        // Last day: show hours
+                        countdownStr = currentUserLang === 'ar' ? `${hoursLeft} ساعة متبقية` : `${hoursLeft} hours left`;
                     } else {
-                        planBadge.style.background = '#dbeafe';
-                        planBadge.style.color = '#1e40af';
-                        planText = currentUserLang === 'ar' && planText === 'Basic Plan' ? 'الباقة الأساسية' :
+                        countdownStr = currentUserLang === 'ar' ? `${daysLeft} يوم` : `${daysLeft} days left`;
+                    }
+
+                    if (planText === 'Free Trial') {
+                        planText = currentUserLang === 'ar' ? `تجربة مجانية (${countdownStr})` : `Free Trial (${countdownStr})`;
+                        planBadge.style.background = !isActive ? '#fee2e2' : '#fef3c7';
+                        planBadge.style.color = !isActive ? '#991b1b' : '#92400e';
+                    } else {
+                        const localName = currentUserLang === 'ar' && planText === 'Basic Plan' ? 'الباقة الأساسية' :
                             currentUserLang === 'ar' && planText === 'Pro Plan' ? 'الباقة الاحترافية' : planText;
+                        planText = `${localName} (${countdownStr})`;
+                        planBadge.style.background = !isActive ? '#fee2e2' : '#dbeafe';
+                        planBadge.style.color = !isActive ? '#991b1b' : '#1e40af';
                     }
                     planBadge.textContent = planText;
                 }

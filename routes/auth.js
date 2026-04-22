@@ -325,7 +325,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
 // GET /api/auth/me — get current user
 router.get('/me', auth, async (req, res) => {
-    res.json({ user: req.user });
+    res.json({ user: req.user, serverTime: new Date().toISOString() });
 });
 
 // PUT /api/auth/settings — update user settings
