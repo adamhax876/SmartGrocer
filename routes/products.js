@@ -199,8 +199,24 @@ router.post('/import', enforceLimits('products'), upload.single('file'), async (
             }
         }
 
+        // ENFORCE LIMITS FOR EXCEL BATCH INJECTION
         if (products.length > 0) {
-            await Product.insertMany(products);
+            const plan = req.user.subscriptionPlan || 'Free Trial';
+            if (plan === 'Basic Plan') {
+                const currentCount = await Product.countDocuments({ userId: req.user._id });
+                if (currentCount + products.length > 3000) {
+                    const allowedToAdd = Math.max(0, 3000 - currentCount);
+                    if (allowedToAdd === 0) {
+                        return res.status(403).json({ message: 'لقد استنفذت الحد الأقصى للمنتجات (3000 منتج).' });
+                    }
+                    products.splice(allowedToAdd); // limit the imported array to what's left in their quota
+                    errors.push(`تم استيراد ${allowedToAdd} منتج فقط لتخطي الحد الأقصى للباقة الأساسية`);
+                }
+            }
+
+            if (products.length > 0) {
+                await Product.insertMany(products);
+            }
         }
 
         res.json({
