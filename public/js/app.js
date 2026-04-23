@@ -163,13 +163,14 @@ function formatMoney(amount) {
 document.addEventListener('DOMContentLoaded', () => {
     const topbarActions = document.querySelector('.topbar-actions');
     if (topbarActions && getToken()) {
+        const alignStyle = document.documentElement.dir === 'rtl' ? 'left: -10px; right: auto;' : 'right: -10px; left: auto;';
         const notifHtml = `
             <div style="position: relative; margin-right: 1rem;">
                 <button onclick="toggleNotifications()" class="btn btn-outline" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0; position: relative;" id="notif-btn">
                     <span>🔔</span>
                     <span id="notif-badge" style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; display: none;">0</span>
                 </button>
-                <div id="notif-dropdown" style="display: none; position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 320px; max-height: 400px; overflow-y: auto; box-shadow: var(--shadow-md); z-index: 1000; padding: 1rem; margin-top: 10px;">
+                <div id="notif-dropdown" style="display: none; position: absolute; top: 100%; ${alignStyle} background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 320px; max-height: 400px; overflow-y: auto; box-shadow: var(--shadow-md); z-index: 1000; padding: 1rem; margin-top: 10px;">
                     <h4 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; color: var(--text);">رسائل الإدارة 🔔</h4>
                     <div id="notif-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
                         <div style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.9rem;">جاري التحميل...</div>
@@ -266,12 +267,24 @@ function initRealtimeNotifications() {
         const data = JSON.parse(event.data);
         if (data.type === 'connected') return;
 
+        // Skip loud Support popups if we are currently inside the support chat page
+        const isSupportMessage = data.type === 'support' || (data.title && data.title.includes('الدعم'));
+        if (window.location.pathname.includes('/support.html') && isSupportMessage) {
+            // Silently refresh UI badges without the big popup
+            if (typeof fetchNotifications === 'function') fetchNotifications();
+            if (typeof checkUnreadTickets === 'function') checkUnreadTickets();
+            return;
+        }
+
         // Display modal popup immediately
         showRealtimePopup(data);
 
         // Refresh the notifications dropdown & bell badge seamlessly
         if (typeof fetchNotifications === 'function') {
             fetchNotifications();
+        }
+        if (typeof checkUnreadTickets === 'function' && isSupportMessage) {
+            checkUnreadTickets();
         }
     };
 
