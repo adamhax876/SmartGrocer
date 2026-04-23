@@ -273,7 +273,6 @@
 
             </div>
             <nav class="sidebar-nav">
-                <a href="/dashboard.html" class="sidebar-link active"><span class="icon">📊</span> <span
                 <a href="/dashboard.html" class="sidebar-link active"><span class="icon">📊</span> <span>لوحة التحكم</span></a>
                 <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span>المنتجات</span></a>
                 <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span>المخزون</span></a>
@@ -668,7 +667,10 @@
             } catch (e) { console.error('Low stock error:', e); }
 
         });
-
+// ... 
+    </script>
+    <script src="/js/user-lang.js"></script>
+    <script>
         async function promptDeleteAccount() {
             const confirmed = await Swal.fire({
                 title: t('del_acc_title'),
