@@ -212,11 +212,11 @@ function getTranslatedCategory(cat) {
         'Dairy & Cheese': 'dairy',
         'Meat & Frozen': 'meat',
         'Beverages & Juice': 'beverages',
-        'Snacks & Sweets': 'snacks'
+        'Snacks & Sweets': 'snacks','bakery': 'bakery','مخبوزات': 'bakery','frozen': 'frozen','مجمدات': 'frozen','other': 'other','أخرى': 'other', 'bakery': 'bakery', 'مخبوزات': 'bakery', 'frozen': 'frozen', 'مجمدات': 'frozen', 'other': 'other', 'أخرى': 'other'
     };
     const key = normalizeMap[cat] || cat;
-    const catMapAr = { 'groceries': 'بقالة عادية', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات' };
-    const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets' };
+    const catMapAr = { 'groceries': 'بقالة عادية', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات', 'bakery': 'مخبوزات', 'frozen': 'مجمدات', 'other': 'أخرى' };
+    const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets', 'bakery': 'Bakery', 'frozen': 'Frozen Food', 'other': 'Other' };
     return currentUserLang === 'ar' ? (catMapAr[key] || cat) : (catMapEn[key] || cat);
 }
 
