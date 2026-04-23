@@ -81,7 +81,16 @@ app.use((req, res, next) => {
 const maintenance = require('./middleware/maintenance');
 app.use(maintenance);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.html')) {
+            // Force aggressive cache bursting to prevent PWA / Cloudflare stalling
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+    }
+}));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/smartgrocer';
@@ -99,9 +108,9 @@ app.get('/api/settings/public', async (req, res) => {
 
   // Fetch exchange rate on backend securely
   try {
-      if (Date.now() - lastRateFetch > 1000 * 60 * 60 * 4) { // Cache for 4 hours
+      if (Date.now() - lastRateFetch > 1000 * 60 * 60 * 1) { // Cache for 1 hour to stay closer to live
           const axios = require('axios');
-          const xr = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
+          const xr = await axios.get('https://open.er-api.com/v6/latest/USD');
           if (xr.data && xr.data.rates && xr.data.rates.EGP) {
               cachedUsdRate = xr.data.rates.EGP;
               lastRateFetch = Date.now();
