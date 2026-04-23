@@ -110,9 +110,9 @@ app.get('/api/settings/public', async (req, res) => {
   try {
       if (Date.now() - lastRateFetch > 1000 * 60 * 60 * 1) { // Cache for 1 hour to stay closer to live
           const axios = require('axios');
-          const xr = await axios.get('https://open.er-api.com/v6/latest/USD');
-          if (xr.data && xr.data.rates && xr.data.rates.EGP) {
-              cachedUsdRate = xr.data.rates.EGP;
+          const xr = await axios.get('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+          if (xr.data && xr.data.usd && xr.data.usd.egp) {
+              cachedUsdRate = xr.data.usd.egp;
               lastRateFetch = Date.now();
           }
       }
