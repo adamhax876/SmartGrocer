@@ -79,7 +79,10 @@ const userTranslations = {
         comp_revenue: "Revenue",
         comp_orders: "Orders",
         comp_avg: "Avg Order Value",
-        stock_healthy: "Stock is healthy"
+        stock_healthy: "Stock is healthy",
+        val_greeting: "Welcome",
+        val_greeting: "Welcome"
+
     },
     ar: {
         nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -158,7 +161,10 @@ const userTranslations = {
         comp_revenue: "الإيرادات",
         comp_orders: "الطلبات",
         comp_avg: "متوسط الفاتورة",
-        stock_healthy: "المخزون بحالة جيدة"
+        stock_healthy: "المخزون بحالة جيدة",
+        val_greeting: "أهلاً بك",
+        val_greeting: "Welcome"
+
     }
 };
 
