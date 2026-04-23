@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="nav_dashboard">SmartGrocer — لوحة التحكم</title>
-    <link rel="stylesheet" href="/css/global.css?v=1776968982354">
+    <link rel="stylesheet" href="/css/global.css?v=1776972693179">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -381,8 +381,8 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/user-lang.js?v=1776968982354"></script>
-    <script src="/js/app.js?v=1776968982354"></script>
+    <script src="/js/user-lang.js?v=1776972693179"></script>
+    <script src="/js/app.js?v=1776972693179"></script>
     <script>
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -540,8 +540,23 @@
                             }
                         },
                         scales: {
-                            x: { grid: { display: false } },
-                            y: { beginAtZero: true, grid: { color: themeStr === 'dark' ? '#1e293b' : '#f1f5f9' }, ticks: { callback: v => v.toLocaleString() } }
+                            x: { 
+                                grid: { display: false },
+                                ticks: { 
+                                    color: themeStr === 'dark' ? '#94a3b8' : '#1e293b', 
+                                    autoSkip: false,
+                                    font: { weight: 'bold', family: 'Cairo' }
+                                }
+                            },
+                            y: { 
+                                beginAtZero: true, 
+                                grid: { color: themeStr === 'dark' ? '#1e293b' : '#e2e8f0' }, 
+                                ticks: { 
+                                    color: themeStr === 'dark' ? '#94a3b8' : '#1e293b',
+                                    callback: v => v.toLocaleString(),
+                                    font: { family: 'Cairo', weight: '600' }
+                                } 
+                            }
                         }
                     }
                 });
@@ -583,7 +598,8 @@
                                     usePointStyle: true,
                                     pointStyle: 'circle',
                                     padding: 16,
-                                    font: { size: 12 }
+                                    color: themeStr === 'dark' ? '#cbd5e1' : '#0f172a',
+                                    font: { size: 13, family: 'Cairo', weight: 'bold' }
                                 }
                             },
                             tooltip: {
@@ -669,7 +685,7 @@
         });
 // ... 
     </script>
-    <script src="/js/user-lang.js?v=1776968982354"></script>
+    <script src="/js/user-lang.js?v=1776972693179"></script>
     <script>
         async function promptDeleteAccount() {
             const confirmed = await Swal.fire({

@@ -8,15 +8,15 @@
 
 /* --- Light Theme (Default) --- */
 :root {
-  --bg: #ffffff;
-  --bg-secondary: #f9fafb;
+  --bg: #f8fafc;
+  --bg-secondary: #f1f5f9;
   --bg-card: #ffffff;
-  --bg-input: #f3f4f6;
-  --border: #e5e7eb;
-  --border-light: #f3f4f6;
-  --text: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --bg-input: #f8fafc;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
   --primary: #16a34a;
   --primary-light: #dcfce7;
   --primary-dark: #15803d;
