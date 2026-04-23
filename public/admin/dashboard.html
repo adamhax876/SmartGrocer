@@ -343,10 +343,18 @@
             });
         }
 
-    <script src="/js/admin-lang.js"></script>
-    <script src="/js/admin-app.js"></script>
-    <script>
-
+        // Mobile Menu Toggle logic
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('absolute', 'z-40', 'h-full', 'w-64');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('absolute', 'z-40', 'h-full', 'w-64');
+            }
+        });
+    </script>
 </body>
 
 </html>

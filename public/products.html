@@ -524,9 +524,7 @@
                     else if (p.quantity <= 10) statusHtml = `<span class="badge badge-warning">${translations[currentLang].status_low || 'قاربت على النفاذ'}</span>`;
                     else statusHtml = `<span class="badge badge-success">${translations[currentLang].status_in || 'متوفر'}</span>`;
                     
-                    const catMapAr = { 'groceries': 'بقالة', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات' };
-                    const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets' };
-                    const translatedCat = currentLang === 'ar' ? (catMapAr[p.category] || p.category) : (catMapEn[p.category] || p.category);
+                    const translatedCat = getTranslatedCategory(p.category);
 
                     return `
                         <tr>

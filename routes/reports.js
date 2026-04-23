@@ -406,6 +406,7 @@ router.get('/low-stock', async (req, res) => {
 router.get('/monthly-comparison', async (req, res) => {
     try {
         const userId = req.user._id;
+        const lang = req.query.lang || 'ar';
         const now = new Date();
 
         // Current month range
@@ -439,13 +440,13 @@ router.get('/monthly-comparison', async (req, res) => {
                 revenue: currentRevenue,
                 orders: currentOrders,
                 avgOrder: currentAvg,
-                monthLabel: currentStart.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' })
+                monthLabel: currentStart.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', { month: 'long', year: 'numeric' })
             },
             previous: {
                 revenue: prevRevenue,
                 orders: prevOrders,
                 avgOrder: prevAvg,
-                monthLabel: prevStart.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' })
+                monthLabel: prevStart.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', { month: 'long', year: 'numeric' })
             },
             change: {
                 revenue: calcChange(currentRevenue, prevRevenue).toFixed(1),

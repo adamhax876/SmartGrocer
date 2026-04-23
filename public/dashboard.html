@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGrocer — لوحة التحكم</title>
+    <title data-i18n="nav_dashboard">SmartGrocer — لوحة التحكم</title>
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -274,25 +274,19 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="/dashboard.html" class="sidebar-link active"><span class="icon">📊</span> <span
-                        data-i18n="nav_dashboard">لوحة التحكم</span></a>
-                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span
-                        data-i18n="nav_products">المنتجات</span></a>
-                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span
-                        data-i18n="nav_inventory">المخزون</span></a>
-                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span data-i18n="nav_pos">نقطة
-                        البيع (POS)</span></a>
-                <a href="/sales.html" class="sidebar-link"><span class="icon">💰</span> <span
-                        data-i18n="nav_sales">المبيعات</span></a>
-                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span
-                        data-i18n="nav_reports">التقارير</span></a>
-                <a href="/support.html" class="sidebar-link"><span class="icon">🎧</span> <span
-                        data-i18n="nav_support">الدعم الفني</span></a>
+                <a href="/dashboard.html" class="sidebar-link active"><span class="icon">📊</span> <span>لوحة التحكم</span></a>
+                <a href="/products.html" class="sidebar-link"><span class="icon">📦</span> <span>المنتجات</span></a>
+                <a href="/inventory.html" class="sidebar-link"><span class="icon">📋</span> <span>المخزون</span></a>
+                <a href="/pos.html" class="sidebar-link"><span class="icon">💻</span> <span>نقطة البيع (POS)</span></a>
+                <a href="/sales.html" class="sidebar-link"><span class="icon">💰</span> <span>المبيعات</span></a>
+                <a href="/reports.html" class="sidebar-link"><span class="icon">📈</span> <span>التقارير</span></a>
+                <a href="/support.html" class="sidebar-link"><span class="icon">🎧</span> <span>الدعم الفني</span></a>
             </nav>
             <div class="sidebar-bottom">
                 <button onclick="window.location.href='/'" class="btn btn-primary"
-                    style="width: 100%; margin-bottom: 10px;" data-i18n="btn_home">🏠 الرئيسية</button>
-                <button onclick="logout()" class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" data-i18n="btn_logout">تسجيل الخروج</button>
-                <button onclick="promptDeleteAccount()" class="btn btn-outline" style="width: 100%; border-color: var(--error); color: var(--error);" data-i18n="btn_delete_account">حذف حساب المتجر</button>
+                    style="width: 100%; margin-bottom: 10px;">🏠 الرئيسية</button>
+                <button onclick="logout()" class="btn btn-danger" style="width: 100%; margin-bottom: 10px;">تسجيل الخروج</button>
+                <button onclick="promptDeleteAccount()" class="btn btn-outline" style="width: 100%; border-color: var(--error); color: var(--error);">حذف حساب المتجر</button>
             </div>
         </aside>
 
@@ -300,7 +294,7 @@
             <header class="topbar">
                 <div style="display:flex;align-items:center;gap:0.5rem">
                     <button class="hamburger" onclick="toggleSidebar()">☰</button>
-                    <h1 class="topbar-title" data-i18n="title_dashboard">نظرة عامة</h1>
+                    <h1 class="topbar-title">نظرة عامة</h1>
                 </div>
                 <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
                     <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
@@ -308,10 +302,9 @@
                     <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
                     <button onclick="window.location.href='/billing.html'" class="btn btn-primary" id="btnUpgrade"
-                        style="padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: bold;"
-                        data-i18n="btn_upgrade">ترقية الباقة 🚀</button>
+                        style="padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: bold;">ترقية الباقة 🚀</button>
                     <div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
-                        <span id="userGreeting" style="font-weight: bold; color: var(--text);">مرحباً</span>
+                        <span id="userGreeting" style="font-weight: bold; color: var(--text);">...</span>
                         <span id="planBadge"
                             style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 12px; background: #dcfce7; color: #166534; display: none;"></span>
                     </div>
@@ -346,7 +339,7 @@
                             <span id="compMonthLabel" style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(79,70,229,0.1); color: #4F46E5; font-weight: 600;">...</span>
                         </div>
                         <div id="comparisonContent" style="display: flex; flex-direction: column; gap: 0.8rem;">
-                            <div style="text-align: center; color: var(--text-secondary); padding: 1rem;">جاري التحميل...</div>
+                            <div style="text-align: center; color: var(--text-secondary); padding: 1rem;" data-i18n="loading">جاري التحميل...</div>
                         </div>
                     </div>
                     <!-- Low Stock Alerts Card -->
@@ -356,7 +349,7 @@
                             <span id="lowStockBadge" style="font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 700; display: none;">0</span>
                         </div>
                         <div id="lowStockContent" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto;">
-                            <div style="text-align: center; color: var(--text-secondary); padding: 1rem;">جاري التحميل...</div>
+                            <div style="text-align: center; color: var(--text-secondary); padding: 1rem;" data-i18n="loading">جاري التحميل...</div>
                         </div>
                     </div>
                 </div>
@@ -400,7 +393,7 @@
             }
 
             const user = getUser();
-            document.getElementById('userGreeting').textContent = currentUserLang === 'ar' ? `مرحباً، ${user.fullName || ''}` : `Hello, ${user.fullName || ''}`;
+            document.getElementById('userGreeting').textContent = `${t('val_greeting')}, ${user.fullName || ''}`;
 
             try {
                 // Fetch full fresh user details
@@ -521,7 +514,7 @@
                     data: {
                         labels: shortMonths,
                         datasets: [{
-                            label: currentUserLang === 'ar' ? 'المبيعات' : 'Sales',
+                            label: t('nav_sales'),
                             data: Object.values(data.monthlyRevenue),
                             backgroundColor: barGrad,
                             borderRadius: 10,
@@ -543,7 +536,7 @@
                                 cornerRadius: 10,
                                 padding: 12,
                                 callbacks: {
-                                    label: ctx => (currentUserLang === 'ar' ? 'المبيعات: ' : 'Sales: ') + ctx.parsed.y.toLocaleString()
+                                    label: ctx => t('nav_sales') + ': ' + ctx.parsed.y.toLocaleString()
                                 }
                             }
                         },
@@ -554,12 +547,18 @@
                     }
                 });
 
-                // Category Chart — Premium Doughnut with Legend
-                const catData = data.categories;
-                const catMapAr = { 'groceries': 'بقالة', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات' };
-                const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets' };
-                const catLabels = Object.keys(catData).map(k => currentUserLang === 'ar' ? (catMapAr[k] || k) : (catMapEn[k] || k));
-                const catValues = Object.values(catData).map(c => c.products);
+                // Category Chart
+                const rawCatData = data.categories;
+                const groupedCatData = {};
+                
+                Object.keys(rawCatData).forEach(rawCat => {
+                    const normalizedLabel = getTranslatedCategory(rawCat) || rawCat;
+                    if (!groupedCatData[normalizedLabel]) groupedCatData[normalizedLabel] = 0;
+                    groupedCatData[normalizedLabel] += rawCatData[rawCat].products;
+                });
+
+                const catLabels = Object.keys(groupedCatData);
+                const catValues = Object.values(groupedCatData);
                 const catColors = ['#4F46E5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#14b8a6'];
 
                 const catCtx = document.getElementById('categoryChart');
@@ -614,13 +613,13 @@
 
             // --- Feature: Monthly Comparison ---
             try {
-                const comp = await api('/api/reports/monthly-comparison');
+                const comp = await api('/api/reports/monthly-comparison?lang=' + currentUserLang);
                 if (comp && comp.success) {
                     document.getElementById('compMonthLabel').textContent = comp.current.monthLabel;
                     const items = [
-                        { label: currentUserLang === 'ar' ? 'الإيرادات' : 'Revenue', val: Number(comp.current.revenue).toLocaleString(), change: comp.change.revenue, icon: '💰' },
-                        { label: currentUserLang === 'ar' ? 'الطلبات' : 'Orders', val: comp.current.orders, change: comp.change.orders, icon: '🧾' },
-                        { label: currentUserLang === 'ar' ? 'متوسط الطلب' : 'Avg Order', val: Number(comp.current.avgOrder).toFixed(1), change: comp.change.avgOrder, icon: '📊' }
+                        { label: t('comp_revenue'), val: Number(comp.current.revenue).toLocaleString(), change: comp.change.revenue, icon: '💰' },
+                        { label: t('comp_orders'), val: comp.current.orders, change: comp.change.orders, icon: '🧾' },
+                        { label: t('comp_avg'), val: Number(comp.current.avgOrder).toFixed(1), change: comp.change.avgOrder, icon: '📊' }
                     ];
                     document.getElementById('comparisonContent').innerHTML = items.map(it => {
                         const pct = parseFloat(it.change);
@@ -651,14 +650,13 @@
                         badge.textContent = ls.totalLow;
                         badge.style.display = 'inline-block';
                     }
-                    const unitMap = { piece: 'قطعة', kg: 'كجم', liter: 'لتر', box: 'صندوق', pack: 'عبوة' };
                     if (ls.items.length === 0) {
-                        document.getElementById('lowStockContent').innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 1.5rem;">✅ ${currentUserLang === 'ar' ? 'لا توجد تنبيهات — المخزون ممتاز!' : 'No alerts — stock is healthy!'}</div>`;
+                        document.getElementById('lowStockContent').innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 1.5rem;">✅ ${t('stock_healthy')}</div>`;
                     } else {
                         document.getElementById('lowStockContent').innerHTML = ls.items.map(p => {
                             const pct = p.threshold > 0 ? (p.quantity / p.threshold) * 100 : 0;
                             const barColor = pct <= 25 ? '#ef4444' : pct <= 60 ? '#f59e0b' : '#16a34a';
-                            const unitLabel = currentUserLang === 'ar' ? (unitMap[p.unit] || p.unit) : p.unit;
+                            const unitLabel = getTranslatedUnit(p.unit);
                             return `
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.7rem; background: var(--bg-secondary); border-radius: 8px; border-right: 3px solid ${barColor};">
                                     <span style="font-weight: 600; color: var(--text); font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%;">${p.name}</span>
@@ -673,27 +671,27 @@
 
         async function promptDeleteAccount() {
             const confirmed = await Swal.fire({
-                title: currentUserLang === 'ar' ? 'هل أنت متأكد من حذف حسابك؟' : 'Are you sure you want to delete your account?',
-                text: currentUserLang === 'ar' ? "لن تتمكن من التراجع عن هذا الإجراء، وسيتم مسح كل بيانات متجرك نهائياً!" : "You will not be able to undo this action, and all your store data will be deleted permanently!",
+                title: t('del_acc_title'),
+                text: t('del_acc_text'),
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3b82f6',
-                confirmButtonText: currentUserLang === 'ar' ? 'نعم، احذف حسابي النهائي' : 'Yes, delete my account',
-                cancelButtonText: currentUserLang === 'ar' ? 'إلغاء' : 'Cancel'
+                confirmButtonText: t('del_acc_confirm'),
+                cancelButtonText: t('del_acc_cancel')
             });
 
             if (confirmed.isConfirmed) {
                 try {
                     Swal.fire({
-                        title: currentUserLang === 'ar' ? 'جاري الحذف...' : 'Deleting...',
+                        title: t('del_acc_deleting'),
                         didOpen: () => { Swal.showLoading() }
                     });
                     
                     const res = await api('/api/auth/account', { method: 'DELETE' });
                     if (res && res.success) {
                         await Swal.fire(
-                            currentUserLang === 'ar' ? 'تم الوداع' : 'Goodbye',
+                            t('del_acc_bye'),
                             res.message,
                             'success'
                         );

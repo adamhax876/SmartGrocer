@@ -336,7 +336,7 @@
                     return `
                         <tr>
                             <td><strong>${p.name}</strong></td>
-                            <td style="color: var(--text-secondary);">${p.category}</td>
+                            <td style="color: var(--text-secondary);">${getTranslatedCategory(p.category)}</td>
                             <td>
                                 <div style="display:flex; align-items:center; gap:0.5rem;">
                                     <span style="font-weight:bold; color: ${p.quantity < 10 ? 'var(--error)' : 'var(--text)'}; width: 30px;">${p.quantity}</span>

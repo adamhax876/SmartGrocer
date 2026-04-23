@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGrocer — نقطة البيع السريعة (POS)</title>
+    <title data-i18n="pos_title">SmartGrocer — نقطة البيع السريعة (POS)</title>
     <link rel="stylesheet" href="/css/global.css">
     <!-- SweetAlert2 & FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -484,9 +484,8 @@
             <div class="cart-header">
                 <h2>🛒 <span data-i18n="cart_title">سلة المشتريات</span></h2>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-outline" onclick="clearCart()" style="padding: 0.5rem;"
-                        title="حذف الكل">🗑️</button>
-                    <a href="/dashboard.html" class="btn btn-outline" style="padding: 0.5rem;" title="رجوع للوحة">🔙</a>
+                    <button class="btn btn-outline" onclick="clearCart()" style="padding: 0.5rem;" data-i18n-title="tip_clear">🗑️</button>
+                    <a href="/dashboard.html" class="btn btn-outline" style="padding: 0.5rem;" data-i18n-title="tip_back">🔙</a>
                 </div>
             </div>
 
@@ -580,19 +579,8 @@
                 <!-- Items list -->
             </div>
 
-            <div class="r-total-sec">
-                <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span data-i18n="receipt_subtotal">المجموع قبل الضريبة:</span>
-                    <span id="rSub">0.00</span>
-                </div>
-                <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span data-i18n="receipt_tax">الضريبة (14%):</span>
-                    <span id="rTax">0.00</span>
-                </div>
-                <div class="r-total-row" style="margin-top: 0.5rem;">
-                    <span data-i18n="receipt_total">الإجمالي (شامل الضريبة):</span>
-                    <span id="rTotal">0.00</span>
-                </div>
+            <div class="r-total-sec" id="receiptSummaryArea">
+                <!-- Totals row here -->
             </div>
 
             <div style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: #555;" data-i18n="receipt_footer">
@@ -600,18 +588,15 @@
                 النظام مدعوم بواسطة SmartGrocer
             </div>
 
-            <div class="no-print" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <button class="btn btn-primary" onclick="window.print()" style="width: 100%; padding: 1rem;">
-                    🖨️ <span data-i18n="btn_print">طباعة الفاتورة</span>
-                </button>
-                <button class="btn"
-                    style="background-color: #25D366; color: white; width: 100%; padding: 1rem; border: none; font-weight: bold; border-radius: var(--radius);"
-                    onclick="sendWhatsAppReceipt()">
+            <div class="receipt-actions no-print" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <button class="btn" style="background-color: #25D366; color: white; width: 100%; padding: 1rem; border: none; font-weight: bold; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onclick="sendWhatsAppReceipt()">
                     <i class="fab fa-whatsapp"></i> <span data-i18n="btn_whatsapp">إرسال عبر واتساب (Pro)</span>
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- html2pdf dependency for professional printing -->
 
     <script src="/js/app.js"></script>
     <script>
@@ -623,34 +608,38 @@
         // I18n Setup
         const translations = {
             en: {
+                pos_title: "SmartGrocer — Point of Sale (POS)",
                 cart_title: "Shopping Cart", cart_empty: "Cart is empty. Add products to start.",
                 sum_subtotal: "Subtotal", sum_tax: "Tax (14%)", sum_total: "Total Due",
                 btn_pay: "Pay & Print Receipt", pay_hint: "Press F8 for quick pay",
                 search_placeholder: "Search by name or scan barcode...",
                 cat_all: "All", cat_groceries: "Groceries", cat_dairy: "Dairy", cat_beverages: "Beverages", cat_snacks: "Snacks",
                 btn_check_pts: "Check", ph_customer_phone: "Customer Phone (Loyalty)", label_use_pts: "Redeem available points for discount", lbl_remaining: "Remaining:", lbl_no_products: "No matching products found",
-                receipt_title: "Retail Sales - Simplified Tax INVOICE", receipt_date: "Date:", receipt_subtotal: "Subtotal before tax:", receipt_tax: "Tax (14%):", receipt_total: "Total (incl. tax):", receipt_discount: "Points Discount:", receipt_points: "Current Customer Points:", receipt_footer: "Thank you for visiting! 🌟<br>Powered by SmartGrocer", btn_print: "Print Receipt", btn_whatsapp: "Send via WhatsApp (Pro)"
+                receipt_title: "Retail Sales - Simplified Tax INVOICE", receipt_date: "Date:", receipt_subtotal: "Subtotal before tax:", receipt_tax: "Tax (14%):", receipt_total: "Total (incl. tax):", receipt_discount: "Points Discount:", receipt_point_balance: "Customer Point Balance:", receipt_footer: "Thank you for visiting! 🌟<br>Powered by SmartGrocer", btn_print: "Print Receipt", btn_whatsapp: "Send via WhatsApp (Pro)",
+                tip_clear: "Clear All", tip_back: "Back to Dashboard", err_stock: "Maximum quantity in stock reached", err_not_fully: "Requested quantity not fully available", err_phone_required: "Please enter phone number first", err_clear_confirm: "Are you sure you want to clear the cart?", 
+                btn_confirm: "Confirm", btn_cancel: "Cancel", msg_success: "Transaction completed successfully", msg_loyalty_applied: "Loyalty discount applied!", msg_loyalty_fail: "Loyalty point verification failed",
             },
             ar: {
+                pos_title: "SmartGrocer — نقطة البيع السريعة (POS)",
                 cart_title: "سلة المشتريات", cart_empty: "السلة فارغة. ابدأ بإضافة المنتجات.",
                 sum_subtotal: "المجموع الفرعي", sum_tax: "الضريبة (14%)", sum_total: "الإجمالي المطلوب",
                 btn_pay: "دفع وإصدار الفاتورة", pay_hint: "اضغط F8 للدفع السريع",
                 search_placeholder: "ابحث بالاسم أو امسح الباركود المباشر...",
                 cat_all: "الكل", cat_groceries: "بقالة", cat_dairy: "ألبان", cat_beverages: "مشروبات", cat_snacks: "تسالي",
                 btn_check_pts: "فحص", ph_customer_phone: "رقم هاتف العميل (نظام الولاء)", label_use_pts: "استبدال النقاط المتاحة بخصم", lbl_remaining: "متبقي:", lbl_no_products: "لا توجد منتجات متطابقة",
-                receipt_title: "مبيعات تجزئة - فاتورة ضريبية مبسطة", receipt_date: "التاريخ:", receipt_subtotal: "المجموع قبل الضريبة:", receipt_tax: "الضريبة (14%):", receipt_total: "الإجمالي (شامل الضريبة):", receipt_discount: "خصم النقاط:", receipt_points: "نقاط العميل الحالية:", receipt_footer: "شكراً لزيارتكم! 🌟<br>النظام مدعوم بواسطة SmartGrocer", btn_print: "طباعة الفاتورة", btn_whatsapp: "إرسال عبر واتساب (Pro)"
+                receipt_title: "مبيعات تجزئة - فاتورة ضريبية مبسطة", receipt_date: "التاريخ:", receipt_subtotal: "المجموع قبل الضريبة:", receipt_tax: "الضريبة (14%):", receipt_total: "الإجمالي (شامل الضريبة):", receipt_discount: "خصم النقاط:", receipt_point_balance: "رصيد نقاط العميل:", receipt_footer: "شكراً لزيارتكم! 🌟<br>النظام مدعوم بواسطة SmartGrocer", btn_print: "طباعة الفاتورة", btn_whatsapp: "إرسال عبر واتساب (Pro)",
+                tip_clear: "حذف الكل", tip_back: "رجوع للوحة", err_stock: "أقصى كمية متوفرة في المخزون", err_not_fully: "الكمية المطلوبة غير متوفرة بالكامل", err_phone_required: "الرجاء إدخال رقم الهاتف أولاً", err_clear_confirm: "تأكيد مسح السلة؟",
+                btn_confirm: "تأكيد", btn_cancel: "إلغاء", msg_success: "تمت العملية بنجاح", msg_loyalty_applied: "تم تطبيق خصم الولاء!", msg_loyalty_fail: "فشل فحص نقاط الولاء",
             }
         };
+
+        let currentLang = localStorage.getItem('sg_lang') || 'ar';
 
         function updateTexts() {
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
-                    if (el.tagName === 'INPUT' && el.type === 'text') {
-                        el.placeholder = translations[currentLang][key];
-                    } else {
-                        el.innerHTML = translations[currentLang][key];
-                    }
+                    el.innerHTML = translations[currentLang][key];
                 }
             });
             document.querySelectorAll('[data-i18n-ph]').forEach(el => {
@@ -659,10 +648,16 @@
                     el.placeholder = translations[currentLang][key];
                 }
             });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.title = translations[currentLang][key];
+                }
+            });
             document.getElementById('barcodeInput').placeholder = translations[currentLang].search_placeholder;
+            document.title = translations[currentLang].pos_title;
         }
 
-        let currentLang = localStorage.getItem('sg_lang') || 'ar';
         document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = currentLang;
         document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
@@ -676,7 +671,7 @@
             document.documentElement.lang = currentLang;
             document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
             updateTexts();
-            renderCart(); // Re-render cart elements
+            renderCart(); // Re-render cart items to potentially update formatted strings
         }
 
         // Initialization
@@ -733,7 +728,7 @@
         function renderProducts(products) {
             const grid = document.getElementById('productsGrid');
             if (products.length === 0) {
-                grid.innerHTML = `<div class="no-data">${translations[currentLang].lbl_no_products || 'لا توجد منتجات متطابقة'}</div>`;
+                grid.innerHTML = `<div class="no-data">${translations[currentLang].lbl_no_products}</div>`;
                 return;
             }
             grid.innerHTML = products.map(p => `
@@ -750,12 +745,11 @@
             const existing = cart.find(item => item._id === product._id);
             if (existing) {
                 if (existing.cartQty < product.quantity) existing.cartQty++;
-                else alert('أقصى كمية متوفرة في المخزون');
+                else Swal.fire({ icon: 'warning', text: translations[currentLang].err_stock });
             } else {
                 cart.push({ ...product, cartQty: 1 });
             }
             renderCart();
-            // Beep sound (Optional enhancement for POS feel)
         }
 
         function updateItemQty(id, delta) {
@@ -765,7 +759,7 @@
             if (item.cartQty <= 0) cart = cart.filter(i => i._id !== id);
             else if (item.cartQty > item.quantity) {
                 item.cartQty = item.quantity;
-                alert('الكمية المطلوبة غير متوفرة بالكامل');
+                Swal.fire({ icon: 'warning', text: translations[currentLang].err_not_fully });
             }
             renderCart();
         }
@@ -776,7 +770,7 @@
                 cart = cart.filter(i => i._id !== id);
             } else {
                 const item = cart.find(i => i._id === id);
-                if (qty > item.quantity) { item.cartQty = item.quantity; alert('تجاوزت المتوفر'); }
+                if (qty > item.quantity) { item.cartQty = item.quantity; Swal.fire({ icon: 'warning', text: translations[currentLang].err_stock }); }
                 else item.cartQty = qty;
             }
             renderCart();
@@ -788,7 +782,14 @@
         }
 
         function clearCart() {
-            if (confirm('تأكيد مسح السلة؟')) { cart = []; renderCart(); }
+            Swal.fire({
+                text: translations[currentLang].err_clear_confirm,
+                showCancelButton: true,
+                confirmButtonText: translations[currentLang].btn_confirm,
+                cancelButtonText: translations[currentLang].btn_cancel
+            }).then(r => {
+                if (r.isConfirmed) { cart = []; renderCart(); }
+            });
         }
 
         async function checkCustomerPoints() {
@@ -797,269 +798,165 @@
             if (!phone) {
                 display.style.display = 'block';
                 display.style.color = 'var(--error)';
-                display.textContent = 'الرجاء إدخال رقم الهاتف أولاً';
+                display.textContent = translations[currentLang].err_phone_required;
                 return;
             }
 
             try {
-                // To fetch customer stats assuming we have such an endpoint. We will use /api/reports/customer-points later if needed, but for now we map it. 
-                const res = await api(`/api/sales/customer/${phone}`);
+                const res = await api(`/api/loyalty/check?phone=${phone}`);
                 display.style.display = 'block';
-                if (res && res.stats) {
-                    display.style.color = 'var(--success)';
-                    display.textContent = `النقاط المتاحة: ${res.stats.points}`;
-                } else {
-                    display.style.color = 'var(--error)';
-                    display.textContent = 'العميل غير مسجل أو لا يملك نقاط';
-                }
+                display.style.color = 'var(--primary)';
+                display.innerHTML = `⭐ ${translations[currentLang].receipt_point_balance} <span id="availablePts">${res.points}</span>`;
             } catch (e) {
                 display.style.display = 'block';
                 display.style.color = 'var(--error)';
-                display.textContent = 'تعذر فحص النقاط';
+                display.textContent = translations[currentLang].msg_loyalty_fail;
             }
         }
 
         function renderCart() {
-            const container = document.getElementById('cartItems');
-            const btnPay = document.getElementById('payBtn');
-            let subT = 0;
-
+            const list = document.getElementById('cartItems');
             if (cart.length === 0) {
-                container.innerHTML = `<div class="no-data" style="margin: auto;" data-i18n="cart_empty">${translations[currentLang].cart_empty}</div>`;
-                document.getElementById('subTotal').textContent = '0.00';
-                document.getElementById('taxAmount').textContent = '0.00';
+                list.innerHTML = `<div class="no-data" style="margin: auto;" data-i18n="cart_empty">${translations[currentLang].cart_empty}</div>`;
+                document.getElementById('subTotal').textContent = formatMoney(0);
+                document.getElementById('taxAmount').textContent = formatMoney(0);
                 document.getElementById('finalTotal').innerHTML = formatMoney(0);
-                btnPay.disabled = true;
+                document.getElementById('payBtn').disabled = true;
                 return;
             }
 
-            container.innerHTML = cart.map(item => {
-                const itemTotal = item.price * item.cartQty;
-                subT += itemTotal;
-                return `
+            list.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-price">${formatMoney(item.price)}</div>
                     </div>
                     <div class="cart-item-qty">
-                        <button class="qty-btn" onclick="updateItemQty('${item._id}', 1)">+</button>
+                        <button class="qty-btn" onclick="updateItemQty('${item._id}', -1)">-</button>
                         <input type="text" class="qty-input" value="${item.cartQty}" onchange="setItemQty('${item._id}', this.value)">
-                        <button class="qty-btn" onclick="updateItemQty('${item._id}', -1)">−</button>
+                        <button class="qty-btn" onclick="updateItemQty('${item._id}', 1)">+</button>
                     </div>
-                    <button class="cart-item-remove" onclick="removeItem('${item._id}')">×</button>
-                </div>
-                `;
-            }).join('');
-
-            const tax = subT * TAX_RATE;
-            const total = subT + tax;
-
-            document.getElementById('subTotal').textContent = subT.toFixed(2);
-            document.getElementById('taxAmount').textContent = tax.toFixed(2);
-            document.getElementById('finalTotal').innerHTML = formatMoney(total);
-            btnPay.disabled = false;
-        }
-
-        // Checkout & Printing
-        async function processPayment() {
-            if (cart.length === 0) return;
-            const btnPayload = cart.map(item => ({
-                productId: item._id,
-                quantity: item.cartQty,
-                price: item.price
-            }));
-
-            const totalAmount = parseFloat(document.getElementById('finalTotal').textContent);
-
-            try {
-                document.getElementById('payBtn').disabled = true;
-
-                const customerPhone = document.getElementById('customerPhone').value.trim();
-                const usePoints = document.getElementById('usePoints').checked;
-
-                // Real-world: This calls the Sales API
-                const res = await api('/api/sales', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        items: btnPayload,
-                        totalAmount: totalAmount,
-                        paymentMethod: 'cash',
-                        customerPhone: customerPhone || undefined,
-                        usePoints: usePoints
-                    })
-                });
-
-                // Generate Receipt
-                generateReceipt(cart, res);
-
-                // Clear state
-                cart = [];
-                document.getElementById('customerPhone').value = '';
-                document.getElementById('usePoints').checked = false;
-                renderCart();
-                fetchProducts(); // Refresh stock locally
-
-            } catch (e) {
-                alert('فشلت عملية البيع: ' + e.message);
-                document.getElementById('payBtn').disabled = false;
-            }
-        }
-
-        function generateReceipt(items, resData) {
-            const saleData = resData.sale;
-            const user = getUser();
-            const lang = translations[currentLang];
-            
-            document.getElementById('rStoreName').textContent = user.storeName || 'SmartGrocer POS';
-            
-            // Re-render fixed elements to support dynamic language changes without refreshing
-            const rHeaderDiv = document.querySelector('.receipt-header div');
-            if (rHeaderDiv) {
-                rHeaderDiv.innerHTML = `${lang.receipt_title}<br>${lang.receipt_date} <span id="rDate">${new Date().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}</span>`;
-            } else {
-                document.getElementById('rDate').textContent = new Date().toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
-            }
-
-            const rList = document.getElementById('rItemsList');
-            rList.innerHTML = items.map(i => `
-                <div class="r-item">
-                    <span style="flex:1;">${i.name}</span>
-                    <span style="width:30px;text-align:center;">${i.cartQty}</span>
-                    <span style="width:60px;text-align:left;">${(i.price * i.cartQty).toFixed(2)}</span>
+                    <button class="cart-item-remove" onclick="removeItem('${item._id}')"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
 
-            // Also translate the labels of the subtotal section inside receipt modal
-            const rTotalSec = document.querySelectorAll('.r-total-sec .r-item span');
-            if (rTotalSec && rTotalSec.length >= 2) {
-                rTotalSec[0].textContent = lang.receipt_subtotal;
-                rTotalSec[2].textContent = lang.receipt_tax; // It's [0] and [2] because of pairs (label, value) if nested, but wait let's be safer:
+            const sub = cart.reduce((acc, i) => acc + (i.price * i.cartQty), 0);
+            const tax = sub * TAX_RATE;
+            const total = sub + tax;
+
+            document.getElementById('subTotal').textContent = formatMoney(sub);
+            document.getElementById('taxAmount').textContent = formatMoney(tax);
+            document.getElementById('finalTotal').innerHTML = formatMoney(total);
+            document.getElementById('payBtn').disabled = false;
+        }
+
+        async function processPayment() {
+            const sub = cart.reduce((acc, i) => acc + (i.price * i.cartQty), 0);
+            const tax = sub * TAX_RATE;
+            const total = sub + tax;
+            const usePoints = document.getElementById('usePoints').checked;
+            const phone = document.getElementById('customerPhone').value.trim();
+
+            const btn = document.getElementById('payBtn');
+            btn.disabled = true;
+
+            try {
+                const res = await api('/api/orders', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        items: cart.map(i => ({ productId: i._id, quantity: i.cartQty, price: i.price })),
+                        total,
+                        tax,
+                        usePoints,
+                        customerPhone: phone
+                    })
+                });
+
+                showReceipt(res.order);
+                cart = [];
+                renderCart();
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('pointsDisplay').style.display = 'none';
+                document.getElementById('usePoints').checked = false;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: translations[currentLang].msg_success,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: e.message });
+            } finally {
+                btn.disabled = false;
             }
-            
-            // safer approach: just rebuild the r-total-sec html entirely
-            const rTotalContainer = document.querySelector('.r-total-sec');
-            rTotalContainer.innerHTML = `
+        }
+
+        function showReceipt(order) {
+            document.getElementById('rStoreName').textContent = getStoreName();
+            document.getElementById('rDate').textContent = new Date(order.createdAt).toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
+
+            const list = document.getElementById('rItemsList');
+            list.innerHTML = order.items.map(i => `
+                <div class="r-item">
+                    <span>${i.productId.name} x ${i.quantity}</span>
+                    <span>${formatMoney(i.price * i.quantity)}</span>
+                </div>
+            `).join('');
+
+            const summaryArea = document.getElementById('receiptSummaryArea');
+            let summaryHTML = `
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span>${lang.receipt_subtotal}</span>
-                    <span id="rSub">${saleData.subtotal.toFixed(2)}</span>
+                    <span>${translations[currentLang].receipt_subtotal}</span>
+                    <span>${formatMoney(order.total - order.tax)}</span>
                 </div>
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
-                    <span>${lang.receipt_tax}</span>
-                    <span id="rTax">${(saleData.subtotal * TAX_RATE).toFixed(2)}</span>
-                </div>
-                <div class="r-total-row" style="margin-top: 0.5rem;">
-                    <span>${lang.receipt_total}</span>
-                    <span id="rTotal">${saleData.total.toFixed(2)}</span>
+                    <span>${translations[currentLang].receipt_tax}</span>
+                    <span>${formatMoney(order.tax)}</span>
                 </div>
             `;
 
-            let extraInfo = '';
-            if (saleData.discount > 0 && resData.appliedLoyalty) {
-                extraInfo += `<div style="color: #16a34a; font-weight: bold; margin-bottom: 5px;">${lang.receipt_discount} ${(saleData.discount).toFixed(2)}-</div>`;
-            }
-            if (document.getElementById('customerPhone').value.trim()) {
-                extraInfo += `<div style="color: #555; font-size: 0.8rem;">${lang.receipt_points} ${resData.customerPoints || 0}</div>`;
+            if (order.discount > 0) {
+                summaryHTML += `
+                <div class="r-item" style="color: #10b981; font-weight: bold; font-size: 0.85rem;">
+                    <span>${translations[currentLang].receipt_discount}</span>
+                    <span>-${formatMoney(order.discount)}</span>
+                </div>
+                `;
             }
 
-            if (extraInfo) {
-                const infoDiv = document.createElement('div');
-                infoDiv.id = 'rExtraInfo';
-                infoDiv.innerHTML = extraInfo;
-                infoDiv.style.marginTop = '10px';
-                infoDiv.style.borderTop = '1px dashed #ccc';
-                infoDiv.style.paddingTop = '10px';
-                rTotalContainer.appendChild(infoDiv);
-            }
+            summaryHTML += `
+                <div class="r-total-row" style="margin-top: 0.5rem;">
+                    <span>${translations[currentLang].receipt_total}</span>
+                    <span>${formatMoney(order.total - (order.discount || 0))}</span>
+                </div>
+            `;
+
+            summaryArea.innerHTML = summaryHTML;
 
             document.getElementById('receiptModal').classList.add('active');
+            window.activeOrder = order; // For PDF/WhatsApp
         }
 
         function closeReceipt() {
             document.getElementById('receiptModal').classList.remove('active');
         }
 
-        async function sendWhatsAppReceipt() {
-            const user = getUser();
-            const plan = user.subscriptionPlan || 'Free Trial';
 
-            if (plan === 'Basic Plan') {
-                Swal.fire({
-                    icon: 'lock',
-                    title: 'ميزة احترافية',
-                    text: 'هذه الميزة متاحة فقط في الباقة الاحترافية (Pro Plan). يرجى الترقية لإرسال الفواتير عبر واتساب.',
-                    confirmButtonText: 'ترقية باقتي',
-                    showCancelButton: true,
-                    cancelButtonText: 'إلغاء'
-                }).then((res) => {
-                    if (res.isConfirmed) window.location.href = '/billing.html';
-                });
-                return;
-            }
-
-            const { value: phone } = await Swal.fire({
-                title: 'رقم هاتف العميل',
-                input: 'tel',
-                inputLabel: 'أدخل رقم هاتف العميل شاملاً كود الدولة (مثال: +2010...)',
-                inputPlaceholder: '+2...',
-                showCancelButton: true,
-                confirmButtonColor: '#25D366',
-                confirmButtonText: 'إرسال الفاتورة <i class="fab fa-whatsapp"></i>'
-            });
-
-            if (phone) {
-                const storeName = user.storeName || 'SmartGrocer';
-                const date = new Date().toLocaleString('ar-EG');
-
-                let msg = `*فاتورة من متجر ${storeName}* 🛒\n`;
-                msg += `📅 التاريخ: ${date}\n`;
-                msg += `------------------------\n`;
-
-                // Get items from the DOM to match the exact receipt
-                const listHTML = document.getElementById('rItemsList').querySelectorAll('.r-item');
-                listHTML.forEach(node => {
-                    const spans = node.querySelectorAll('span');
-                    const name = spans[0].textContent;
-                    const qty = spans[1].textContent;
-                    const total = spans[2].textContent;
-                    msg += `ـ ${name}\nالكمية: ${qty} | الإجمالي: ${total} ج.م\n\n`;
-                });
-
-                msg += `------------------------\n`;
-                msg += `💵 المجموع الفرعي: ${document.getElementById('rSub').textContent} ج.م\n`;
-                msg += `🧾 الضريبة: ${document.getElementById('rTax').textContent} ج.م\n`;
-                msg += `💰 *الإجمالي النهائي: ${document.getElementById('rTotal').textContent}*\n`;
-                msg += `\nشكراً لزيارتكم! 🌟\n`;
-
-                const encodedMsg = encodeURIComponent(msg);
-                const cleanPhone = phone.replace(/[^\d+]/g, '');
-                window.open(`https://wa.me/${cleanPhone}?text=${encodedMsg}`, '_blank');
-            }
+        function sendWhatsAppReceipt() {
+            const order = window.activeOrder;
+            if (!order) return;
+            const phone = document.getElementById('customerPhone').value || "";
+            const msg = `SmartGrocer Receipt\nOrder #${order.orderId}\nTotal: ${formatMoney(order.total)}`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`);
         }
 
-        async function printReceipt() {
-            const element = document.querySelector('.receipt-content');
-            const opt = {
-                margin: 0.5,
-                filename: `receipt_${new Date().getTime()}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            
-            // New window approach for better printing
-            const originalContent = document.body.innerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write('<html><head><title>Print Receipt</title>');
-            printWindow.document.write('<style>body{font-family: Cairo, sans-serif; padding: 20px;} .receipt-content{width: 300px; margin: auto;} .r-item{display: flex; justify-content: space-between; margin-bottom: 5px;} .receipt-header{text-align: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;} .receipt-footer{text-align: center; margin-top: 20px; font-size: 0.8rem; color: #666;}</style>');
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(element.outerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
+        function getStoreName() {
+            const user = JSON.parse(localStorage.getItem('sg_user') || '{}');
+            return user.storeName || "Smart Grocer Store";
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 
 </html>

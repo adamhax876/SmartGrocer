@@ -71,7 +71,15 @@ const userTranslations = {
         btn_print: "🖨️ Print Receipt",
         btn_whatsapp: "Send via WhatsApp (Pro)",
         receipt_discount: "Points Discount:",
-        receipt_points: "Current Customer Points:"
+        receipt_points: "Current Customer Points:",
+        
+        // Dashboard new features
+        monthly_comparison: "Monthly Performance",
+        low_stock_alerts: "Low Stock Alerts",
+        comp_revenue: "Revenue",
+        comp_orders: "Orders",
+        comp_avg: "Avg Order Value",
+        stock_healthy: "Stock is healthy"
     },
     ar: {
         nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -142,7 +150,15 @@ const userTranslations = {
         btn_print: "🖨️ طباعة الفاتورة",
         btn_whatsapp: "إرسال عبر واتساب (Pro)",
         receipt_discount: "خصم النقاط:",
-        receipt_points: "نقاط العميل الحالية:"
+        receipt_points: "نقاط العميل الحالية:",
+        
+        // Dashboard new features
+        monthly_comparison: "مقارنة الأداء الشهري",
+        low_stock_alerts: "تنبيهات المخزون المنخفض",
+        comp_revenue: "الإيرادات",
+        comp_orders: "الطلبات",
+        comp_avg: "متوسط الفاتورة",
+        stock_healthy: "المخزون بحالة جيدة"
     }
 };
 
@@ -178,3 +194,46 @@ function toggleLanguage() {
 }
 
 document.addEventListener('DOMContentLoaded', applyUserLang);
+
+function getTranslatedCategory(cat) {
+    if (!cat) return '';
+    const normalizeMap = {
+        'بقالة عادية': 'groceries',
+        'بقالة': 'groceries',
+        'ألبان وأجبان': 'dairy',
+        'لحوم ومجمدات': 'meat',
+        'مشروبات وعصائر': 'beverages',
+        'تسالي وحلويات': 'snacks',
+        'groceries': 'groceries', 
+        'dairy': 'dairy', 
+        'meat': 'meat', 
+        'beverages': 'beverages', 
+        'snacks': 'snacks',
+        'Dairy & Cheese': 'dairy',
+        'Meat & Frozen': 'meat',
+        'Beverages & Juice': 'beverages',
+        'Snacks & Sweets': 'snacks'
+    };
+    const key = normalizeMap[cat] || cat;
+    const catMapAr = { 'groceries': 'بقالة عادية', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات' };
+    const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets' };
+    return currentUserLang === 'ar' ? (catMapAr[key] || cat) : (catMapEn[key] || cat);
+}
+
+function getTranslatedUnit(unit) {
+    if (!unit) return '';
+    const normalizeMap = {
+        'قطعة': 'piece', 
+        'كيلو': 'kg', 
+        'لتر': 'liter', 
+        'كرتونة': 'box', 
+        'عبوة': 'pack',
+        'piece': 'piece', 
+        'kg': 'kg', 
+        'liter': 'liter', 
+        'box': 'box', 
+        'pack': 'pack'
+    };
+    const key = normalizeMap[unit] || unit;
+    return t('unit_' + key) || unit;
+}
