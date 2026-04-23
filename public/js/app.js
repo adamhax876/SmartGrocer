@@ -146,8 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.insertBefore(overlay, document.body.firstChild);
             }
 
-            // Inject hamburger into topbar
-            const titleContainer = topbar.querySelector('div') || topbar;
+            // Inject hamburger into topbar directly
             const hamburger = document.createElement('button');
             hamburger.className = 'global-hamburger';
             hamburger.textContent = '☰';
@@ -155,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sidebar.classList.toggle('open');
                 document.getElementById('globalSidebarOverlay').classList.toggle('active');
             });
-            titleContainer.insertBefore(hamburger, titleContainer.firstChild);
+            topbar.insertBefore(hamburger, topbar.firstChild);
         }
     }
 });
