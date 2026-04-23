@@ -217,3 +217,118 @@ img { max-width: 100%; }
 .toast-info { background: var(--blue); }
 @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
+/* ==============================
+   GLOBAL MOBILE RESPONSIVE
+   ============================== */
+
+/* Hamburger button (injected by app.js) */
+.global-hamburger {
+    display: none;
+    width: 40px; height: 40px;
+    align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg-secondary);
+    cursor: pointer; font-size: 1.2rem;
+    color: var(--text);
+    flex-shrink: 0;
+}
+
+/* Sidebar overlay */
+.global-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 199;
+}
+.global-sidebar-overlay.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    /* Show hamburger */
+    .global-hamburger {
+        display: flex !important;
+    }
+
+    /* Hide sidebar by default, slide in from the correct side */
+    .sidebar {
+        transform: translateX(100%);
+        position: fixed !important;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 260px !important;
+        z-index: 200;
+    }
+    body[dir="ltr"] .sidebar,
+    html[dir="ltr"] .sidebar {
+        transform: translateX(-100%);
+        left: 0;
+        right: auto;
+    }
+    .sidebar.open {
+        transform: translateX(0) !important;
+    }
+
+    /* Main content full width */
+    .main {
+        margin-inline-start: 0 !important;
+    }
+
+    /* Topbar adjustments */
+    .topbar {
+        padding: 0.8rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .topbar-actions {
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+    .topbar-title {
+        font-size: 1rem;
+    }
+
+    /* Content padding */
+    .content {
+        padding: 1rem;
+    }
+
+    /* KPI grids */
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem;
+    }
+    .kpi-card {
+        padding: 0.8rem;
+    }
+    .kpi-value {
+        font-size: 1.3rem;
+    }
+
+    /* Charts grid */
+    .charts-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Feature cards grid (monthly comparison + low stock) */
+    .feature-cards-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Tables: horizontal scroll */
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-wrapper table {
+        min-width: 600px;
+    }
+
+    /* Filters stack vertically */
+    .filters {
+        flex-direction: column;
+    }
+}
+

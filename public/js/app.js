@@ -127,6 +127,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (getToken()) {
         initRealtimeNotifications();
     }
+
+    // === Global Mobile Sidebar Support ===
+    // Auto-inject hamburger + overlay on pages that have .sidebar but no existing hamburger
+    if (window.innerWidth <= 768 || true) { // Always inject, CSS controls visibility
+        const sidebar = document.querySelector('.sidebar');
+        const topbar = document.querySelector('.topbar');
+        if (sidebar && topbar && !document.querySelector('.hamburger') && !document.querySelector('.global-hamburger')) {
+            // Inject overlay
+            if (!document.getElementById('globalSidebarOverlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'globalSidebarOverlay';
+                overlay.className = 'global-sidebar-overlay';
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                });
+                document.body.insertBefore(overlay, document.body.firstChild);
+            }
+
+            // Inject hamburger into topbar
+            const titleContainer = topbar.querySelector('div') || topbar;
+            const hamburger = document.createElement('button');
+            hamburger.className = 'global-hamburger';
+            hamburger.textContent = '☰';
+            hamburger.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                document.getElementById('globalSidebarOverlay').classList.toggle('active');
+            });
+            titleContainer.insertBefore(hamburger, titleContainer.firstChild);
+        }
+    }
 });
 
 window.CURRENCY = localStorage.getItem('sg_currency') || '$';

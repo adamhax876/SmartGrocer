@@ -399,6 +399,11 @@
             document.getElementById('defaultWelcome').style.display = 'none';
             document.getElementById('activeChat').style.display = 'none';
             document.getElementById('newTicketForm').style.display = 'block';
+            // On mobile, hide ticket list to reveal the form
+            if (window.innerWidth <= 768) {
+                const panel = document.getElementById('ticketSidePanel');
+                if (panel) panel.classList.add('mobile-hidden');
+            }
             renderConversations();
         }
 

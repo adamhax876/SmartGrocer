@@ -135,13 +135,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.querySelector('.sidebar');
     if (mobileBtn && sidebar) {
+        // Create overlay for admin
+        let adminOverlay = document.getElementById('adminMobileOverlay');
+        if (!adminOverlay) {
+            adminOverlay = document.createElement('div');
+            adminOverlay.id = 'adminMobileOverlay';
+            adminOverlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:39;';
+            adminOverlay.addEventListener('click', () => {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('absolute', 'z-40', 'h-full', 'w-64', 'flex', 'flex-col');
+                adminOverlay.style.display = 'none';
+            });
+            document.body.appendChild(adminOverlay);
+        }
+
         mobileBtn.addEventListener('click', () => {
             if (sidebar.classList.contains('hidden')) {
                 sidebar.classList.remove('hidden');
-                sidebar.classList.add('absolute', 'z-40', 'h-full', 'w-64');
+                sidebar.classList.add('absolute', 'z-40', 'h-full', 'w-64', 'flex', 'flex-col');
+                adminOverlay.style.display = 'block';
             } else {
                 sidebar.classList.add('hidden');
-                sidebar.classList.remove('absolute', 'z-40');
+                sidebar.classList.remove('absolute', 'z-40', 'h-full', 'w-64', 'flex', 'flex-col');
+                adminOverlay.style.display = 'none';
             }
         });
     }
