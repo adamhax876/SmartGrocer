@@ -197,13 +197,18 @@ document.addEventListener('DOMContentLoaded', applyUserLang);
 
 function getTranslatedCategory(cat) {
     if (!cat) return '';
-    const normalizeMap = {
+        const normalizeMap = {
         'بقالة عادية': 'groceries',
         'بقالة': 'groceries',
         'ألبان وأجبان': 'dairy',
         'لحوم ومجمدات': 'meat',
         'مشروبات وعصائر': 'beverages',
         'تسالي وحلويات': 'snacks',
+        'فواكه': 'fruits',
+        'خضروات': 'vegetables',
+        'منظفات وأدوات منزلية': 'household',
+        'منظفات': 'household',
+        
         'groceries': 'groceries', 
         'dairy': 'dairy', 
         'meat': 'meat', 
@@ -212,11 +217,44 @@ function getTranslatedCategory(cat) {
         'Dairy & Cheese': 'dairy',
         'Meat & Frozen': 'meat',
         'Beverages & Juice': 'beverages',
-        'Snacks & Sweets': 'snacks','bakery': 'bakery','مخبوزات': 'bakery','frozen': 'frozen','مجمدات': 'frozen','other': 'other','أخرى': 'other', 'bakery': 'bakery', 'مخبوزات': 'bakery', 'frozen': 'frozen', 'مجمدات': 'frozen', 'other': 'other', 'أخرى': 'other'
+        'Snacks & Sweets': 'snacks',
+        'bakery': 'bakery',
+        'مخبوزات': 'bakery',
+        'frozen': 'frozen',
+        'مجمدات': 'frozen',
+        'other': 'other',
+        'أخرى': 'other',
+        'fruits': 'fruits',
+        'vegetables': 'vegetables',
+        'household': 'household'
     };
     const key = normalizeMap[cat] || cat;
-    const catMapAr = { 'groceries': 'بقالة عادية', 'dairy': 'ألبان وأجبان', 'meat': 'لحوم ومجمدات', 'beverages': 'مشروبات وعصائر', 'snacks': 'تسالي وحلويات', 'bakery': 'مخبوزات', 'frozen': 'مجمدات', 'other': 'أخرى' };
-    const catMapEn = { 'groceries': 'Groceries', 'dairy': 'Dairy & Cheese', 'meat': 'Meat & Frozen', 'beverages': 'Beverages', 'snacks': 'Snacks & Sweets', 'bakery': 'Bakery', 'frozen': 'Frozen Food', 'other': 'Other' };
+    const catMapAr = { 
+        'groceries': 'بقالة عادية', 
+        'dairy': 'ألبان وأجبان', 
+        'meat': 'لحوم ومجمدات', 
+        'beverages': 'مشروبات وعصائر', 
+        'snacks': 'تسالي وحلويات',
+        'bakery': 'مخبوزات',
+        'frozen': 'مجمدات',
+        'other': 'أخرى',
+        'fruits': 'فواكه',
+        'vegetables': 'خضروات',
+        'household': 'منظفات وأدوات منزلية'
+    };
+    const catMapEn = { 
+        'groceries': 'Groceries', 
+        'dairy': 'Dairy & Cheese', 
+        'meat': 'Meat & Frozen', 
+        'beverages': 'Beverages', 
+        'snacks': 'Snacks & Sweets',
+        'bakery': 'Bakery',
+        'frozen': 'Frozen Food',
+        'other': 'Other',
+        'fruits': 'Fruits',
+        'vegetables': 'Vegetables',
+        'household': 'Household Settings'
+    };
     return currentUserLang === 'ar' ? (catMapAr[key] || cat) : (catMapEn[key] || cat);
 }
 

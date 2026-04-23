@@ -362,6 +362,12 @@
                         <option value="meat" data-i18n="cat_meat">لحوم ومجمدات</option>
                         <option value="beverages" data-i18n="cat_beverages">مشروبات وعصائر</option>
                         <option value="snacks" data-i18n="cat_snacks">تسالي وحلويات</option>
+                        <option value="bakery" data-i18n="cat_bakery">مخبوزات</option>
+                        <option value="frozen" data-i18n="cat_frozen">مجمدات</option>
+                        <option value="fruits" data-i18n="cat_fruits">فواكه</option>
+                        <option value="vegetables" data-i18n="cat_vegetables">خضروات</option>
+                        <option value="household" data-i18n="cat_household">منظفات وأدوات منزلية</option>
+                        <option value="other" data-i18n="cat_other">أخرى</option>
                     </select>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -458,9 +464,9 @@
                 label_punit: "Unit", unit_piece: "Piece", unit_kg: "Kg", unit_liter: "Liter", unit_box: "Box", unit_pack: "Pack", label_pbarcode: "Barcode (Optional)", ph_barcode: "Scan barcode here...",
                 status_out: "Out of Stock", status_low: "Low Stock", status_in: "In Stock",
                 modal_excel_title: "Excel Import Instructions 📊", modal_excel_desc: "To ensure successful import, prepare your Excel sheet exactly with these headers:", modal_excel_header: "Product Name | Barcode | Category | Unit | Quantity | Cost Price | Price | Expiry Date",
-                excel_p1: "Product Name:", excel_v1: "(Required) Write the product name.", excel_p2: "Barcode:", excel_v2: "(Optional) Product barcode numbers.", excel_p3: "Category:", excel_v3: "groceries, dairy, meat, beverages, or snacks.", excel_p4: "Unit:", excel_v4: "piece, kg, liter, box, or pack.", excel_p5: "Prices and Qty:", excel_v5: "Use numbers only (e.g. 15.50). Do not write any text.", excel_p6: "Expiry Date:", excel_v6: "(Optional) In DD/MM/YYYY format.",
+                excel_p1: "Product Name:", excel_v1: "(Required) Write the product name.", excel_p2: "Barcode:", excel_v2: "(Optional) Product barcode numbers.", excel_p3: "Category:", excel_v3: "groceries, dairy, meat, beverages, snacks, bakery, fruits, vegetables, frozen...", excel_p4: "Unit:", excel_v4: "piece, kg, liter, box, or pack.", excel_p5: "Prices and Qty:", excel_v5: "Use numbers only (e.g. 15.50). Do not write any text.", excel_p6: "Expiry Date:", excel_v6: "(Optional) In DD/MM/YYYY format.",
                 btn_upload_now: "Upload Now", btn_dl_template: "📥 Download Template",
-                cat_groceries: "Groceries", cat_dairy: "Dairy & Cheese", cat_meat: "Meat & Frozen", cat_beverages: "Beverages & Juice", cat_snacks: "Snacks & Sweets"
+                cat_groceries: "Groceries", cat_dairy: "Dairy & Cheese", cat_meat: "Meat & Frozen", cat_beverages: "Beverages & Juice", cat_snacks: "Snacks & Sweets", cat_bakery: "Bakery", cat_frozen: "Frozen Food", cat_fruits: "Fruits", cat_vegetables: "Vegetables", cat_household: "Household", cat_other: "Other"
             },
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_pos: "نقطة البيع (POS)", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -471,9 +477,9 @@
                 label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)", ph_barcode: "امسح الباركود هنا...",
                 status_out: "نفذت الكمية", status_low: "قاربت على النفاذ", status_in: "متوفر",
                 modal_excel_title: "تعليمات استيراد الإكسيل 📊", modal_excel_desc: "لضمان استيراد المنتجات بنجاح، يرجى تجهيز ملف الإكسيل بحيث يحتوي الصف الأول على العناوين التالية بالضبط:", modal_excel_header: "اسم المنتج | الباركود | الفئة | الوحدة | الكمية | سعر التكلفة | السعر | تاريخ الانتهاء",
-                excel_p1: "اسم المنتج:", excel_v1: "(إلزامي) اكتب اسم المنتج.", excel_p2: "الباركود:", excel_v2: "(اختياري) أرقام باركود المنتج.", excel_p3: "الفئة:", excel_v3: "بقالة، ألبان، لحوم، مشروبات، أو تسالي.", excel_p4: "الوحدة:", excel_v4: "قطعة، كيلو، لتر، كرتونة، أو عبوة.", excel_p5: "الأسعار والكمية:", excel_v5: "يُسمح فقط بكتابة أرقام (مثال: 15.50). لا تكتب أي نصوص مع الرقم.", excel_p6: "تاريخ الانتهاء:", excel_v6: "(اختياري) بصيغة يوم/شهر/سنة.",
+                excel_p1: "اسم المنتج:", excel_v1: "(إلزامي) اكتب اسم المنتج.", excel_p2: "الباركود:", excel_v2: "(اختياري) أرقام باركود المنتج.", excel_p3: "الفئة:", excel_v3: "بقالة، ألبان، لحوم، مشروبات، تسالي، مخبوزات، فواكه، خضراوات، إلخ.", excel_p4: "الوحدة:", excel_v4: "قطعة، كيلو، لتر، كرتونة، أو عبوة.", excel_p5: "الأسعار والكمية:", excel_v5: "يُسمح فقط بكتابة أرقام (مثال: 15.50). لا تكتب أي نصوص مع الرقم.", excel_p6: "تاريخ الانتهاء:", excel_v6: "(اختياري) بصيغة يوم/شهر/سنة.",
                 btn_upload_now: "رفع الملف الآن", btn_dl_template: "📥 تحميل قالب جاهز",
-                cat_groceries: "بقالة عادية", cat_dairy: "ألبان وأجبان", cat_meat: "لحوم ومجمدات", cat_beverages: "مشروبات وعصائر", cat_snacks: "تسالي وحلويات"
+                cat_groceries: "بقالة عادية", cat_dairy: "ألبان وأجبان", cat_meat: "لحوم ومجمدات", cat_beverages: "مشروبات وعصائر", cat_snacks: "تسالي وحلويات", cat_bakery: "مخبوزات", cat_frozen: "مجمدات", cat_fruits: "فواكه", cat_vegetables: "خضروات", cat_household: "منظفات", cat_other: "أخرى"
             }
         };
 
