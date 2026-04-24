@@ -150,6 +150,7 @@ img { max-width: 100%; }
   display: inline-flex; align-items: center; gap: 0.3rem;
   padding: 0.25rem 0.7rem; border-radius: 50px;
   font-size: 0.78rem; font-weight: 700;
+  white-space: nowrap;
 }
 .badge-success { background: var(--primary-light); color: var(--primary); }
 .badge-warning { background: var(--orange-light); color: var(--orange); }
