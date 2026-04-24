@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="pos_title">SmartGrocer — نقطة البيع السريعة (POS)</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777062762893">
+    <link rel="stylesheet" href="/css/global.css?v=1777063295066">
     <!-- SweetAlert2 & FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -598,7 +598,7 @@
 
     <!-- html2pdf dependency for professional printing -->
 
-    <script src="/js/app.js?v=1777062762893"></script>
+    <script src="/js/app.js?v=1777063295066"></script>
     <script>
         // Core POS Logic
         let allProducts = [];
@@ -877,7 +877,6 @@
                         customerPhone: phone
                     })
                 });
-
                 showReceipt(res.sale);
                 cart = [];
                 renderCart();
@@ -885,13 +884,6 @@
                 document.getElementById('pointsDisplay').style.display = 'none';
                 document.getElementById('usePoints').checked = false;
                 
-                Swal.fire({
-                    icon: 'success',
-                    title: translations[currentLang].msg_success,
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-
             } catch (e) {
                 Swal.fire({ icon: 'error', title: 'Oops...', text: e.message });
             } finally {
@@ -906,8 +898,8 @@
             const list = document.getElementById('rItemsList');
             list.innerHTML = order.items.map(i => `
                 <div class="r-item">
-                    <span>${i.productId.name} x ${i.quantity}</span>
-                    <span>${formatMoney(i.price * i.quantity)}</span>
+                    <span>${i.productName} x ${i.quantity}</span>
+                    <span>${formatMoney(i.total)}</span>
                 </div>
             `).join('');
 
@@ -915,11 +907,11 @@
             let summaryHTML = `
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
                     <span>${translations[currentLang].receipt_subtotal}</span>
-                    <span>${formatMoney(order.total - order.tax)}</span>
+                    <span>${formatMoney(order.subtotal)}</span>
                 </div>
                 <div class="r-item" style="color: #666; font-size: 0.85rem;">
                     <span>${translations[currentLang].receipt_tax}</span>
-                    <span>${formatMoney(order.tax)}</span>
+                    <span>${formatMoney(order.tax || 0)}</span>
                 </div>
             `;
 

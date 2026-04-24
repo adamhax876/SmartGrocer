@@ -12,7 +12,7 @@ router.use(enforceLockout);
 // POST /api/sales — record a new sale
 router.post('/', enforceLimits('sales'), async (req, res) => {
     try {
-        const { items, discount, paymentMethod, customerName, customerPhone, usePoints } = req.body;
+        const { items, discount, tax, paymentMethod, customerName, customerPhone, usePoints } = req.body;
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'يجب إضافة منتج واحد على الأقل' });
@@ -54,7 +54,8 @@ router.post('/', enforceLimits('sales'), async (req, res) => {
         }
 
         let finalDiscount = discount || 0;
-        let finalTotal = subtotal - finalDiscount;
+        let finalTax = tax || 0;
+        let finalTotal = subtotal + finalTax - finalDiscount;
         let appliedLoyalty = false;
 
         // --- CUSTOMER LOYALTY LOGIC (Pro Plan) ---
@@ -104,6 +105,7 @@ router.post('/', enforceLimits('sales'), async (req, res) => {
             items: saleItems,
             subtotal,
             discount: finalDiscount,
+            tax: finalTax,
             total: finalTotal,
             paymentMethod: paymentMethod || 'cash',
             customerName: customer ? customer.name : (customerName || 'عميل'),
