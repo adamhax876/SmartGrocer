@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="pos_title">SmartGrocer — نقطة البيع السريعة (POS)</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777062214839">
+    <link rel="stylesheet" href="/css/global.css?v=1777062762893">
     <!-- SweetAlert2 & FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -598,7 +598,7 @@
 
     <!-- html2pdf dependency for professional printing -->
 
-    <script src="/js/app.js?v=1777062214839"></script>
+    <script src="/js/app.js?v=1777062762893"></script>
     <script>
         // Core POS Logic
         let allProducts = [];
@@ -850,8 +850,8 @@
             const tax = sub * TAX_RATE;
             const total = sub + tax;
 
-            document.getElementById('subTotal').textContent = formatMoney(sub);
-            document.getElementById('taxAmount').textContent = formatMoney(tax);
+            document.getElementById('subTotal').innerHTML = formatMoney(sub);
+            document.getElementById('taxAmount').innerHTML = formatMoney(tax);
             document.getElementById('finalTotal').innerHTML = formatMoney(total);
             document.getElementById('payBtn').disabled = false;
         }
@@ -878,7 +878,7 @@
                     })
                 });
 
-                showReceipt(res.order);
+                showReceipt(res.sale);
                 cart = [];
                 renderCart();
                 document.getElementById('customerPhone').value = '';
