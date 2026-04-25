@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="pos_title">SmartGrocer — نقطة البيع السريعة (POS)</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777078414305">
+    <link rel="stylesheet" href="/css/global.css?v=1777078861057">
     <!-- SweetAlert2 & FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -515,6 +515,10 @@
                     <span data-i18n="sum_tax">الضريبة (14%)</span>
                     <span id="taxAmount">0.00</span>
                 </div>
+                <div class="summary-row" id="discountRow" style="display: none; color: #10b981; font-weight: bold;">
+                    <span data-i18n="receipt_discount">خصم النقاط:</span>
+                    <span id="discountAmount">0.00</span>
+                </div>
                 <div class="summary-total">
                     <span data-i18n="sum_total">الإجمالي المطلوب</span>
                     <span id="finalTotal"></span>
@@ -609,11 +613,12 @@
 
     <!-- html2pdf dependency for professional printing -->
 
-    <script src="/js/app.js?v=1777078414305"></script>
+    <script src="/js/app.js?v=1777078861057"></script>
     <script>
         // Core POS Logic
         let allProducts = [];
         let cart = [];
+        let currentCustomerPoints = 0;
         const TAX_RATE = 0.14;
 
         // I18n Setup
@@ -816,9 +821,11 @@
             try {
                 const res = await api(`/api/sales/customer/${phone}`);
                 if (res.stats) {
+                    currentCustomerPoints = res.stats.points;
                     display.style.display = 'block';
                     display.style.color = 'var(--primary)';
                     display.innerHTML = `⭐ ${translations[currentLang].receipt_point_balance} <span id="availablePts">${res.stats.points}</span>`;
+                    renderCart(); // Update totals if points are already checked
                 } else {
                     display.style.display = 'block';
                     display.style.color = 'var(--error)';
@@ -859,13 +866,32 @@
 
             const sub = cart.reduce((acc, i) => acc + (i.price * i.cartQty), 0);
             const tax = sub * TAX_RATE;
-            const total = sub + tax;
+            const subtotalWithTax = sub + tax;
+            
+            let discount = 0;
+            const usePoints = document.getElementById('usePoints').checked;
+            if (usePoints && currentCustomerPoints > 0) {
+                // Same logic as backend: 10 points = 1 EGP
+                const pointsValue = currentCustomerPoints / 10;
+                discount = Math.min(subtotalWithTax, pointsValue);
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discountAmount').innerHTML = '-' + formatMoney(discount);
+            } else {
+                document.getElementById('discountRow').style.display = 'none';
+            }
+
+            const total = subtotalWithTax - discount;
 
             document.getElementById('subTotal').innerHTML = formatMoney(sub);
             document.getElementById('taxAmount').innerHTML = formatMoney(tax);
             document.getElementById('finalTotal').innerHTML = formatMoney(total);
             document.getElementById('payBtn').disabled = false;
         }
+
+        // Handle points usage checkbox change
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('usePoints').addEventListener('change', renderCart);
+        });
 
         async function processPayment() {
             const sub = cart.reduce((acc, i) => acc + (i.price * i.cartQty), 0);
