@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="pos_title">SmartGrocer — نقطة البيع السريعة (POS)</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777077545591">
+    <link rel="stylesheet" href="/css/global.css?v=1777077932027">
     <!-- SweetAlert2 & FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -387,6 +387,12 @@
             overflow-y: auto; /* Scroll internally if there are many items */
             flex: 1; /* Allow stretching */
             padding-right: 5px; /* Space for the scrollbar */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .receipt-items::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
         }
 
         .r-item {
@@ -603,7 +609,7 @@
 
     <!-- html2pdf dependency for professional printing -->
 
-    <script src="/js/app.js?v=1777077545591"></script>
+    <script src="/js/app.js?v=1777077932027"></script>
     <script>
         // Core POS Logic
         let allProducts = [];
