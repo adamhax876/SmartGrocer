@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="pos_title">SmartGrocer — نقطة البيع السريعة (POS)</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777077932027">
+    <link rel="stylesheet" href="/css/global.css?v=1777078161113">
     <!-- SweetAlert2 & FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -609,7 +609,7 @@
 
     <!-- html2pdf dependency for professional printing -->
 
-    <script src="/js/app.js?v=1777077932027"></script>
+    <script src="/js/app.js?v=1777078161113"></script>
     <script>
         // Core POS Logic
         let allProducts = [];
@@ -888,7 +888,7 @@
                         customerPhone: phone
                     })
                 });
-                showReceipt(res.sale);
+                showReceipt(res.sale, res.customerPoints);
                 cart = [];
                 renderCart();
                 document.getElementById('customerPhone').value = '';
@@ -902,7 +902,7 @@
             }
         }
 
-        function showReceipt(order) {
+        function showReceipt(order, points) {
             document.getElementById('rStoreName').textContent = getStoreName();
             document.getElementById('rDate').textContent = new Date(order.createdAt).toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
 
@@ -941,6 +941,15 @@
                     <span>${formatMoney(order.total - (order.discount || 0))}</span>
                 </div>
             `;
+
+            if (points !== undefined) {
+                summaryHTML += `
+                <div class="r-item" style="color: #666; font-size: 0.8rem; border-top: 1px dashed #eee; padding-top: 0.5rem; margin-top: 0.5rem;">
+                    <span>${translations[currentLang].receipt_points}</span>
+                    <span>${points}</span>
+                </div>
+                `;
+            }
 
             summaryArea.innerHTML = summaryHTML;
 
