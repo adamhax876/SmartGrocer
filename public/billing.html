@@ -205,16 +205,7 @@
 
     </main>
 
-    <footer class="glass-panel border-t-0 mt-auto py-8 relative z-10">
-        <div class="container mx-auto px-6 text-center">
-            <div class="flex justify-center gap-6 mb-4">
-                <a href="#" class="text-gray-500 hover:text-white transition text-xl"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="text-gray-500 hover:text-white transition text-xl"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="text-gray-500 hover:text-white transition text-xl"><i class="fab fa-instagram"></i></a>
-            </div>
-            <p class="text-gray-500 text-sm font-semibold tracking-wide">© 2026 Smart Grocer. صنع بشغف لرواد التجزئة.</p>
-        </div>
-    </footer>
+
 
     <script>
         const token = localStorage.getItem('sg_token');
@@ -363,12 +354,16 @@
                     const links = typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks) : data.socialLinks;
                     const container = document.getElementById('socialLinksFooter');
                     if (container && links && links.length > 0) {
-                        container.innerHTML = links.map(link => `
-                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" title="${link.name}"
-                                class="w-11 h-11 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 text-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:-translate-y-1 transition-all">
-                                <i class="${link.icon}"></i>
-                            </a>
-                        `).join('');
+                        container.innerHTML = links.map(link => {
+                            let url = link.url || '#';
+                            if (url !== '#' && !url.startsWith('http')) url = 'https://' + url;
+                            return `
+                                <a href="${url}" target="_blank" rel="noopener noreferrer" title="${link.name}"
+                                    class="w-11 h-11 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-gray-400 text-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:-translate-y-1 transition-all">
+                                    <i class="${link.icon}"></i>
+                                </a>
+                            `;
+                        }).join('');
                     }
                 }
             } catch (e) {
@@ -376,13 +371,17 @@
             }
         })();
     </script>
-    <script src="/js/user-lang.js?v=1777717910886"></script>
-    <script src="/js/app.js?v=1777717910886"></script>
+    <script src="/js/user-lang.js?v=1777718556064"></script>
+    <script src="/js/app.js?v=1777718556064"></script>
 
     <!-- Footer with Social Links -->
-    <footer class="glass-panel border-t border-gray-700/50 py-8 text-center">
-        <div id="socialLinksFooter" class="flex justify-center gap-4 mb-4 flex-wrap"></div>
-        <p class="text-gray-500 text-sm">© 2026 SmartGrocer. All rights reserved.</p>
+    <footer class="glass-panel border-t border-gray-700/50 py-10 text-center relative z-10 mt-auto">
+        <div class="container mx-auto px-6">
+            <div id="socialLinksFooter" class="flex justify-center gap-6 mb-6 flex-wrap"></div>
+            <p class="text-gray-500 text-sm font-semibold tracking-wide">© 2026 SmartGrocer. All rights reserved.</p>
+            <p class="text-gray-600 text-xs mt-2 opacity-60 en-only">Made with ❤️ for retail leaders.</p>
+            <p class="text-gray-600 text-xs mt-2 opacity-60 ar-only">صنع بشغف لرواد التجزئة.</p>
+        </div>
     </footer>
 </body>
 </html>

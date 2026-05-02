@@ -872,15 +872,48 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <p class="footer-text">© 2025 SmartGrocer. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Support</a>
+        <div class="footer-content" style="flex-direction: column; gap: 2rem;">
+            <div id="socialLinksFooter" style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem;">
+                <p class="footer-text">© 2026 SmartGrocer. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/privacy.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a>
+                    <a href="/support.html">Support</a>
+                </div>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Fetch and render social media links in footer
+        (async () => {
+            try {
+                const res = await fetch('/api/settings/public');
+                const data = await res.json();
+                if (data.success && data.socialLinks) {
+                    const links = typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks) : data.socialLinks;
+                    const container = document.getElementById('socialLinksFooter');
+                    if (container && links && links.length > 0) {
+                        container.innerHTML = links.map(link => {
+                            let url = link.url || '#';
+                            if (url !== '#' && !url.startsWith('http')) url = 'https://' + url;
+                            return `
+                                <a href="${url}" target="_blank" rel="noopener noreferrer" title="${link.name}"
+                                    style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); font-size: 1.15rem; transition: all 0.3s; text-decoration: none;"
+                                    onmouseover="this.style.background='linear-gradient(135deg, #2563eb, #10b981)'; this.style.color='#fff'; this.style.borderColor='transparent'; this.style.transform='translateY(-3px)'"
+                                    onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='rgba(255,255,255,0.6)'; this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)'">
+                                    <i class="${link.icon}"></i>
+                                </a>
+                            `;
+                        }).join('');
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to fetch social links:', e);
+            }
+        })();
+    </script>
 </body>
 
 </html>
