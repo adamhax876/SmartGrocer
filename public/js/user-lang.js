@@ -81,7 +81,14 @@ const userTranslations = {
         comp_avg: "Avg Order Value",
         stock_healthy: "Stock is healthy",
         val_greeting: "Welcome",
-        val_greeting: "Welcome"
+        
+        // Delete Account
+        del_acc_title: "Delete Account",
+        del_acc_text: "Are you sure you want to permanently delete your store account? This action cannot be undone and all data will be lost.",
+        del_acc_confirm: "Yes, delete it",
+        del_acc_cancel: "Cancel",
+        del_acc_deleting: "Deleting Account...",
+        del_acc_bye: "Goodbye"
 
     },
     ar: {
@@ -163,7 +170,14 @@ const userTranslations = {
         comp_avg: "متوسط الفاتورة",
         stock_healthy: "المخزون بحالة جيدة",
         val_greeting: "أهلاً بك",
-        val_greeting: "Welcome"
+        
+        // Delete Account
+        del_acc_title: "حذف الحساب",
+        del_acc_text: "هل أنت متأكد أنك تريد حذف حساب المتجر نهائياً؟ لا يمكن التراجع عن هذا الإجراء وسيتم فقدان جميع البيانات.",
+        del_acc_confirm: "نعم، احذف الحساب",
+        del_acc_cancel: "إلغاء",
+        del_acc_deleting: "جاري الحذف...",
+        del_acc_bye: "وداعاً"
 
     }
 };
