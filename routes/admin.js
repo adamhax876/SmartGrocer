@@ -10,6 +10,30 @@ const Invite = require('../models/Invite');
 const crypto = require('crypto');
 const { clearSettingsCache } = require('../utils/settings');
 const { sendSupportInviteEmail, sendTicketReplyEmail } = require('../utils/email');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configure multer for logo upload
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../public/images'));
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'logo.png'); // Always overwrite the main logo
+    }
+});
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not an image! Please upload an image.'), false);
+        }
+    }
+});
 
 // =====================================
 // Admin Endpoints
@@ -195,6 +219,47 @@ router.post('/settings', isAdmin, async (req, res) => {
         clearSettingsCache(); // Ensure next request fetches fresh settings
 
         res.json({ success: true, message: 'Settings saved successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
+// 9.5 Upload/Change Website Logo
+router.post('/settings/logo', isAdmin, upload.single('logo'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'لم يتم رفع أي صورة' });
+        }
+
+        // Run the bust-cache logic to automatically update all HTML files to fetch the new logo
+        try {
+            const dir = path.join(__dirname, '../public');
+            const ts = Date.now();
+            
+            const walk = (d) => {
+                fs.readdirSync(d).forEach(file => {
+                    let fullPath = path.join(d, file);
+                    if (fs.statSync(fullPath).isDirectory()) {
+                        walk(fullPath);
+                    } else if (file.endsWith('.html')) {
+                        let content = fs.readFileSync(fullPath, 'utf8');
+                        let original = content;
+                        
+                        // Add or update cache-buster specifically for the logo image
+                        content = content.replace(/\/images\/logo\.png(\?v=\d+)?/g, '/images/logo.png?v=' + ts);
+                        
+                        if (content !== original) {
+                            fs.writeFileSync(fullPath, content);
+                        }
+                    }
+                });
+            };
+            walk(dir);
+        } catch (cacheErr) {
+            console.error('Cache busting failed for logo upload:', cacheErr);
+        }
+
+        res.json({ success: true, message: 'تم تحديث اللوجو بنجاح. سيظهر التحديث في جميع الصفحات فوراً.' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }

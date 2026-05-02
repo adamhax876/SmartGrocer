@@ -116,6 +116,18 @@
                         </select>
                     </div>
 
+                    <div class="border-t border-b py-4 my-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1" data-translate="lbl_logo">لوجو المنصة (Website Logo)</label>
+                        <p class="text-xs text-gray-500 mb-3" data-translate="lbl_logo_hint">تغيير اللوجو هنا سيتم تطبيقه تلقائياً على كافة صفحات المنصة (الدخول، التسجيل، وغيرها).</p>
+                        <div class="flex flex-col sm:flex-row items-center gap-4">
+                            <img src="/images/logo.png" id="logoPreview" class="h-16 w-32 object-contain border rounded p-1 bg-gray-50" alt="Current Logo">
+                            <input type="file" id="logo_upload" accept="image/*" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-sm bg-white">
+                            <button type="button" onclick="uploadLogo()" id="uploadLogoBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold whitespace-nowrap transition w-full sm:w-auto flex justify-center items-center">
+                                <i class="fas fa-upload ml-2 rtl:ml-2 ltr:mr-2"></i> <span data-translate="btn_upload_logo">رفع اللوجو</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="flex items-center gap-3 p-4 bg-gray-50 border rounded-lg">
                         <input type="checkbox" id="maintenance_mode"
                             class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
@@ -202,6 +214,59 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save"></i> حفظ الإعدادات';
+            }
+        });
+
+        // Logo Upload Function
+        async function uploadLogo() {
+            const fileInput = document.getElementById('logo_upload');
+            const file = fileInput.files[0];
+            if (!file) {
+                Swal.fire('تنبيه', 'يرجى اختيار صورة للوجو أولاً', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('uploadLogoBtn');
+            const ogContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري الرفع...';
+
+            const formData = new FormData();
+            formData.append('logo', file);
+
+            try {
+                const res = await fetch('/api/admin/settings/logo', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({ title: 'نجاح', text: data.message, icon: 'success', timer: 4000 });
+                    // Update preview immediately with a cache buster parameter to show the new image
+                    document.getElementById('logoPreview').src = '/images/logo.png?v=' + Date.now();
+                    fileInput.value = '';
+                } else {
+                    Swal.fire('خطأ', data.message, 'error');
+                }
+            } catch (e) {
+                Swal.fire('خطأ', 'حدث خطأ غير متوقع أثناء الرفع', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = ogContent;
+            }
+        }
+
+        // Preview logo locally before upload
+        document.getElementById('logo_upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
             }
         });
 

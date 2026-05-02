@@ -266,7 +266,7 @@
         </div>
 
         <div class="auth-card">
-            <div class="logo-icon"><i class="fas fa-store"></i></div>
+            <img src="/images/logo.png" style="width: 100%; max-height: 80px; object-fit: contain; margin-bottom: 1rem;" alt="Logo" class="logo-img">
             <h1 class="auth-title" data-i18n="signup_title">إنشاء حساب جديد</h1>
             <p class="auth-subtitle" data-i18n="signup_desc">خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك</p>
 
@@ -292,33 +292,31 @@
             <div class="error-message" id="errorBox"></div>
             <div class="success-message" id="successBox"></div>
 
-            <!-- Step 1 -->
             <div class="step-form active" id="form-1">
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_name">الاسم الكامل</label>
+                    <label class="form-label"><span data-i18n="label_name">الاسم الكامل</span> <span style="color: var(--red);">*</span></label>
                     <input type="text" class="form-input" id="u-name" required placeholder="أحمد محمد">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_email">البريد الإلكتروني</label>
+                    <label class="form-label"><span data-i18n="label_email">البريد الإلكتروني</span> <span style="color: var(--red);">*</span></label>
                     <input type="email" class="form-input" id="u-email" required placeholder="you@example.com">
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary btn-full" onclick="nextStepUI(2)" data-i18n="btn_next">متابعة ➝</button>
+                    <button class="btn btn-primary btn-full" onclick="nextStepUI(2)" data-i18n="btn_next">متابعة</button>
                 </div>
                 <div class="auth-footer">
                     <span data-i18n="has_acc">لديك حساب فعلاً؟</span> <a href="/login.html" class="auth-link" data-i18n="btn_login">دخول</a>
                 </div>
             </div>
 
-            <!-- Step 2 -->
             <div class="step-form" id="form-2">
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_store_name">اسم المتجر</label>
+                    <label class="form-label"><span data-i18n="label_store_name">اسم المتجر</span> <span style="color: var(--red);">*</span></label>
                     <input type="text" class="form-input" id="s-name" required placeholder="سوبر ماركت السعادة">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_store_type">نشاط المتجر</label>
-                    <select class="form-input" id="s-type">
+                    <label class="form-label"><span data-i18n="label_store_type">نشاط المتجر</span> <span style="color: var(--red);">*</span></label>
+                    <select class="form-input" id="s-type" required>
                         <option value="supermarket" data-i18n="type_supermarket">سوبر ماركت</option>
                         <option value="grocery" data-i18n="type_grocery">بقالة</option>
                         <option value="minimarket" data-i18n="type_minimarket">ميني ماركت</option>
@@ -327,7 +325,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_country">الدولة / Country</label>
+                    <label class="form-label"><span data-i18n="label_country">الدولة / Country</span> <span style="color: var(--red);">*</span></label>
                     <select class="form-input" id="u-country" required>
                         <option value="Egypt">مصر - Egypt</option>
                         <option value="Saudi Arabia">السعودية - Saudi Arabia</option>
@@ -344,14 +342,13 @@
                 <div class="form-actions">
                     <!-- Form internal navigation -->
                     <button class="btn btn-outline btn-full" onclick="nextStepUI(1)" data-i18n="btn_back">تراجع للحقول</button>
-                    <button class="btn btn-primary btn-full" onclick="nextStepUI(3)" data-i18n="btn_next">متابعة ➝</button>
+                    <button class="btn btn-primary btn-full" onclick="nextStepUI(3)" data-i18n="btn_next">متابعة</button>
                 </div>
             </div>
 
-            <!-- Step 3 -->
             <div class="step-form" id="form-3">
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_password">كلمة المرور الآمنة</label>
+                    <label class="form-label"><span data-i18n="label_password">كلمة المرور الآمنة</span> <span style="color: var(--red);">*</span></label>
                     <input type="password" class="form-input" id="u-pass" oninput="checkPasswordStrength()" required placeholder="••••••••">
                     
                     <div class="password-strength-container">
@@ -367,7 +364,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-i18n="label_confirm">تأكيد كلمة المرور</label>
+                    <label class="form-label"><span data-i18n="label_confirm">تأكيد كلمة المرور</span> <span style="color: var(--red);">*</span></label>
                     <input type="password" class="form-input" id="u-pass-confirm" required placeholder="••••••••">
                 </div>
                 <div class="form-actions">
@@ -398,7 +395,7 @@
                 signup_title: "Create your Account", signup_desc: "One step away from professional management",
                 step_1: "Personal", step_2: "Store", step_3: "Security", step_4: "Verify",
                 label_name: "Full Name", label_email: "Email Address",
-                btn_next: "Continue ➝", has_acc: "Already registered?", btn_login: "Sign In",
+                btn_next: "Continue", has_acc: "Already registered?", btn_login: "Sign In",
                 verify_msg: "We've sent a code to your email. Enter the 6 digits below to verify your identity.",
                 btn_back: "Back", btn_verify: "Verify Code & Login",
                 label_store_name: "Store Name", label_store_type: "Business Type",
@@ -414,7 +411,7 @@
                 signup_title: "إنشاء حساب جديد", signup_desc: "خطوة واحدة تفصلك عن الإدارة الاحترافية لعملك",
                 step_1: "البيانات", step_2: "المتجر", step_3: "المرور", step_4: "التحقق",
                 label_name: "الاسم الكامل", label_email: "البريد الإلكتروني",
-                btn_next: "متابعة ➝", has_acc: "لديك حساب فعلاً؟", btn_login: "تسجيل الدخول",
+                btn_next: "متابعة", has_acc: "لديك حساب فعلاً؟", btn_login: "تسجيل الدخول",
                 verify_msg: "أرسلنا كود التأكيد للبريد الخاص بك. يرجى إدخال الأرقام الستة أدناه للمتابعة.",
                 btn_back: "تراجع", btn_verify: "تأكيد الرمز والدخول",
                 label_store_name: "اسم المتجر", label_store_type: "نشاط المتجر",
