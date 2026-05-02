@@ -8,13 +8,13 @@
 
 /* --- Light Theme (Default) --- */
 :root {
-  /* Softened Light Theme */
-  --bg: #eef2f6;
-  --bg-secondary: #e2e8f0;
-  --bg-card: #f8fafc;
-  --bg-input: #f1f5f9;
-  --border: #cbd5e1;
-  --border-light: #e2e8f0;
+  /* Premium Light Theme (Dark Sidebar + Light Content) */
+  --bg: #f0f2f5;
+  --bg-secondary: #e4e6eb;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --border: #dadce0;
+  --border-light: #e4e6eb;
   --text: #0f172a;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
@@ -61,9 +61,31 @@
   --navbar-border: #334155;
 }
 
-/* Fix Logo visibility in Light Mode */
+/* Premium Dark Sidebar Override for Light Mode */
+:root:not([data-theme="dark"]) .sidebar {
+  background: #111827 !important;
+  border-inline-end: 1px solid #1f2937 !important;
+}
+:root:not([data-theme="dark"]) .sidebar-logo-text {
+  color: #f3f4f6 !important;
+}
+:root:not([data-theme="dark"]) .sidebar-link {
+  color: #9ca3af !important;
+}
+:root:not([data-theme="dark"]) .sidebar-link:hover {
+  background: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+:root:not([data-theme="dark"]) .sidebar-link.active {
+  background: rgba(22, 163, 74, 0.2) !important;
+  color: #22c55e !important;
+}
+:root:not([data-theme="dark"]) .sidebar-bottom {
+  border-top-color: #1f2937 !important;
+}
+/* Ensure logo is perfectly visible without weird filters */
 :root:not([data-theme="dark"]) .sidebar-logo img {
-  filter: invert(1) hue-rotate(180deg) brightness(0.7);
+  filter: none !important;
 }
 
 /* --- Reset --- */
