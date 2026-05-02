@@ -125,6 +125,7 @@ app.get('/api/settings/public', async (req, res) => {
     currency: settings.currency || '$',
     siteName: settings.site_name || 'Smart Grocer',
     paymentMethods: settings.paymentMethods || null,
+    socialLinks: settings.social_links || '[]',
     usdEgpRate: cachedUsdRate || 50.85 // Secure fallback
   });
 });

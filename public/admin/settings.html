@@ -145,10 +145,45 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Social Media Links Management -->
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-8 mt-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-2 border-b pb-4"><i class="fas fa-share-alt text-blue-500 ml-2"></i> روابط التواصل الاجتماعي (Social Media)</h3>
+                <p class="text-xs text-gray-500 mb-4">أضف روابط صفحات التواصل الاجتماعي. ستظهر تلقائياً في ذيل الصفحة الرئيسية للموقع.</p>
+
+                <div id="socialLinksContainer" class="space-y-3 mb-4"></div>
+
+                <div class="flex flex-col sm:flex-row gap-2 p-4 bg-gray-50 rounded-lg border">
+                    <select id="newSocialIcon" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500 flex-shrink-0">
+                        <option value="fab fa-facebook-f">Facebook</option>
+                        <option value="fab fa-twitter">Twitter / X</option>
+                        <option value="fab fa-instagram">Instagram</option>
+                        <option value="fab fa-whatsapp">WhatsApp</option>
+                        <option value="fab fa-youtube">YouTube</option>
+                        <option value="fab fa-tiktok">TikTok</option>
+                        <option value="fab fa-linkedin-in">LinkedIn</option>
+                        <option value="fab fa-telegram">Telegram</option>
+                        <option value="fab fa-snapchat-ghost">Snapchat</option>
+                        <option value="fas fa-globe">Website</option>
+                    </select>
+                    <input type="text" id="newSocialName" placeholder="اسم المنصة (مثال: Facebook)" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                    <input type="url" id="newSocialUrl" placeholder="رابط الصفحة (https://...)" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                    <button type="button" onclick="addSocialLink()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm whitespace-nowrap transition flex items-center justify-center gap-1">
+                        <i class="fas fa-plus"></i> إضافة
+                    </button>
+                </div>
+
+                <div class="pt-4 border-t mt-4 flex justify-end">
+                    <button type="button" onclick="saveSocialLinks()" id="saveSocialBtn"
+                        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold flex items-center gap-2 transition">
+                        <i class="fas fa-save"></i> حفظ روابط التواصل
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 
-    <script src="/js/admin-lang.js?v=1777716051354"></script>
+    <script src="/js/admin-lang.js?v=1777717001205"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
@@ -168,6 +203,13 @@
                 if (data.success && data.data) {
                     const settings = data.data;
                     settings.forEach(s => {
+                        if (s.key === 'social_links') {
+                            try {
+                                socialLinks = JSON.parse(s.value || '[]');
+                                renderSocialLinks();
+                            } catch(e) { console.error('Failed to parse social_links', e); }
+                            return;
+                        }
                         const el = document.getElementById(s.key);
                         if (el) {
                             if (el.type === 'checkbox') el.checked = s.value === 'true' || s.value === true;
@@ -269,6 +311,77 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // Social Media Links Logic
+        let socialLinks = [];
+
+        function renderSocialLinks() {
+            const container = document.getElementById('socialLinksContainer');
+            if (socialLinks.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-400 text-center py-2">لا توجد روابط بعد. أضف رابطاً جديداً أدناه.</p>';
+                return;
+            }
+            container.innerHTML = socialLinks.map((link, i) => `
+                <div class="flex items-center gap-3 p-3 bg-gray-50 border rounded-lg">
+                    <i class="${link.icon} text-xl text-blue-600 w-8 text-center"></i>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-sm text-gray-800">${link.name}</div>
+                        <a href="${link.url}" target="_blank" class="text-xs text-blue-500 truncate block">${link.url}</a>
+                    </div>
+                    <button onclick="removeSocialLink(${i})" class="text-red-500 hover:text-red-700 transition p-1" title="حذف">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addSocialLink() {
+            const icon = document.getElementById('newSocialIcon').value;
+            const name = document.getElementById('newSocialName').value.trim();
+            const url = document.getElementById('newSocialUrl').value.trim();
+            if (!name || !url) {
+                Swal.fire('تنبيه', 'يرجى إدخال اسم المنصة والرابط', 'warning');
+                return;
+            }
+            socialLinks.push({ icon, name, url });
+            renderSocialLinks();
+            document.getElementById('newSocialName').value = '';
+            document.getElementById('newSocialUrl').value = '';
+        }
+
+        function removeSocialLink(index) {
+            socialLinks.splice(index, 1);
+            renderSocialLinks();
+        }
+
+        async function saveSocialLinks() {
+            const btn = document.getElementById('saveSocialBtn');
+            const ogContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+            try {
+                const res = await fetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ settings: [{ key: 'social_links', value: JSON.stringify(socialLinks) }] })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ title: 'تم', text: 'تم حفظ روابط التواصل بنجاح', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                } else {
+                    Swal.fire('خطأ', data.message, 'error');
+                }
+            } catch (e) {
+                Swal.fire('خطأ', 'حدث خطأ غير متوقع', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = ogContent;
+            }
+        }
 
         // Initialize
         fetchSettings();

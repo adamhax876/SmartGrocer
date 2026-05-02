@@ -5,8 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartGrocer — النظام الذكي لإدارة المتاجر</title>
+  <!-- SEO & Social Meta Tags -->
+  <meta name="description" content="منظومة متكاملة لنقاط البيع (POS)، إدارة المخزون، والتقارير التحليلية. انطلق بتجارتك مع SmartGrocer وارفع أرباحك.">
+  <meta name="keywords" content="كاشير, نقاط بيع, إدارة مخزون, POS, سوبر ماركت, مبيعات, فواتير, نظام محاسبي">
+  <meta property="og:title" content="SmartGrocer — النظام الذكي لإدارة المتاجر">
+  <meta property="og:description" content="أقوى نظام سحابي لإدارة المحلات التجارية والمخازن. ابدأ تجربتك المجانية الآن.">
+  <meta property="og:image" content="https://smartgrocer.me/images/logo.png">
+  <meta property="og:url" content="https://smartgrocer.me">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <!-- We still have global.css perfectly intact -->
-  <link rel="stylesheet" href="/css/global.css?v=1777716051399">
+  <link rel="stylesheet" href="/css/global.css?v=1777717001251">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     /* Home page specific styles */
     .hero {
@@ -356,11 +366,12 @@
   </section>
 
   <footer
-    style="text-align: center; padding: 3rem; background: var(--bg-card); border-top: 1px solid var(--border); color: var(--text-secondary);">
+    style="text-align: center; padding: 3rem 2rem; background: var(--bg-card); border-top: 1px solid var(--border); color: var(--text-secondary);">
+    <div id="socialLinksFooter" style="display: flex; justify-content: center; gap: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap;"></div>
     <p>© 2026 SmartGrocer. All rights reserved.</p>
   </footer>
 
-  <script src="/js/app.js?v=1777716051399"></script>
+  <script src="/js/app.js?v=1777717001251"></script>
   <script>
     // Dictionary for translation
     const translations = {
@@ -582,6 +593,30 @@
         updateTexts();
       }
     });
+
+    // Fetch and render social media links in footer
+    (async () => {
+      try {
+        const res = await fetch('/api/settings/public');
+        const data = await res.json();
+        if (data.success && data.socialLinks) {
+          const links = typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks) : data.socialLinks;
+          const container = document.getElementById('socialLinksFooter');
+          if (links && links.length > 0) {
+            container.innerHTML = links.map(link => `
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer" title="${link.name}"
+                style="width: 44px; height: 44px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 1.15rem; transition: all 0.3s; text-decoration: none;"
+                onmouseover="this.style.background='var(--primary)'; this.style.color='#fff'; this.style.borderColor='var(--primary)'; this.style.transform='translateY(-3px)'"
+                onmouseout="this.style.background='var(--bg-secondary)'; this.style.color='var(--text)'; this.style.borderColor='var(--border)'; this.style.transform='translateY(0)'">
+                <i class="${link.icon}"></i>
+              </a>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch social links:', e);
+      }
+    })();
   </script>
 </body>
 
