@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrocer — التقارير الشاملة</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777717001277">
+    <link rel="stylesheet" href="/css/global.css?v=1777717910925">
     <style>
         .app {
             display: flex;
@@ -334,14 +334,13 @@
                         <thead>
                             <tr style="background: linear-gradient(135deg, #4F46E5, #7c3aed); color: white;">
                                 <th data-i18n="th_cat" style="color: white; border-radius: 8px 0 0 0;">الفئة</th>
-                                <th data-i18n="th_qty" style="color: white;">الكمية المباعة</th>
                                 <th data-i18n="th_rev" style="color: white;">الإيرادات</th>
                                 <th data-i18n="th_profit" style="color: white; border-radius: 0 8px 0 0;">الربح الصافي</th>
                             </tr>
                         </thead>
                         <tbody id="categoryTableBody">
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 2rem;">⏳ جاري التحميل...</td>
+                                <td colspan="3" style="text-align: center; padding: 2rem;">⏳ جاري التحميل...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -354,7 +353,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/app.js?v=1777717001277"></script>
+    <script src="/js/app.js?v=1777717910925"></script>
     <script>
         const translations = {
             en: {
@@ -365,7 +364,7 @@
                 chart_trend: "Sales & Profit Trend", chart_top: "Top Selling Products",
                 chart_trend_badge: "Last 30 Days", btn_export_excel: "Export Excel",
                 table_summary: "Category Financial Summary",
-                th_cat: "Category", th_qty: "Qty Sold", th_rev: "Revenue", th_profit: "Net Profit"
+                th_cat: "Category", th_rev: "Revenue", th_profit: "Net Profit"
             },
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
@@ -375,7 +374,7 @@
                 chart_trend: "اتجاه المبيعات والأرباح (آخر 30 يوم)", chart_top: "أكثر المنتجات مبيعاً",
                 chart_trend_badge: "آخر 30 يوم", btn_export_excel: "تصدير إكسيل",
                 table_summary: "ملخص الأداء المالي للفئات",
-                th_cat: "الفئة", th_qty: "الكمية المباعة", th_rev: "الإيرادات", th_profit: "الربح الصافي"
+                th_cat: "الفئة", th_rev: "الإيرادات", th_profit: "الربح الصافي"
             }
         };
 
@@ -467,12 +466,11 @@
                 // Render Table
                 const tbody = document.getElementById('categoryTableBody');
                 if (Object.keys(catStats).length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">لا توجد مبيعات مسجلة للتحليل</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">لا توجد مبيعات مسجلة للتحليل</td></tr>`;
                 } else {
                     tbody.innerHTML = Object.entries(catStats).map(([cat, stat]) => `
                         <tr>
                             <td><strong>${cat}</strong></td>
-                            <td>${stat.qty}</td>
                             <td style="color: var(--primary); font-weight: bold;">${stat.rev.toFixed(2)}</td>
                             <td style="color: #10b981;">${stat.profit.toFixed(2)}</td>
                         </tr>
