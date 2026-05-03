@@ -25,14 +25,13 @@ let _lightLogoExists = null; // null = unknown, true/false = cached result
 
 function updateLogos(theme) {
     function applyLogo(useLightLogo) {
-        const ts = Date.now();
         document.querySelectorAll('img[src*="/images/logo"]').forEach(img => {
             // Skip admin settings preview images
             if (img.id === 'logoPreview' || img.id === 'logoDarkPreview') return;
             if (theme === 'light' && useLightLogo) {
-                img.src = '/images/logo-light.png?v=' + ts;
+                img.src = '/images/logo-light.png';
             } else {
-                img.src = '/images/logo.png?v=' + ts;
+                img.src = '/images/logo.png';
             }
         });
     }
