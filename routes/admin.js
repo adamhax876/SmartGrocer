@@ -14,13 +14,16 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for logo upload
+// Configure multer for logo upload (supports logo.png and logo-light.png)
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, path.join(__dirname, '../public/images'));
     },
     filename: function (req, file, cb) {
-        cb(null, 'logo.png'); // Always overwrite the main logo
+        // If type=light, save as logo-light.png (light mode logo)
+        // Otherwise save as logo.png (default / dark mode logo)
+        const name = req.query.type === 'light' ? 'logo-light.png' : 'logo.png';
+        cb(null, name);
     }
 });
 const upload = multer({
@@ -224,12 +227,15 @@ router.post('/settings', isAdmin, async (req, res) => {
     }
 });
 
-// 9.5 Upload/Change Website Logo
+// 9.5 Upload/Change Website Logo (supports ?type=light for light mode logo)
 router.post('/settings/logo', isAdmin, upload.single('logo'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'لم يتم رفع أي صورة' });
         }
+
+        const isLight = req.query.type === 'light';
+        const logoFile = isLight ? 'logo-light.png' : 'logo.png';
 
         // Run the bust-cache logic to automatically update all HTML files to fetch the new logo
         try {
@@ -245,8 +251,9 @@ router.post('/settings/logo', isAdmin, upload.single('logo'), async (req, res) =
                         let content = fs.readFileSync(fullPath, 'utf8');
                         let original = content;
                         
-                        // Add or update cache-buster specifically for the logo image
+                        // Add or update cache-buster for both logo files
                         content = content.replace(/\/images\/logo\.png(\?v=\d+)?/g, '/images/logo.png?v=' + ts);
+                        content = content.replace(/\/images\/logo-light\.png(\?v=\d+)?/g, '/images/logo-light.png?v=' + ts);
                         
                         if (content !== original) {
                             fs.writeFileSync(fullPath, content);
@@ -259,7 +266,25 @@ router.post('/settings/logo', isAdmin, upload.single('logo'), async (req, res) =
             console.error('Cache busting failed for logo upload:', cacheErr);
         }
 
-        res.json({ success: true, message: 'تم تحديث اللوجو بنجاح. سيظهر التحديث في جميع الصفحات فوراً.' });
+        const msg = isLight
+            ? 'تم تحديث لوجو الوضع النهاري بنجاح.'
+            : 'تم تحديث اللوجو بنجاح. سيظهر التحديث في جميع الصفحات فوراً.';
+        res.json({ success: true, message: msg });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    }
+});
+
+// 9.6 Delete Light Mode Logo (falls back to using main logo for both modes)
+router.delete('/settings/logo-light', isAdmin, async (req, res) => {
+    try {
+        const logoPath = path.join(__dirname, '../public/images/logo-light.png');
+        if (fs.existsSync(logoPath)) {
+            fs.unlinkSync(logoPath);
+            res.json({ success: true, message: 'تم حذف لوجو الوضع النهاري. سيتم استخدام اللوجو الأساسي في الوضعين.' });
+        } else {
+            res.json({ success: true, message: 'لا يوجد لوجو خاص بالوضع النهاري.' });
+        }
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server Error', error: error.message });
     }

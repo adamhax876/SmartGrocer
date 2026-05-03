@@ -118,12 +118,38 @@
 
                     <div class="border-t border-b py-4 my-4">
                         <label class="block text-sm font-semibold text-gray-700 mb-1" data-translate="lbl_logo">لوجو المنصة (Website Logo)</label>
-                        <p class="text-xs text-gray-500 mb-3" data-translate="lbl_logo_hint">تغيير اللوجو هنا سيتم تطبيقه تلقائياً على كافة صفحات المنصة (الدخول، التسجيل، وغيرها).</p>
-                        <div class="flex flex-col sm:flex-row items-center gap-4">
-                            <img src="/images/logo.png" id="logoPreview" class="h-16 w-32 object-contain border rounded p-1 bg-gray-50" alt="Current Logo">
-                            <input type="file" id="logo_upload" accept="image/*" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-sm bg-white">
-                            <button type="button" onclick="uploadLogo()" id="uploadLogoBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold whitespace-nowrap transition w-full sm:w-auto flex justify-center items-center">
-                                <i class="fas fa-upload ml-2 rtl:ml-2 ltr:mr-2"></i> <span data-translate="btn_upload_logo">رفع اللوجو</span>
+                        <p class="text-xs text-gray-500 mb-3" data-translate="lbl_logo_hint">يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين.</p>
+                        
+                        <!-- Light Mode Logo -->
+                        <div class="mb-4 p-4 bg-gray-50 rounded-lg border">
+                            <p class="text-sm font-bold text-gray-700 mb-2">☀️ لوجو الوضع النهاري (Light Mode)</p>
+                            <div class="flex flex-col sm:flex-row items-center gap-4">
+                                <img src="/images/logo-light.png" id="logoPreview" class="h-16 w-32 object-contain border rounded p-1 bg-white" alt="Light Logo"
+                                    onerror="this.src='/images/logo.png'; this.onerror=null;">
+                                <input type="file" id="logo_upload" accept="image/*" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-sm bg-white">
+                                <button type="button" onclick="uploadLogo('light')" id="uploadLogoBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold whitespace-nowrap transition w-full sm:w-auto flex justify-center items-center">
+                                    <i class="fas fa-upload ml-2 rtl:ml-2 ltr:mr-2"></i> <span data-translate="btn_upload_logo">رفع اللوجو</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dark Mode Logo -->
+                        <div class="p-4 bg-gray-900 rounded-lg border border-gray-700">
+                            <p class="text-sm font-bold text-white mb-2">🌙 لوجو الوضع الليلي (Dark Mode)</p>
+                            <div class="flex flex-col sm:flex-row items-center gap-4">
+                                <img src="/images/logo.png" id="logoDarkPreview" class="h-16 w-32 object-contain border border-gray-600 rounded p-1 bg-gray-800" alt="Dark Logo">
+                                <input type="file" id="logo_dark_upload" accept="image/*" class="w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 text-sm bg-gray-800 text-white">
+                                <button type="button" onclick="uploadLogo('dark')" id="uploadLogoDarkBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold whitespace-nowrap transition w-full sm:w-auto flex justify-center items-center">
+                                    <i class="fas fa-upload ml-2 rtl:ml-2 ltr:mr-2"></i> رفع اللوجو
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">ملاحظة: إذا لم ترفع لوجو للوضع النهاري، سيُستخدم هذا اللوجو في كلا الوضعين.</p>
+                        </div>
+
+                        <!-- Delete Light Logo Button -->
+                        <div class="mt-3 flex justify-end">
+                            <button type="button" onclick="deleteLightLogo()" class="text-sm text-red-500 hover:text-red-700 transition flex items-center gap-1">
+                                <i class="fas fa-trash-alt"></i> حذف لوجو الوضع النهاري (استخدام لوجو واحد للوضعين)
                             </button>
                         </div>
                     </div>
@@ -183,7 +209,7 @@
         </div>
     </main>
 
-    <script src="/js/admin-lang.js?v=1777840174541"></script>
+    <script src="/js/admin-lang.js?v=1777841773380"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
@@ -259,16 +285,17 @@
             }
         });
 
-        // Logo Upload Function
-        async function uploadLogo() {
-            const fileInput = document.getElementById('logo_upload');
+        // Logo Upload Function (supports type: 'light' or 'dark')
+        async function uploadLogo(type) {
+            const isLight = type === 'light';
+            const fileInput = document.getElementById(isLight ? 'logo_upload' : 'logo_dark_upload');
             const file = fileInput.files[0];
             if (!file) {
                 Swal.fire('تنبيه', 'يرجى اختيار صورة للوجو أولاً', 'warning');
                 return;
             }
 
-            const btn = document.getElementById('uploadLogoBtn');
+            const btn = document.getElementById(isLight ? 'uploadLogoBtn' : 'uploadLogoDarkBtn');
             const ogContent = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري الرفع...';
@@ -276,8 +303,10 @@
             const formData = new FormData();
             formData.append('logo', file);
 
+            const endpoint = isLight ? '/api/admin/settings/logo?type=light' : '/api/admin/settings/logo';
+
             try {
-                const res = await fetch('/api/admin/settings/logo', {
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
@@ -286,8 +315,10 @@
 
                 if (data.success) {
                     Swal.fire({ title: 'نجاح', text: data.message, icon: 'success', timer: 4000 });
-                    // Update preview immediately with a cache buster parameter to show the new image
-                    document.getElementById('logoPreview').src = '/images/logo.png?v=' + Date.now();
+                    // Update preview immediately
+                    const previewId = isLight ? 'logoPreview' : 'logoDarkPreview';
+                    const imgName = isLight ? 'logo-light.png' : 'logo.png';
+                    document.getElementById(previewId).src = '/images/' + imgName + '?v=' + Date.now();
                     fileInput.value = '';
                 } else {
                     Swal.fire('خطأ', data.message, 'error');
@@ -300,13 +331,54 @@
             }
         }
 
-        // Preview logo locally before upload
+        // Delete light mode logo
+        async function deleteLightLogo() {
+            const result = await Swal.fire({
+                title: 'تأكيد الحذف',
+                text: 'هل تريد حذف لوجو الوضع النهاري؟ سيتم استخدام اللوجو الأساسي (الوضع الليلي) في كلا الوضعين.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#dc2626'
+            });
+            if (!result.isConfirmed) return;
+
+            try {
+                const res = await fetch('/api/admin/settings/logo-light', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({ title: 'تم', text: data.message, icon: 'success', timer: 3000 });
+                    // Reset light preview to fallback
+                    document.getElementById('logoPreview').src = '/images/logo.png?v=' + Date.now();
+                } else {
+                    Swal.fire('خطأ', data.message, 'error');
+                }
+            } catch (e) {
+                Swal.fire('خطأ', 'حدث خطأ غير متوقع', 'error');
+            }
+        }
+
+        // Preview logos locally before upload
         document.getElementById('logo_upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('logoPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        document.getElementById('logo_dark_upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logoDarkPreview').src = e.target.result;
                 }
                 reader.readAsDataURL(file);
             }

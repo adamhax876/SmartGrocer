@@ -11,11 +11,54 @@ function setTheme(theme) {
     localStorage.setItem('sg_theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
     updateThemeIcon(theme);
+    updateLogos(theme);
 }
 
 function toggleTheme() {
     const current = getTheme();
     setTheme(current === 'light' ? 'dark' : 'light');
+}
+
+// Logo switching for light/dark mode
+// Checks if logo-light.png exists (cached), and swaps all logo images accordingly
+let _lightLogoExists = null; // null = unknown, true/false = cached result
+
+function updateLogos(theme) {
+    function applyLogo(useLightLogo) {
+        const ts = Date.now();
+        document.querySelectorAll('img[src*="/images/logo"]').forEach(img => {
+            // Skip admin settings preview images
+            if (img.id === 'logoPreview' || img.id === 'logoDarkPreview') return;
+            if (theme === 'light' && useLightLogo) {
+                img.src = '/images/logo-light.png?v=' + ts;
+            } else {
+                img.src = '/images/logo.png?v=' + ts;
+            }
+        });
+    }
+
+    if (theme !== 'light') {
+        applyLogo(false);
+        return;
+    }
+
+    // For light mode, check if logo-light.png exists
+    if (_lightLogoExists === true) {
+        applyLogo(true);
+    } else if (_lightLogoExists === false) {
+        applyLogo(false);
+    } else {
+        // First check: do a HEAD request
+        fetch('/images/logo-light.png', { method: 'HEAD' })
+            .then(res => {
+                _lightLogoExists = res.ok;
+                applyLogo(res.ok);
+            })
+            .catch(() => {
+                _lightLogoExists = false;
+                applyLogo(false);
+            });
+    }
 }
 
 function updateThemeIcon(theme) {
