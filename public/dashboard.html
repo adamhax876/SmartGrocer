@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="nav_dashboard">SmartGrocer — لوحة التحكم</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777821456025">
+    <link rel="stylesheet" href="/css/global.css?v=1777840174891">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -301,7 +301,7 @@
                     <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
                         style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
                     <button onclick="window.location.href='/billing.html'" class="btn btn-primary" id="btnUpgrade"
-                        style="padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: bold;">ترقية الباقة 🚀</button>
+                        style="padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: bold;" data-i18n="btn_upgrade">ترقية الباقة 🚀</button>
                     <div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
                         <span id="userGreeting" style="font-weight: bold; color: var(--text);">...</span>
                         <span id="planBadge"
@@ -381,8 +381,8 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/user-lang.js?v=1777821456025"></script>
-    <script src="/js/app.js?v=1777821456025"></script>
+    <script src="/js/user-lang.js?v=1777840174891"></script>
+    <script src="/js/app.js?v=1777840174891"></script>
     <script>
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -414,6 +414,7 @@
                         if (planText === 'Pro Plan' && isActive) {
                             upgBtn.style.display = 'none';
                         } else if (!isActive) {
+                            upgBtn.setAttribute('data-i18n', 'btn_renew');
                             upgBtn.textContent = currentUserLang === 'ar' ? 'تجديد الباقة 🚀' : 'Renew Plan 🚀';
                             upgBtn.style.background = '#dc2626'; // Alert color
                         }
@@ -685,7 +686,7 @@
         });
 // ... 
     </script>
-    <script src="/js/user-lang.js?v=1777821456025"></script>
+    <script src="/js/user-lang.js?v=1777840174891"></script>
     <script>
         async function promptDeleteAccount() {
             const confirmed = await Swal.fire({
