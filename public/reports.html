@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrocer — التقارير الشاملة</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777718556102">
+    <link rel="stylesheet" href="/css/global.css?v=1777819758770">
     <style>
         .app {
             display: flex;
@@ -353,7 +353,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/app.js?v=1777718556102"></script>
+    <script src="/js/app.js?v=1777819758770"></script>
     <script>
         const translations = {
             en: {
@@ -566,23 +566,12 @@
                         labels: topProducts.map(p => p[0]),
                         datasets: [
                             {
-                                label: currentLang === 'ar' ? 'الكمية المباعة' : 'Qty Sold',
-                                data: topProducts.map(p => p[1].qty),
+                                label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue',
+                                data: topProducts.map(p => p[1].rev),
                                 backgroundColor: barColors,
                                 borderRadius: 8,
                                 borderSkipped: false,
                                 barPercentage: 0.6,
-                            },
-                            {
-                                label: currentLang === 'ar' ? 'الإيرادات' : 'Revenue',
-                                data: topProducts.map(p => p[1].rev),
-                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                                borderColor: '#10b981',
-                                borderWidth: 2,
-                                borderRadius: 8,
-                                borderSkipped: false,
-                                barPercentage: 0.6,
-                                yAxisID: 'y1'
                             }
                         ]
                     },
@@ -604,8 +593,7 @@
                         },
                         scales: {
                             x: { beginAtZero: true, grid: { display: false }, position: 'top' },
-                            y: { grid: { display: false } },
-                            y1: { display: false, beginAtZero: true }
+                            y: { grid: { display: false } }
                         }
                     }
                 });
