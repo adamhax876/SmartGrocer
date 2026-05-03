@@ -62,21 +62,6 @@
 }
 
 /* Light mode logo handled via logo-light.png auto-switching in app.js */
-.sidebar-logo img, 
-.brand img, 
-.logo-img {
-  height: 45px !important; /* Consistent height prevents vertical jumps */
-  width: auto !important;
-  max-width: 100% !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  transition: none !important; /* Disable all transitions to prevent sliding/jumping */
-}
-
-/* Specific adjustment for login/signup pages where logo is larger */
-.logo-img-lg {
-  height: 100px !important;
-}
 
 /* --- Reset --- */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
