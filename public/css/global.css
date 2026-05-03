@@ -296,32 +296,50 @@ img { max-width: 100%; }
     /* Topbar adjustments */
     .topbar {
         padding: 0.8rem 1rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 0.5rem;
     }
     .topbar-actions {
-        gap: 0.4rem;
-        flex-wrap: wrap;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+        width: 100%;
+        justify-content: flex-start;
     }
+    .topbar-actions::-webkit-scrollbar { display: none; }
     .topbar-title {
         font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    /* Fixed Notifications dropdown */
+    #notif-dropdown {
+        position: fixed !important;
+        top: 70px !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        width: auto !important;
+        max-height: 70vh !important;
     }
 
     /* Content padding */
     .content {
         padding: 1rem;
+        overflow-x: hidden;
     }
 
     /* KPI grids */
     .kpi-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.5rem;
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
     }
     .kpi-card {
-        padding: 0.8rem;
+        padding: 1rem;
     }
     .kpi-value {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
     }
 
     /* Charts grid */
@@ -329,12 +347,12 @@ img { max-width: 100%; }
         grid-template-columns: 1fr !important;
     }
 
-    /* Feature cards grid (monthly comparison + low stock) */
+    /* Feature cards grid */
     .feature-cards-grid {
         grid-template-columns: 1fr !important;
     }
 
-    /* Tables: horizontal scroll */
+    /* Tables: fit on screen without horizontal scroll if possible */
     .table-wrapper {
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
@@ -342,8 +360,13 @@ img { max-width: 100%; }
         display: block !important;
     }
     .table-wrapper table {
-        min-width: 700px !important;
+        min-width: 100% !important;
         width: 100% !important;
+    }
+    .table-wrapper th, .table-wrapper td, table th, table td {
+        padding: 0.5rem 0.3rem !important;
+        font-size: 0.8rem !important;
+        word-break: break-word;
     }
 
     /* Filters stack vertically */
