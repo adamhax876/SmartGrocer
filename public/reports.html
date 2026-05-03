@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrocer — التقارير الشاملة</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777819758770">
+    <link rel="stylesheet" href="/css/global.css?v=1777819891503">
     <style>
         .app {
             display: flex;
@@ -353,7 +353,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/app.js?v=1777819758770"></script>
+    <script src="/js/app.js?v=1777819891503"></script>
     <script>
         const translations = {
             en: {
@@ -470,7 +470,7 @@
                 } else {
                     tbody.innerHTML = Object.entries(catStats).map(([cat, stat]) => `
                         <tr>
-                            <td><strong>${cat}</strong></td>
+                            <td><strong>${getTranslatedCategory(cat) || cat}</strong></td>
                             <td style="color: var(--primary); font-weight: bold;">${stat.rev.toFixed(2)}</td>
                             <td style="color: #10b981;">${stat.profit.toFixed(2)}</td>
                         </tr>
