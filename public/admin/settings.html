@@ -209,7 +209,7 @@
         </div>
     </main>
 
-    <script src="/js/admin-lang.js?v=1777841773380"></script>
+    <script src="/js/admin-lang.js?v=1777843556897"></script>
     <script>
         const token = localStorage.getItem('adminToken');
         if (!token) window.location.href = '/admin/login.html';
@@ -320,6 +320,9 @@
                     const imgName = isLight ? 'logo-light.png' : 'logo.png';
                     document.getElementById(previewId).src = '/images/' + imgName + '?v=' + Date.now();
                     fileInput.value = '';
+
+                    // Invalidate frontend logo existence cache
+                    localStorage.removeItem('sg_light_logo');
                 } else {
                     Swal.fire('خطأ', data.message, 'error');
                 }
@@ -354,6 +357,9 @@
                     Swal.fire({ title: 'تم', text: data.message, icon: 'success', timer: 3000 });
                     // Reset light preview to fallback
                     document.getElementById('logoPreview').src = '/images/logo.png?v=' + Date.now();
+                    
+                    // Invalidate frontend logo existence cache
+                    localStorage.removeItem('sg_light_logo');
                 } else {
                     Swal.fire('خطأ', data.message, 'error');
                 }

@@ -19,46 +19,62 @@ function toggleTheme() {
     setTheme(current === 'light' ? 'dark' : 'light');
 }
 
-// Logo switching for light/dark mode
-// Checks if logo-light.png exists (cached), and swaps all logo images accordingly
-let _lightLogoExists = null; // null = unknown, true/false = cached result
+// ─── Logo Dual-Mode System ────────────────────────────────────────────────────
+// Strategy: preload BOTH logos into browser cache on page load, then swap
+// img.src from memory with zero network delay. Existence of logo-light.png
+// is persisted in localStorage so it survives page reloads.
+
+const LOGO_DARK  = '/images/logo.png';
+const LOGO_LIGHT = '/images/logo-light.png';
+
+// true/false/null - read from localStorage for instant resolution on reload
+let _lightLogoExists = localStorage.getItem('sg_light_logo') === null
+    ? null
+    : localStorage.getItem('sg_light_logo') === 'true';
+
+// Preload both images into browser cache silently
+function _preloadLogo(src) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload  = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+    });
+}
+
+async function preloadLogos() {
+    // Dark logo always exists (it's the original)
+    _preloadLogo(LOGO_DARK);
+
+    // Light logo: check existence via preload, cache result
+    if (_lightLogoExists === null) {
+        const exists = await _preloadLogo(LOGO_LIGHT);
+        _lightLogoExists = exists;
+        localStorage.setItem('sg_light_logo', String(exists));
+    } else {
+        // Already know result – silently preload into browser cache regardless
+        _preloadLogo(LOGO_LIGHT);
+    }
+
+    // Apply correct logo for current theme now that preload is done
+    updateLogos(getTheme());
+}
 
 function updateLogos(theme) {
-    function applyLogo(useLightLogo) {
-        const ts = Date.now();
-        document.querySelectorAll('img[src*="/images/logo"]').forEach(img => {
-            // Skip admin settings preview images
-            if (img.id === 'logoPreview' || img.id === 'logoDarkPreview') return;
-            if (theme === 'light' && useLightLogo) {
-                img.src = '/images/logo-light.png?v=' + ts;
-            } else {
-                img.src = '/images/logo.png?v=' + ts;
-            }
-        });
-    }
+    const useLightLogo = theme === 'light' && _lightLogoExists === true;
+    const targetSrc    = useLightLogo ? LOGO_LIGHT : LOGO_DARK;
 
-    if (theme !== 'light') {
-        applyLogo(false);
-        return;
-    }
-
-    // For light mode, check if logo-light.png exists
-    if (_lightLogoExists === true) {
-        applyLogo(true);
-    } else if (_lightLogoExists === false) {
-        applyLogo(false);
-    } else {
-        // First check: do a HEAD request
-        fetch('/images/logo-light.png', { method: 'HEAD' })
-            .then(res => {
-                _lightLogoExists = res.ok;
-                applyLogo(res.ok);
-            })
-            .catch(() => {
-                _lightLogoExists = false;
-                applyLogo(false);
-            });
-    }
+    document.querySelectorAll('img[src*="/images/logo"]').forEach(img => {
+        if (img.id === 'logoPreview' || img.id === 'logoDarkPreview') return;
+        
+        const currentBase = img.src.split('?')[0];
+        const targetBase  = location.origin + targetSrc;
+        
+        if (currentBase !== targetBase) {
+            // Instant swap - no transition for "eye-cannot-notice" speed
+            img.src = targetSrc;
+        }
+    });
 }
 
 function updateThemeIcon(theme) {
@@ -157,10 +173,12 @@ function showToast(message, type = 'success') {
 
 // Init on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Apply saved theme
+    // Apply saved theme (synchronous - no logo switch yet, logos not loaded)
     setTheme(getTheme());
     // Apply saved language
     setLang(getLang());
+    // Preload both logos into browser cache, then apply correct one
+    preloadLogos();
 
 
     // Fetch and apply public settings (Currency, Site Name)
