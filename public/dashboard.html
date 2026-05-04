@@ -200,8 +200,10 @@
                 top: 0;
                 right: 0;
                 bottom: 0;
-                width: 260px;
-                z-index: 200;
+                width: 280px;
+                z-index: 9999; /* Standardized high z-index */
+                display: flex !important;
+                box-shadow: -5px 0 25px rgba(0,0,0,0.2);
             }
             body[dir="ltr"] .sidebar {
                 transform: translateX(-100%);
@@ -210,13 +212,15 @@
             }
             .sidebar.open {
                 transform: translateX(0) !important;
+                display: flex !important;
             }
             .sidebar-overlay {
                 display: none;
                 position: fixed;
                 inset: 0;
                 background: rgba(0,0,0,0.5);
-                z-index: 199;
+                z-index: 9998; /* Just below sidebar */
+                backdrop-filter: blur(2px);
             }
             .sidebar-overlay.active {
                 display: block;

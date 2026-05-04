@@ -268,7 +268,8 @@ img { max-width: 100%; }
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
-    z-index: 199;
+    z-index: 9998; /* Extremely high to stay above everything */
+    backdrop-filter: blur(2px);
 }
 .global-sidebar-overlay.active {
     display: block;
@@ -288,18 +289,21 @@ img { max-width: 100%; }
         right: 0 !important;
         bottom: 0 !important;
         left: auto !important;
-        width: 260px !important;
-        z-index: 200 !important;
+        width: 280px !important;
+        z-index: 9999 !important; /* Higher than overlay */
         display: flex !important;
+        box-shadow: -5px 0 25px rgba(0,0,0,0.2) !important;
     }
     body[dir="ltr"] .sidebar,
     html[dir="ltr"] .sidebar {
         transform: translateX(-100%) !important;
         left: 0 !important;
         right: auto !important;
+        box-shadow: 5px 0 25px rgba(0,0,0,0.2) !important;
     }
     .sidebar.open {
         transform: translateX(0) !important;
+        display: flex !important;
     }
 
     /* Main content full width */
