@@ -653,7 +653,7 @@
                 });
 
                 // Chart 2: Top Products — Horizontal bar with revenue overlay
-                const topProducts = Object.entries(prodStats).sort((a, b) => b[1].qty - a[1].qty).slice(0, 5);
+                const topProducts = Object.entries(prodStats).sort((a, b) => b[1].rev - a[1].rev).slice(0, 5);
                 const barColors = ['#4F46E5', '#7c3aed', '#8b5cf6', '#a78bfa', '#c4b5fd'];
 
                 new Chart(document.getElementById('topProductsChart'), {
