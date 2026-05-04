@@ -214,10 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Global click-outside listener to close sidebar
 document.addEventListener('click', (e) => {
     const sidebar = document.querySelector('.sidebar');
-    const hamburger = document.querySelector('.global-hamburger');
-    const overlay = document.getElementById('globalSidebarOverlay');
+    const hamburger = document.querySelector('.global-hamburger') || document.querySelector('.hamburger');
+    const overlay = document.getElementById('globalSidebarOverlay') || document.getElementById('sidebarOverlay');
+    
     if (sidebar && sidebar.classList.contains('open')) {
-        // If click is outside sidebar and NOT on the hamburger
+        // If click is outside sidebar and NOT on the hamburger button
         if (!sidebar.contains(e.target) && (!hamburger || !hamburger.contains(e.target))) {
             sidebar.classList.remove('open');
             if (overlay) overlay.classList.remove('active');
