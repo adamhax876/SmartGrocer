@@ -425,6 +425,7 @@
                         <thead>
                             <tr style="background: linear-gradient(135deg, #4F46E5, #7c3aed); color: white;">
                                 <th data-i18n="th_cat" style="color: white; border-radius: 8px 0 0 0;">الفئة</th>
+                                <th data-i18n="th_qty_sold" style="color: white;">الكمية المباعة</th>
                                 <th data-i18n="th_rev" style="color: white;">الإيرادات</th>
                                 <th data-i18n="th_profit" style="color: white; border-radius: 0 8px 0 0;">الربح الصافي</th>
                             </tr>
@@ -561,12 +562,14 @@
                     tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">لا توجد مبيعات مسجلة للتحليل</td></tr>`;
                 } else {
                     const labelCat = currentLang === 'ar' ? 'الفئة' : 'Category';
+                    const labelQty = currentLang === 'ar' ? 'الكمية المباعة' : 'Qty Sold';
                     const labelRev = currentLang === 'ar' ? 'الإيرادات' : 'Revenue';
                     const labelProf = currentLang === 'ar' ? 'الربح الصافي' : 'Net Profit';
 
                     tbody.innerHTML = Object.entries(catStats).map(([cat, stat]) => `
                         <tr>
                             <td data-label="${labelCat}"><strong>${getTranslatedCategory(cat) || cat}</strong></td>
+                            <td data-label="${labelQty}">${stat.qty}</td>
                             <td data-label="${labelRev}" style="color: var(--primary); font-weight: bold;">${stat.rev.toFixed(2)}</td>
                             <td data-label="${labelProf}" style="color: #10b981;">${stat.profit.toFixed(2)}</td>
                         </tr>
