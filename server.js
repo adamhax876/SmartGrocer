@@ -7,6 +7,7 @@ if (process.env.APP_URL && process.env.APP_URL.includes('onrender.com')) {
 
 const express = require('express');
 const mongoose = require('mongoose');
+// Triggering redeploy for POS mobile fixes
 const cors = require('cors');
 const path = require('path');
 
