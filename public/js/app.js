@@ -267,7 +267,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleNotifications() {
     const dropdown = document.getElementById('notif-dropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    const isHidden = dropdown.style.display === 'none';
+    
+    dropdown.style.display = isHidden ? 'block' : 'none';
+    
+    // Mobile optimization: Close button and overlay
+    if (window.innerWidth <= 768) {
+        let overlay = document.getElementById('notif-mobile-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'notif-mobile-overlay';
+            overlay.className = 'notif-overlay';
+            overlay.onclick = toggleNotifications;
+            document.body.appendChild(overlay);
+        }
+        overlay.classList.toggle('active', isHidden);
+        
+        // Add close button if not exists
+        if (isHidden && !document.getElementById('notif-close-btn')) {
+            const header = dropdown.querySelector('h4');
+            const closeBtn = document.createElement('button');
+            closeBtn.id = 'notif-close-btn';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = 'float: left; background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; line-height: 1;';
+            closeBtn.onclick = (e) => { e.stopPropagation(); toggleNotifications(); };
+            header.insertBefore(closeBtn, header.firstChild);
+        }
+    }
 }
 
 async function fetchNotifications() {
