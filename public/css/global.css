@@ -78,12 +78,12 @@
   transition: none !important;
 }
 
-/* Fine-tuning: Shift the light logo slightly to the right to match the dark one's weight */
+/* Fine-tuning: Shift the light logo slightly to the left to match the dark one's weight */
 html[dir="rtl"] .sidebar-logo img.is-light-logo {
-  margin-right: 15px;
+  margin-right: 5px; /* Pushes from right to left */
 }
 html[dir="ltr"] .sidebar-logo img.is-light-logo {
-  margin-left: 15px;
+  margin-left: -5px; /* Pushes from left to left (negative) or just use margin-right */
 }
 
 /* --- Reset --- */
