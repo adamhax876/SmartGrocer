@@ -195,24 +195,29 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(100%);
                 position: fixed;
                 top: 0;
-                right: 0;
+                right: -280px;
                 bottom: 0;
                 width: 280px;
                 z-index: 9999; /* Standardized high z-index */
                 display: flex !important;
+                transform: none !important;
+                transition: right 0.3s ease-in-out !important;
                 box-shadow: -5px 0 25px rgba(0,0,0,0.2);
             }
             body[dir="ltr"] .sidebar {
-                transform: translateX(-100%);
-                left: 0;
+                left: -280px;
                 right: auto;
+                transition: left 0.3s ease-in-out !important;
             }
             .sidebar.open {
-                transform: translateX(0) !important;
+                right: 0 !important;
                 display: flex !important;
+            }
+            body[dir="ltr"] .sidebar.open {
+                left: 0 !important;
+                right: auto !important;
             }
             .sidebar-overlay {
                 display: none;
