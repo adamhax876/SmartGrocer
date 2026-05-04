@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="nav_dashboard">SmartGrocer — لوحة التحكم</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777886853554">
+    <link rel="stylesheet" href="/css/global.css?v=1777887222587">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -225,7 +225,14 @@
                 margin-inline-start: 0;
             }
             .charts-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            .chart-card {
+                padding: 1rem !important;
+            }
+            canvas {
+                max-height: 250px !important;
             }
             .topbar {
                 padding: 0.8rem 1rem;
@@ -357,14 +364,14 @@
                     <div class="chart-card">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <h2 style="margin: 0; color: var(--text); font-size: 1.1rem;" data-i18n="chart_sales">المبيعات الشهرية</h2>
-                            <span style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(79,70,229,0.1); color: #4F46E5; font-weight: 600;">📊 MONTHLY</span>
+                            <span style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(79,70,229,0.1); color: #4F46E5; font-weight: 600;" data-i18n="badge_monthly">📊 MONTHLY</span>
                         </div>
                         <canvas id="revenueChart" height="300"></canvas>
                     </div>
                     <div class="chart-card">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <h2 style="margin: 0; color: var(--text); font-size: 1.1rem;" data-i18n="chart_categories">توزيع الفئات</h2>
-                            <span style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(16,185,129,0.1); color: #10b981; font-weight: 600;">🏷️ CATEGORIES</span>
+                            <span style="font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; background: rgba(16,185,129,0.1); color: #10b981; font-weight: 600;" data-i18n="badge_categories">🏷️ CATEGORIES</span>
                         </div>
                         <canvas id="categoryChart" height="300"></canvas>
                     </div>
@@ -381,8 +388,8 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/user-lang.js?v=1777886853554"></script>
-    <script src="/js/app.js?v=1777886853554"></script>
+    <script src="/js/user-lang.js?v=1777887222587"></script>
+    <script src="/js/app.js?v=1777887222587"></script>
     <script>
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -686,7 +693,7 @@
         });
 // ... 
     </script>
-    <script src="/js/user-lang.js?v=1777886853554"></script>
+    <script src="/js/user-lang.js?v=1777887222587"></script>
     <script>
         async function promptDeleteAccount() {
             const confirmed = await Swal.fire({

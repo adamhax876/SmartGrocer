@@ -88,7 +88,9 @@ const userTranslations = {
         del_acc_confirm: "Yes, delete it",
         del_acc_cancel: "Cancel",
         del_acc_deleting: "Deleting Account...",
-        del_acc_bye: "Goodbye"
+        del_acc_bye: "Goodbye",
+        badge_monthly: "📊 MONTHLY",
+        badge_categories: "🏷️ CATEGORIES"
 
     },
     ar: {
@@ -177,7 +179,9 @@ const userTranslations = {
         del_acc_confirm: "نعم، احذف الحساب",
         del_acc_cancel: "إلغاء",
         del_acc_deleting: "جاري الحذف...",
-        del_acc_bye: "وداعاً"
+        del_acc_bye: "وداعاً",
+        badge_monthly: "📊 شهري",
+        badge_categories: "🏷️ الفئات"
 
     }
 };
