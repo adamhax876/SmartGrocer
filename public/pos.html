@@ -993,8 +993,8 @@
             const list = document.getElementById('cartItems');
             if (cart.length === 0) {
                 list.innerHTML = `<div class="no-data" style="margin: auto;" data-i18n="cart_empty">${translations[currentLang].cart_empty}</div>`;
-                document.getElementById('subTotal').textContent = formatMoney(0);
-                document.getElementById('taxAmount').textContent = formatMoney(0);
+                document.getElementById('subTotal').innerHTML = formatMoney(0);
+                document.getElementById('taxAmount').innerHTML = formatMoney(0);
                 document.getElementById('finalTotal').innerHTML = formatMoney(0);
                 document.getElementById('payBtn').disabled = true;
                 return;
