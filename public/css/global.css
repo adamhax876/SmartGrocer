@@ -312,18 +312,54 @@ img { max-width: 100%; }
 
     /* Topbar adjustments */
     .topbar {
-        padding: 0.8rem 1rem;
-        flex-wrap: nowrap;
-        gap: 0.5rem;
+        padding: 0.8rem 1rem !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        height: auto !important;
+        gap: 0.5rem !important;
     }
+    
+    .global-hamburger {
+        display: flex !important;
+        order: 1;
+    }
+
+    .topbar-title {
+        order: 2;
+        flex: 1;
+        margin-inline-start: 10px;
+        font-size: 1.1rem !important;
+        white-space: nowrap;
+    }
+
     .topbar-actions {
-        gap: 0.5rem;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 5px;
-        width: 100%;
-        justify-content: flex-start;
+        order: 3;
+        width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+        gap: 0.5rem !important;
+        padding-top: 0.5rem !important;
+        border-top: 1px solid var(--border-light);
+        overflow: visible !important;
+    }
+
+    /* Adjust specific action elements */
+    .topbar-actions > * {
+        flex-shrink: 0;
+    }
+
+    #userGreeting {
+        font-size: 0.8rem !important;
+        text-align: start;
+        order: 10; /* Put greeting last */
+    }
+    
+    .topbar-actions .btn {
+        padding: 0.4rem 0.7rem !important;
+        font-size: 0.75rem !important;
     }
     .topbar-actions::-webkit-scrollbar { display: none; }
     .topbar-title {
