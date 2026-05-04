@@ -185,14 +185,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const sidebar = document.querySelector('.sidebar');
         const topbar = document.querySelector('.topbar');
         if (sidebar && topbar && !document.querySelector('.hamburger') && !document.querySelector('.global-hamburger')) {
+            // Inject overlay
+            if (!document.getElementById('globalSidebarOverlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'globalSidebarOverlay';
+                overlay.className = 'global-sidebar-overlay';
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                });
+                document.body.insertBefore(overlay, document.body.firstChild);
+            }
+
             // Inject hamburger into topbar directly
             const hamburger = document.createElement('button');
             hamburger.className = 'global-hamburger';
             hamburger.textContent = '☰';
             hamburger.addEventListener('click', () => {
                 sidebar.classList.toggle('open');
+                const overlay = document.getElementById('globalSidebarOverlay');
+                if (overlay) overlay.classList.toggle('active');
             });
             topbar.insertBefore(hamburger, topbar.firstChild);
+        }
+    }
+});
+
+// Global click-outside listener to close sidebar
+document.addEventListener('click', (e) => {
+    const sidebar = document.querySelector('.sidebar');
+    const hamburger = document.querySelector('.global-hamburger');
+    const overlay = document.getElementById('globalSidebarOverlay');
+    if (sidebar && sidebar.classList.contains('open')) {
+        // If click is outside sidebar and NOT on the hamburger
+        if (!sidebar.contains(e.target) && (!hamburger || !hamburger.contains(e.target))) {
+            sidebar.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
         }
     }
 });
@@ -233,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (topbarActions && getToken()) {
         const alignStyle = document.documentElement.dir === 'rtl' ? 'left: -10px; right: auto;' : 'right: -10px; left: auto;';
         const notifHtml = `
-            <div style="position: relative; margin-right: 1rem;">
+            <div style="position: relative; display: flex; align-items: center; justify-content: center;" id="notif-wrapper">
                 <button onclick="toggleNotifications()" class="btn btn-outline" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0; position: relative;" id="notif-btn">
                     <span>🔔</span>
                     <span id="notif-badge" style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; display: none;">0</span>
