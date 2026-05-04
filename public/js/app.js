@@ -25,13 +25,22 @@ let _lightLogoExists = null; // null = unknown, true/false = cached result
 
 function updateLogos(theme) {
     function applyLogo(useLightLogo) {
+        const targetSrc = useLightLogo ? '/images/logo-light.png' : '/images/logo.png';
         document.querySelectorAll('img[src*="/images/logo"]').forEach(img => {
             // Skip admin settings preview images
             if (img.id === 'logoPreview' || img.id === 'logoDarkPreview') return;
-            if (theme === 'light' && useLightLogo) {
-                img.src = '/images/logo-light.png';
-            } else {
-                img.src = '/images/logo.png';
+            
+            const currentBase = img.src.split('?')[0];
+            const targetBase  = location.origin + targetSrc;
+            
+            if (currentBase !== targetBase) {
+                img.src = targetSrc;
+                // Add/remove class for fine-tuning alignment via CSS
+                if (useLightLogo) {
+                    img.classList.add('is-light-logo');
+                } else {
+                    img.classList.remove('is-light-logo');
+                }
             }
         });
     }

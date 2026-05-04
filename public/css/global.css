@@ -62,10 +62,28 @@
 }
 
 /* Light mode logo handled via logo-light.png auto-switching in app.js */
+.sidebar-logo {
+  display: flex !important;
+  justify-content: center !important; /* Ensure the logo box is centered in the sidebar */
+  align-items: center !important;
+  width: 100% !important;
+  margin-bottom: 2rem;
+}
+
 .sidebar-logo img {
   width: auto !important;
-  height: 80px !important; /* Increased height to restore original size */
+  height: 100px !important; /* Back to original maximum size */
+  max-width: 90% !important;
   object-fit: contain;
+  transition: none !important;
+}
+
+/* Fine-tuning: Shift the light logo slightly to the right to match the dark one's weight */
+html[dir="rtl"] .sidebar-logo img.is-light-logo {
+  margin-right: 15px;
+}
+html[dir="ltr"] .sidebar-logo img.is-light-logo {
+  margin-left: 15px;
 }
 
 /* --- Reset --- */
