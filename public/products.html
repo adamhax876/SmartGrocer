@@ -368,18 +368,78 @@
             }
 
             table {
-                min-width: 800px; /* Better spacing for columns */
+                min-width: 100%;
+                border: none;
             }
 
-            th {
-                background: var(--bg-secondary) !important;
-                padding: 1rem 0.75rem !important;
-                font-size: 0.8rem !important;
+            thead {
+                display: none; /* Hide headers on mobile */
+            }
+
+            tbody {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            tr {
+                display: block;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 1.2rem;
+                box-shadow: var(--shadow-sm);
+                transition: transform 0.2s;
+            }
+
+            tr:active {
+                transform: scale(0.98);
             }
 
             td {
-                padding: 1rem 0.75rem !important;
-                font-size: 0.9rem !important;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: none !important;
+                padding: 0.6rem 0 !important;
+                text-align: right !important;
+            }
+
+            td:not(:last-child) {
+                border-bottom: 1px dashed var(--border) !important;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+            }
+
+            td:first-child {
+                justify-content: center;
+                padding-bottom: 1rem !important;
+                border-bottom: 1px solid var(--border) !important;
+                margin-bottom: 0.5rem;
+            }
+
+            td:first-child::before {
+                display: none;
+            }
+
+            td:first-child strong {
+                font-size: 1.1rem;
+                color: var(--primary);
+            }
+
+            td:last-child {
+                justify-content: center;
+                padding-top: 1rem !important;
+                border-bottom: none !important;
+            }
+
+            td:last-child::before {
+                display: none;
             }
         }
 
@@ -666,14 +726,14 @@
 
                     return `
                         <tr>
-                            <td><strong>${p.name}</strong></td>
-                            <td style="color: var(--text-secondary);">${translatedCat}</td>
-                            <td style="color: var(--primary); font-weight: bold;">${p.price.toFixed(2)}</td>
-                            <td>${(p.costPrice || 0).toFixed(2)}</td>
-                            <td>${p.quantity}</td>
-                            <td>${statusHtml}</td>
-                            <td style="text-align: center;">
-                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.6rem; font-size: 0.8rem;" title="حذف المنتج">🗑️</button>
+                            <td data-label="${translations[currentLang].th_name}"><strong>${p.name}</strong></td>
+                            <td data-label="${translations[currentLang].th_category}" style="color: var(--text-secondary);">${translatedCat}</td>
+                            <td data-label="${translations[currentLang].th_price}" style="color: var(--primary); font-weight: bold;">${p.price.toFixed(2)}</td>
+                            <td data-label="${translations[currentLang].th_cost}">${(p.costPrice || 0).toFixed(2)}</td>
+                            <td data-label="${translations[currentLang].th_qty}">${p.quantity}</td>
+                            <td data-label="${translations[currentLang].th_status}">${statusHtml}</td>
+                            <td data-label="${translations[currentLang].th_actions}">
+                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 1rem; font-size: 0.85rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">🗑️ ${currentLang === 'ar' ? 'حذف المنتج' : 'Delete Product'}</button>
                             </td>
                         </tr>
                     `;
