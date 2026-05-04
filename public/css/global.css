@@ -64,7 +64,7 @@
 /* Light mode logo handled via logo-light.png auto-switching in app.js */
 .sidebar-logo img {
   width: auto !important;
-  height: 50px !important; /* Fixed height is more stable than max-height for jumps */
+  height: 80px !important; /* Increased height to restore original size */
   object-fit: contain;
 }
 
