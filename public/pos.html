@@ -19,20 +19,26 @@
         .mobile-cart-toggle {
             display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            width: 60px;
-            height: 60px;
+            bottom: 30px;
+            right: 30px;
+            background: #4f46e5 !important;
+            color: white !important;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
-            z-index: 9999;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+            z-index: 999999;
             cursor: pointer;
-            border: none;
-            font-size: 1.5rem;
+            border: 3px solid white;
+            font-size: 1.8rem;
+            text-decoration: none;
+        }
+
+        [dir="ltr"] .mobile-cart-toggle {
+            right: auto;
+            left: 30px;
         }
 
         .mobile-cart-badge {
@@ -560,8 +566,6 @@
 
             .mobile-cart-toggle {
                 display: flex !important;
-                bottom: 30px;
-                inset-inline-end: 30px;
             }
 
             .cart-summary {
@@ -576,8 +580,8 @@
 
 <body class="light">
     <div class="pos-container">
-
-        <!-- RIGHT PANEL (Cart Details) -->
+        <!-- Cart Panel is outside for easier mobile z-indexing if needed, but keeping it inside for desktop layout -->
+        <!-- Logic remains: .pos-cart is fixed on mobile -->
         <div class="pos-cart" id="posCart">
             <div class="cart-header">
                 <h2>🛒 <span data-i18n="cart_title">سلة المشتريات</span></h2>
@@ -589,9 +593,7 @@
             </div>
 
             <div class="cart-items" id="cartItems">
-                <!-- Cart items injected here -->
-                <div class="no-data" style="margin: auto;" data-i18n="cart_empty">السلة فارغة. ابدأ بإضافة المنتجات.
-                </div>
+                <div class="no-data" style="margin: auto;" data-i18n="cart_empty">السلة فارغة. ابدأ بإضافة المنتجات.</div>
             </div>
 
             <div class="cart-summary">
@@ -612,16 +614,14 @@
                     <span id="finalTotal"></span>
                 </div>
 
-                <div
-                    style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4);">
+                <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4);">
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="tel" id="customerPhone" data-i18n-ph="ph_customer_phone" placeholder="رقم هاتف العميل (نظام الولاء)"
                             style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
                         <button class="btn btn-outline" style="padding: 0 0.5rem; font-size: 0.85rem;" onclick="checkCustomerPoints()" type="button" data-i18n="btn_check_pts">فحص</button>
                     </div>
                     <div id="pointsDisplay" style="font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; display: none; color: var(--primary);"></div>
-                    <label
-                        style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer;">
                         <input type="checkbox" id="usePoints">
                         <span data-i18n="label_use_pts">استبدال النقاط المتاحة بخصم</span>
                     </label>
@@ -640,7 +640,7 @@
         <!-- LEFT PANEL (Products & Search) -->
         <div class="pos-products">
             <div class="topbar">
-                <button onclick="toggleTheme()" class="btn btn-outline">🌓</button>
+                <button onclick="toggleTheme()" class="btn btn-outline" style="font-size: 1.2rem;">🌓</button>
                 <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle">English</button>
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
