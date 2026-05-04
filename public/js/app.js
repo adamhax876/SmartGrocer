@@ -185,25 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const sidebar = document.querySelector('.sidebar');
         const topbar = document.querySelector('.topbar');
         if (sidebar && topbar && !document.querySelector('.hamburger') && !document.querySelector('.global-hamburger')) {
-            // Inject overlay
-            if (!document.getElementById('globalSidebarOverlay')) {
-                const overlay = document.createElement('div');
-                overlay.id = 'globalSidebarOverlay';
-                overlay.className = 'global-sidebar-overlay';
-                overlay.addEventListener('click', () => {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                });
-                document.body.insertBefore(overlay, document.body.firstChild);
-            }
-
             // Inject hamburger into topbar directly
             const hamburger = document.createElement('button');
             hamburger.className = 'global-hamburger';
             hamburger.textContent = '☰';
             hamburger.addEventListener('click', () => {
                 sidebar.classList.toggle('open');
-                document.getElementById('globalSidebarOverlay').classList.toggle('active');
             });
             topbar.insertBefore(hamburger, topbar.firstChild);
         }
@@ -268,31 +255,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleNotifications() {
     const dropdown = document.getElementById('notif-dropdown');
     const isHidden = dropdown.style.display === 'none';
-    
     dropdown.style.display = isHidden ? 'block' : 'none';
     
-    // Mobile optimization: Close button and overlay
-    if (window.innerWidth <= 768) {
-        let overlay = document.getElementById('notif-mobile-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'notif-mobile-overlay';
-            overlay.className = 'notif-overlay';
-            overlay.onclick = toggleNotifications;
-            document.body.appendChild(overlay);
-        }
-        overlay.classList.toggle('active', isHidden);
-        
-        // Add close button if not exists
-        if (isHidden && !document.getElementById('notif-close-btn')) {
-            const header = dropdown.querySelector('h4');
-            const closeBtn = document.createElement('button');
-            closeBtn.id = 'notif-close-btn';
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = 'float: left; background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; line-height: 1;';
-            closeBtn.onclick = (e) => { e.stopPropagation(); toggleNotifications(); };
-            header.insertBefore(closeBtn, header.firstChild);
-        }
+    // Add close button if not exists
+    if (window.innerWidth <= 768 && isHidden && !document.getElementById('notif-close-btn')) {
+        const header = dropdown.querySelector('h4');
+        const closeBtn = document.createElement('button');
+        closeBtn.id = 'notif-close-btn';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.cssText = 'float: left; background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; line-height: 1;';
+        closeBtn.onclick = (e) => { e.stopPropagation(); toggleNotifications(); };
+        header.insertBefore(closeBtn, header.firstChild);
     }
 }
 
