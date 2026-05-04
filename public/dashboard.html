@@ -235,13 +235,57 @@
                 max-height: 250px !important;
             }
             .topbar {
-                padding: 0.8rem 1rem;
-                flex-wrap: wrap;
-                gap: 0.5rem;
+                padding: 0.8rem 1rem !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 0.75rem !important;
+                background: var(--bg-card) !important;
+                border-bottom: 1px solid var(--border);
             }
             .topbar-actions {
-                gap: 0.4rem;
-                flex-wrap: wrap;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 0.5rem !important;
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 0 !important;
+            }
+            .topbar-actions > button, 
+            .topbar-actions > div#notif-wrapper {
+                flex: 0 0 auto !important; /* Prevent stretching */
+                height: 40px !important;
+                min-height: 40px !important;
+                padding: 0 0.75rem !important;
+                border-radius: 12px !important;
+                font-size: 0.82rem !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin: 0 !important;
+            }
+            #theme-toggle {
+                width: 40px !important;
+                padding: 0 !important;
+            }
+            .topbar-info {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.3rem !important;
+                width: 100%;
+                margin-top: 0.2rem;
+                padding-top: 0.5rem;
+                border-top: 1px dashed var(--border);
+            }
+            #planBadge {
+                margin: 0 !important;
+                font-size: 0.7rem !important;
+                padding: 0.2rem 0.6rem !important;
+                border-radius: 8px !important;
+            }
+            #userGreeting {
+                font-size: 0.85rem !important;
+                font-weight: 700 !important;
             }
             .content {
                 padding: 1rem;
@@ -302,17 +346,17 @@
                     <button class="hamburger" onclick="toggleSidebar()">☰</button>
                     <h1 class="topbar-title" data-i18n="title_dashboard">نظرة عامة</h1>
                 </div>
-                <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <div class="topbar-actions">
                     <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
-                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
+                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 1.1rem;">🌓</button>
                     <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
-                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 12px; min-height: 40px;">English</button>
                     <button onclick="window.location.href='/billing.html'" class="btn btn-primary" id="btnUpgrade"
-                        style="padding: 0.4rem 1rem; font-size: 0.9rem; font-weight: bold;" data-i18n="btn_upgrade">ترقية الباقة 🚀</button>
-                    <div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
-                        <span id="userGreeting" style="font-weight: bold; color: var(--text);">...</span>
+                        style="padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: bold; border-radius: 12px; white-space: nowrap; min-height: 40px;" data-i18n="btn_upgrade">Upgrade Plan 🚀</button>
+                    <div class="topbar-info" style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2;">
                         <span id="planBadge"
-                            style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 12px; background: #dcfce7; color: #166534; display: none;"></span>
+                            style="font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 12px; background: #fee2e2; color: #991b1b; display: none; margin-bottom: 2px;"></span>
+                        <span id="userGreeting" style="font-weight: bold; color: var(--text);">...</span>
                     </div>
                 </div>
             </header>
