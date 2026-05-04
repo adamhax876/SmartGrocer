@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmartGrocer — التقارير الشاملة</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777882801720">
+    <link rel="stylesheet" href="/css/global.css?v=1777883206098">
     <style>
         .app {
             display: flex;
@@ -30,27 +30,15 @@
         .sidebar-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
             margin-bottom: 2rem;
             padding: 0 .5rem;
         }
 
-        .sidebar-logo-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--primary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-logo-text {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text);
+        .sidebar-logo img {
+            width: auto;
+            height: 80px;
+            object-fit: contain;
         }
 
         .sidebar-nav {
@@ -208,6 +196,57 @@
             border-bottom: 1px solid var(--border);
             color: var(--text);
         }
+
+        /* --- Mobile Specific Performance Adjustments --- */
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.75rem !important;
+            }
+            .kpi-card {
+                padding: 1rem !important;
+            }
+            .kpi-value {
+                font-size: 1.3rem !important;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* Table to Card transformation for Performance Summary */
+            .table-wrapper table, .table-wrapper thead, .table-wrapper tbody, .table-wrapper th, .table-wrapper td, .table-wrapper tr {
+                display: block;
+            }
+            .table-wrapper thead {
+                display: none;
+            }
+            .table-wrapper tr {
+                background: var(--bg-secondary);
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border: 1px solid var(--border);
+            }
+            .table-wrapper td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.5rem 0 !important;
+                border: none;
+                font-size: 0.9rem;
+            }
+            .table-wrapper td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-secondary);
+                font-size: 0.8rem;
+            }
+            .table-wrapper td:last-child {
+                border-top: 1px dashed var(--border);
+                margin-top: 0.5rem;
+                padding-top: 0.8rem !important;
+            }
+        }
     </style>
 </head>
 
@@ -353,8 +392,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/user-lang.js?v=1777882801720"></script>
-    <script src="/js/app.js?v=1777882801720"></script>
+    <script src="/js/user-lang.js?v=1777883206098"></script>
+    <script src="/js/app.js?v=1777883206098"></script>
     <script>
         const translations = {
             en: {
@@ -469,11 +508,15 @@
                 if (Object.keys(catStats).length === 0) {
                     tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">لا توجد مبيعات مسجلة للتحليل</td></tr>`;
                 } else {
+                    const labelCat = currentLang === 'ar' ? 'الفئة' : 'Category';
+                    const labelRev = currentLang === 'ar' ? 'الإيرادات' : 'Revenue';
+                    const labelProf = currentLang === 'ar' ? 'الربح الصافي' : 'Net Profit';
+
                     tbody.innerHTML = Object.entries(catStats).map(([cat, stat]) => `
                         <tr>
-                            <td><strong>${getTranslatedCategory(cat) || cat}</strong></td>
-                            <td style="color: var(--primary); font-weight: bold;">${stat.rev.toFixed(2)}</td>
-                            <td style="color: #10b981;">${stat.profit.toFixed(2)}</td>
+                            <td data-label="${labelCat}"><strong>${getTranslatedCategory(cat) || cat}</strong></td>
+                            <td data-label="${labelRev}" style="color: var(--primary); font-weight: bold;">${stat.rev.toFixed(2)}</td>
+                            <td data-label="${labelProf}" style="color: #10b981;">${stat.profit.toFixed(2)}</td>
                         </tr>
                     `).join('');
                 }
