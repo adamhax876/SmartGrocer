@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmartGrocer — التقارير الشاملة</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777883804111">
+    <link rel="stylesheet" href="/css/global.css?v=1777884265476">
     <style>
         .app {
             display: flex;
@@ -199,6 +199,35 @@
 
         /* --- Mobile Specific Performance Adjustments --- */
         @media (max-width: 768px) {
+            .topbar {
+                padding: 1rem !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 1rem !important;
+            }
+            .topbar-actions {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr 1fr !important; /* Icons on top row */
+                gap: 0.5rem !important;
+                width: 100% !important;
+            }
+            .topbar-actions .btn {
+                width: 100% !important;
+                justify-content: center;
+                padding: 0.6rem 0.2rem !important;
+                font-size: 0.7rem !important;
+                white-space: nowrap;
+            }
+            /* Make primary action buttons span 2 columns on bottom row */
+            #btnAiAnalysis {
+                grid-column: span 2 !important;
+                order: 10;
+            }
+            .topbar-actions button[onclick="exportToExcel()"] {
+                grid-column: span 2 !important;
+                order: 11;
+            }
+            
             .content {
                 padding: 1rem !important;
                 overflow-x: hidden;
@@ -206,51 +235,30 @@
             .kpi-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 0.5rem !important;
-                width: 100% !important;
-                margin-bottom: 1.5rem !important;
             }
             .kpi-card {
                 padding: 0.8rem 0.5rem !important;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                min-width: 0; /* Prevent overflow */
-            }
-            .kpi-card > div {
-                flex-direction: column !important;
-                align-items: center !important;
-                gap: 0.5rem;
-            }
-            .kpi-card h3 {
-                font-size: 0.65rem !important;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                width: 100%;
             }
             .kpi-value {
                 font-size: 1.1rem !important;
-            }
-            .kpi-card div[style*="width: 48px"] {
-                width: 32px !important;
-                height: 32px !important;
-                font-size: 1rem !important;
-                order: -1; /* Icon on top */
             }
 
             .charts-grid {
                 grid-template-columns: 1fr !important;
                 gap: 1rem !important;
             }
-            
-            /* Analytics badge wrap fix */
-            .table-wrapper h2 {
+            .chart-card {
+                padding: 1rem !important;
+            }
+            .chart-card div[style*="height: 280px"] {
+                height: 220px !important; /* Smaller charts for mobile */
+            }
+            .chart-card h2 {
                 font-size: 0.95rem !important;
             }
-            .table-wrapper span[style*="ANALYTICS"] {
-                white-space: nowrap !important;
-                font-size: 0.65rem !important;
-                padding: 2px 6px !important;
+            
+            .table-wrapper h2 {
+                font-size: 0.9rem !important;
             }
 
             /* Table to Card transformation */
@@ -432,8 +440,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/user-lang.js?v=1777883804111"></script>
-    <script src="/js/app.js?v=1777883804111"></script>
+    <script src="/js/user-lang.js?v=1777884265476"></script>
+    <script src="/js/app.js?v=1777884265476"></script>
     <script>
         const translations = {
             en: {
