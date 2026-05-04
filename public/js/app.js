@@ -269,6 +269,18 @@ function toggleNotifications() {
     }
 }
 
+// Global click-outside listener to close notification dropdown
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('notif-dropdown');
+    const btn = document.getElementById('notif-btn');
+    if (dropdown && dropdown.style.display === 'block') {
+        // If click is outside both dropdown and the trigger button
+        if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    }
+});
+
 async function fetchNotifications() {
     try {
         const res = await api('/api/messages');
