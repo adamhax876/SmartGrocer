@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SmartGrocer — التقارير الشاملة</title>
-    <link rel="stylesheet" href="/css/global.css?v=1777883206098">
+    <link rel="stylesheet" href="/css/global.css?v=1777883804111">
     <style>
         .app {
             display: flex;
@@ -199,21 +199,61 @@
 
         /* --- Mobile Specific Performance Adjustments --- */
         @media (max-width: 768px) {
+            .content {
+                padding: 1rem !important;
+                overflow-x: hidden;
+            }
             .kpi-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
-                gap: 0.75rem !important;
+                gap: 0.5rem !important;
+                width: 100% !important;
+                margin-bottom: 1.5rem !important;
             }
             .kpi-card {
-                padding: 1rem !important;
+                padding: 0.8rem 0.5rem !important;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-width: 0; /* Prevent overflow */
+            }
+            .kpi-card > div {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.5rem;
+            }
+            .kpi-card h3 {
+                font-size: 0.65rem !important;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 100%;
             }
             .kpi-value {
-                font-size: 1.3rem !important;
+                font-size: 1.1rem !important;
             }
+            .kpi-card div[style*="width: 48px"] {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 1rem !important;
+                order: -1; /* Icon on top */
+            }
+
             .charts-grid {
                 grid-template-columns: 1fr !important;
+                gap: 1rem !important;
             }
             
-            /* Table to Card transformation for Performance Summary */
+            /* Analytics badge wrap fix */
+            .table-wrapper h2 {
+                font-size: 0.95rem !important;
+            }
+            .table-wrapper span[style*="ANALYTICS"] {
+                white-space: nowrap !important;
+                font-size: 0.65rem !important;
+                padding: 2px 6px !important;
+            }
+
+            /* Table to Card transformation */
             .table-wrapper table, .table-wrapper thead, .table-wrapper tbody, .table-wrapper th, .table-wrapper td, .table-wrapper tr {
                 display: block;
             }
@@ -223,28 +263,28 @@
             .table-wrapper tr {
                 background: var(--bg-secondary);
                 border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 1rem;
+                padding: 0.8rem;
+                margin-bottom: 0.8rem;
                 border: 1px solid var(--border);
             }
             .table-wrapper td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 0.5rem 0 !important;
+                padding: 0.4rem 0 !important;
                 border: none;
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             .table-wrapper td::before {
                 content: attr(data-label);
                 font-weight: 700;
                 color: var(--text-secondary);
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
             .table-wrapper td:last-child {
                 border-top: 1px dashed var(--border);
-                margin-top: 0.5rem;
-                padding-top: 0.8rem !important;
+                margin-top: 0.4rem;
+                padding-top: 0.6rem !important;
             }
         }
     </style>
@@ -392,8 +432,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/js/user-lang.js?v=1777883206098"></script>
-    <script src="/js/app.js?v=1777883206098"></script>
+    <script src="/js/user-lang.js?v=1777883804111"></script>
+    <script src="/js/app.js?v=1777883804111"></script>
     <script>
         const translations = {
             en: {
