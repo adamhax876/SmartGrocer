@@ -727,6 +727,17 @@
         </div>
     </div>
 
+    <!-- View Batches Modal -->
+    <div class="modal" id="viewBatchesModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-btn" onclick="document.getElementById('viewBatchesModal').classList.remove('active')">&times;</button>
+            <h2 class="modal-title" data-i18n="modal_batches_title">تفاصيل الدفعات المتاحة</h2>
+            <div id="batchesContainer" class="table-wrapper" style="margin-top: 1rem;">
+                <!-- Batches Table will be injected here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Import Instructions Modal -->
     <div class="modal" id="importInstructionsModal">
         <div class="modal-content" style="max-width: 600px;">
@@ -879,7 +890,10 @@
                         <td data-label="${translations[currentLang].th_expiry}">${expiryStr}</td>
                         <td data-label="${translations[currentLang].th_status}">${statusHtml}</td>
                         <td data-label="${translations[currentLang].th_actions}">
-                            <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.8rem; width: 100%;">🗑️ حذف</button>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button onclick="showBatches('${p._id}')" class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.8rem; flex: 1;">📋 الدفعات</button>
+                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.8rem; flex: 1;">🗑️ حذف</button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -903,6 +917,40 @@
             } catch (e) {
                 alert('خطأ في حذف المنتج');
             }
+        }
+
+        function showBatches(productId) {
+            const product = allProducts.find(p => p._id === productId);
+            if (!product) return;
+
+            const container = document.getElementById('batchesContainer');
+            if (product.batches && product.batches.length > 0) {
+                container.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border);">
+                                <th style="padding: 0.8rem; text-align: start;">${currentLang === 'ar' ? 'الكمية' : 'Qty'}</th>
+                                <th style="padding: 0.8rem; text-align: start;">${currentLang === 'ar' ? 'تاريخ الانتهاء' : 'Expiry'}</th>
+                                <th style="padding: 0.8rem; text-align: start;">${currentLang === 'ar' ? 'التكلفة' : 'Cost'}</th>
+                                <th style="padding: 0.8rem; text-align: start;">${currentLang === 'ar' ? 'تاريخ الإضافة' : 'Added'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${product.batches.map(b => `
+                                <tr style="border-bottom: 1px solid var(--border);">
+                                    <td style="padding: 0.8rem;">${b.quantity}</td>
+                                    <td style="padding: 0.8rem;">${b.expiryDate ? new Date(b.expiryDate).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US') : '—'}</td>
+                                    <td style="padding: 0.8rem;">${(b.costPrice || 0).toFixed(2)}</td>
+                                    <td style="padding: 0.8rem;">${new Date(b.addedAt).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                container.innerHTML = `<p style="text-align:center; padding: 1rem;">${currentLang === 'ar' ? 'لا توجد دفعات مسجلة لهذا المنتج.' : 'No batches found.'}</p>`;
+            }
+            document.getElementById('viewBatchesModal').classList.add('active');
         }
 
         async function saveProduct(e) {
