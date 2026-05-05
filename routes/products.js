@@ -102,18 +102,42 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-// POST /api/products — create product
+// POST /api/products — create or update product (Smart Merge)
 router.post('/', enforceLimits('products'), async (req, res) => {
     try {
-        if (req.body.price < 0 || req.body.costPrice < 0 || req.body.quantity < 0) {
+        const { name, barcode, quantity, price, costPrice } = req.body;
+        if (price < 0 || costPrice < 0 || quantity < 0) {
             return res.status(400).json({ message: 'الأسعار والكميات لا يمكن أن تكون قيم سالبة' });
         }
-        
-        const product = await Product.create({
-            ...req.body,
-            userId: req.user._id
-        });
-        res.status(201).json({ product });
+
+        // Search for existing product: prioritize barcode, fallback to name
+        let existingProduct = null;
+        if (barcode && barcode.trim()) {
+            existingProduct = await Product.findOne({ userId: req.user._id, barcode: barcode.trim() });
+        } else {
+            existingProduct = await Product.findOne({ userId: req.user._id, name: name.trim() });
+        }
+
+        if (existingProduct) {
+            // Update existing product
+            existingProduct.quantity += parseInt(quantity || 0);
+            existingProduct.price = price || existingProduct.price;
+            existingProduct.costPrice = costPrice || existingProduct.costPrice;
+            // Update other fields if provided
+            if (req.body.category) existingProduct.category = req.body.category;
+            if (req.body.unit) existingProduct.unit = req.body.unit;
+            if (req.body.expiryDate) existingProduct.expiryDate = req.body.expiryDate;
+            
+            await existingProduct.save();
+            return res.json({ product: existingProduct, updated: true });
+        } else {
+            // Create new product
+            const product = await Product.create({
+                ...req.body,
+                userId: req.user._id
+            });
+            return res.status(201).json({ product, updated: false });
+        }
     } catch (error) {
         res.status(400).json({ message: 'بيانات غير صحيحة', error: error.message });
     }
@@ -199,29 +223,47 @@ router.post('/import', enforceLimits('products'), upload.single('file'), async (
             }
         }
 
-        // ENFORCE LIMITS FOR EXCEL BATCH INJECTION
-        if (products.length > 0) {
-            const plan = req.user.subscriptionPlan || 'Free Trial';
-            if (plan === 'Basic Plan') {
-                const currentCount = await Product.countDocuments({ userId: req.user._id });
-                if (currentCount + products.length > 3000) {
-                    const allowedToAdd = Math.max(0, 3000 - currentCount);
-                    if (allowedToAdd === 0) {
-                        return res.status(403).json({ message: 'لقد استنفذت الحد الأقصى للمنتجات (3000 منتج).' });
-                    }
-                    products.splice(allowedToAdd); // limit the imported array to what's left in their quota
-                    errors.push(`تم استيراد ${allowedToAdd} منتج فقط لتخطي الحد الأقصى للباقة الأساسية`);
-                }
-            }
+        // SMART MERGE FOR EXCEL IMPORT
+        let importedCount = 0;
+        let updatedCount = 0;
 
-            if (products.length > 0) {
-                await Product.insertMany(products);
+        for (const pData of products) {
+            try {
+                let existing = null;
+                if (pData.barcode && pData.barcode.trim()) {
+                    existing = await Product.findOne({ userId: req.user._id, barcode: pData.barcode.trim() });
+                } else {
+                    existing = await Product.findOne({ userId: req.user._id, name: pData.name.trim() });
+                }
+
+                if (existing) {
+                    existing.quantity += pData.quantity;
+                    existing.price = pData.price || existing.price;
+                    existing.costPrice = pData.costPrice || existing.costPrice;
+                    if (pData.expiryDate) existing.expiryDate = pData.expiryDate;
+                    await existing.save();
+                    updatedCount++;
+                } else {
+                    // Check Limits before creating new
+                    const plan = req.user.subscriptionPlan || 'Free Trial';
+                    const currentCount = await Product.countDocuments({ userId: req.user._id });
+                    if (plan === 'Basic Plan' && currentCount >= 3000) {
+                        errors.push(`تم تخطي الحد الأقصى للمنتجات لـ: ${pData.name}`);
+                        continue;
+                    }
+                    
+                    await Product.create(pData);
+                    importedCount++;
+                }
+            } catch (err) {
+                errors.push(`خطأ في معالجة ${pData.name}: ${err.message}`);
             }
         }
 
         res.json({
-            message: `تم استيراد ${products.length} منتج بنجاح`,
-            imported: products.length,
+            message: `تمت المعالجة بنجاح: إضافة ${importedCount} منتج جديد، وتحديث كمية ${updatedCount} منتج موجود.`,
+            imported: importedCount,
+            updated: updatedCount,
             errors: errors.length > 0 ? errors : undefined
         });
     } catch (error) {
