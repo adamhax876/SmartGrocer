@@ -629,6 +629,7 @@
                                 <th data-i18n="th_price">سعر البيع</th>
                                 <th data-i18n="th_cost">التكلفة</th>
                                 <th data-i18n="th_qty">الكمية بالمخزون</th>
+                                <th data-i18n="th_expiry">تاريخ الانتهاء</th>
                                 <th data-i18n="th_status">الحالة</th>
                                 <th data-i18n="th_actions" style="text-align: center;">الإجراءات</th>
                             </tr>
@@ -679,6 +680,10 @@
                         <label data-i18n="label_pprice">سعر البيع</label>
                         <input type="number" class="form-control" id="p_price" step="0.01" required>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="th_expiry">تاريخ الانتهاء</label>
+                    <input type="date" class="form-control" id="p_expiry">
                 </div>
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
                     <div class="form-group">
@@ -759,7 +764,7 @@
                 nav_dashboard: "Dashboard", nav_products: "Products", nav_pos: "POS System", nav_reports: "Reports", nav_support: "Support",
                 btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home",
                 title_products: "Products Inventory", btn_add_product: "Add Product +", btn_import_excel: "Import Excel 📊",
-                th_name: "Product Name", th_barcode: "Barcode", th_category: "Category", th_price: "Selling Price", th_cost: "Cost Price", th_qty: "Stock Qty", th_status: "Status",
+                th_name: "Product Name", th_barcode: "Barcode", th_category: "Category", th_price: "Selling Price", th_cost: "Cost Price", th_qty: "Stock Qty", th_status: "Status", th_actions: "Actions", th_expiry: "Expiry Date",
                 ph_search_products: "Search by name or barcode...",
                 modal_title: "Add New Product", label_pname: "Product Name", label_pcat: "Category", label_pcost: "Cost Price", label_pprice: "Selling Price", label_pqty: "Initial Quantity", btn_save: "Save Product",
                 label_punit: "Unit", unit_piece: "Piece", unit_kg: "Kg", unit_liter: "Liter", unit_box: "Box", unit_pack: "Pack", label_pbarcode: "Barcode (Optional)", ph_barcode: "Scan barcode here...",
@@ -773,7 +778,7 @@
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_pos: "نقطة البيع (POS)", nav_reports: "التقارير", nav_support: "الدعم الفني",
                 btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية",
                 title_products: "قائمة المنتجات", btn_add_product: "إضافة منتج +", btn_import_excel: "استيراد إكسيل 📊",
-                th_name: "اسم المنتج", th_barcode: "الباركود", th_category: "الفئة", th_price: "سعر البيع", th_cost: "التكلفة", th_qty: "الكمية بالمخزون", th_status: "الحالة",
+                th_name: "اسم المنتج", th_barcode: "الباركود", th_category: "الفئة", th_price: "سعر البيع", th_cost: "التكلفة", th_qty: "الكمية بالمخزون", th_status: "الحالة", th_actions: "الإجراءات", th_expiry: "تاريخ الانتهاء",
                 ph_search_products: "ابحث بالاسم أو الباركود...",
                 modal_title: "إضافة منتج جديد", label_pname: "اسم المنتج", label_pcat: "الفئة", label_pcost: "التكلفة", label_pprice: "سعر البيع", label_pqty: "الكمية الابتدائية", btn_save: "حفظ المنتج",
                 label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)", ph_barcode: "امسح الباركود هنا...",
@@ -895,7 +900,8 @@
                         price: parseFloat(document.getElementById('p_price').value),
                         quantity: parseInt(document.getElementById('p_qty').value),
                         unit: document.getElementById('p_unit').value,
-                        barcode: document.getElementById('p_barcode').value
+                        barcode: document.getElementById('p_barcode').value,
+                        expiryDate: document.getElementById('p_expiry').value || undefined
                     })
                 });
                 closeModal();
