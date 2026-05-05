@@ -196,13 +196,15 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            align-items: center;
-            justify-content: center;
+            overflow-y: auto;
+            padding: 2rem 1rem;
             backdrop-filter: blur(4px);
         }
 
         .modal.active {
             display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
         .modal-content {
@@ -213,6 +215,7 @@
             padding: 2rem;
             position: relative;
             border: 1px solid var(--border);
+            margin: auto;
         }
 
         .modal-title {
