@@ -347,9 +347,18 @@
                 grid-area: import; 
                 display: flex !important;
                 width: 100% !important;
+                overflow: hidden; /* Prevent leaking */
             }
             .topbar-actions > div:last-of-type .btn {
                 flex: 1;
+                font-size: 0.75rem !important; /* Smaller font for long text */
+                padding: 0 4px !important;
+                white-space: normal !important; /* Allow wrapping if needed */
+                line-height: 1.1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
             }
 
             /* Add Button */
@@ -746,7 +755,7 @@
             ar: {
                 nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_pos: "نقطة البيع (POS)", nav_reports: "التقارير", nav_support: "الدعم الفني",
                 btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية",
-                title_products: "قائمة المنتجات", btn_add_product: "إضافة منتج +", btn_import_excel: "استيراد من إكسيل 📊",
+                title_products: "قائمة المنتجات", btn_add_product: "إضافة منتج +", btn_import_excel: "استيراد إكسيل 📊",
                 th_name: "اسم المنتج", th_barcode: "الباركود", th_category: "الفئة", th_price: "سعر البيع", th_cost: "التكلفة", th_qty: "الكمية بالمخزون", th_status: "الحالة",
                 ph_search_products: "ابحث بالاسم أو الباركود...",
                 modal_title: "إضافة منتج جديد", label_pname: "اسم المنتج", label_pcat: "الفئة", label_pcost: "التكلفة", label_pprice: "سعر البيع", label_pqty: "الكمية الابتدائية", btn_save: "حفظ المنتج",
