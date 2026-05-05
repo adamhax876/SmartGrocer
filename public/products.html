@@ -840,7 +840,7 @@
         function renderProductsTable(products) {
             const tbody = document.getElementById('productsTableBody');
             if (products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2rem;">لا توجد منتجات مطابقة للبحث.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 2rem;">لا توجد منتجات مطابقة للبحث.</td></tr>`;
                 return;
             }
 
@@ -850,6 +850,8 @@
                 else if (p.quantity <= 10) statusHtml = `<span class="badge badge-warning">${translations[currentLang].status_low}</span>`;
                 else statusHtml = `<span class="badge badge-success">${translations[currentLang].status_in}</span>`;
 
+                const expiryStr = p.expiryDate ? new Date(p.expiryDate).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US') : '—';
+
                 return `
                     <tr>
                         <td data-label="${translations[currentLang].th_name}"><strong>${p.name}</strong></td>
@@ -858,6 +860,7 @@
                         <td data-label="${translations[currentLang].th_price}" style="color: var(--primary); font-weight: bold;">${p.price.toFixed(2)}</td>
                         <td data-label="${translations[currentLang].th_cost}">${(p.costPrice || 0).toFixed(2)}</td>
                         <td data-label="${translations[currentLang].th_qty}">${p.quantity}</td>
+                        <td data-label="${translations[currentLang].th_expiry}">${expiryStr}</td>
                         <td data-label="${translations[currentLang].th_status}">${statusHtml}</td>
                         <td data-label="${translations[currentLang].th_actions}">
                             <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.8rem; width: 100%;">🗑️ حذف</button>
