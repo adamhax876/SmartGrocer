@@ -48,8 +48,28 @@ router.post('/', enforceLimits('sales'), async (req, res) => {
                 total
             });
 
-            // Decrease stock
-            product.quantity -= item.quantity;
+            // Decrease stock using FIFO (First In First Out) for Batches
+            let qtyToDeduct = item.quantity;
+            
+            // Sort batches by expiry date (earliest first), items without date at the end
+            product.batches.sort((a, b) => {
+                if (!a.expiryDate) return 1;
+                if (!b.expiryDate) return -1;
+                return a.expiryDate - b.expiryDate;
+            });
+
+            for (let i = 0; i < product.batches.length && qtyToDeduct > 0; i++) {
+                const batch = product.batches[i];
+                if (batch.quantity >= qtyToDeduct) {
+                    batch.quantity -= qtyToDeduct;
+                    qtyToDeduct = 0;
+                } else {
+                    qtyToDeduct -= batch.quantity;
+                    batch.quantity = 0;
+                }
+            }
+
+            // The pre-save hook in Product.js will handle summing total qty and removing empty batches
             await product.save();
         }
 

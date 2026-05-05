@@ -119,29 +119,47 @@ router.post('/', enforceLimits('products'), async (req, res) => {
         }
 
         if (existingProduct) {
-            // Update existing product
-            existingProduct.quantity += parseInt(quantity || 0);
-            existingProduct.price = price || existingProduct.price;
-            existingProduct.costPrice = costPrice || existingProduct.costPrice;
-            // Expiry Date Logic: Keep the EARLIEST date to ensure alerts trigger for the first expiring batch
-            if (req.body.expiryDate) {
-                const newDate = new Date(req.body.expiryDate);
-                if (!existingProduct.expiryDate || newDate < existingProduct.expiryDate) {
-                    existingProduct.expiryDate = newDate;
-                }
+            // Update existing product using Batches
+            const newQty = parseInt(quantity || 0);
+            const newExp = req.body.expiryDate ? new Date(req.body.expiryDate) : null;
+            const newCost = costPrice || existingProduct.costPrice;
+
+            // Check if a batch with the same expiry date already exists
+            const sameBatch = existingProduct.batches.find(b => 
+                (!b.expiryDate && !newExp) || 
+                (b.expiryDate && newExp && b.expiryDate.getTime() === newExp.getTime())
+            );
+
+            if (sameBatch) {
+                sameBatch.quantity += newQty;
+                sameBatch.costPrice = newCost;
+            } else {
+                existingProduct.batches.push({ 
+                    quantity: newQty, 
+                    expiryDate: newExp, 
+                    costPrice: newCost 
+                });
             }
             
+            // Updates other non-batch fields
             if (req.body.category) existingProduct.category = req.body.category;
             if (req.body.unit) existingProduct.unit = req.body.unit;
+            existingProduct.price = price || existingProduct.price;
             
             await existingProduct.save();
             return res.json({ product: existingProduct, updated: true });
         } else {
-            // Create new product
-            const product = await Product.create({
+            // Create new product with initial batch
+            const product = new Product({
                 ...req.body,
-                userId: req.user._id
+                userId: req.user._id,
+                batches: [{
+                    quantity: parseInt(quantity || 0),
+                    expiryDate: req.body.expiryDate ? new Date(req.body.expiryDate) : null,
+                    costPrice: costPrice || 0
+                }]
             });
+            await product.save();
             return res.status(201).json({ product, updated: false });
         }
     } catch (error) {
@@ -243,15 +261,25 @@ router.post('/import', enforceLimits('products'), upload.single('file'), async (
                 }
 
                 if (existing) {
-                    existing.quantity += pData.quantity;
-                    existing.price = pData.price || existing.price;
-                    existing.costPrice = pData.costPrice || existing.costPrice;
-                    // Expiry Merge: Keep earliest
-                    if (pData.expiryDate) {
-                        if (!existing.expiryDate || pData.expiryDate < existing.expiryDate) {
-                            existing.expiryDate = pData.expiryDate;
-                        }
+                    // Smart Merge with Batches
+                    const newExp = pData.expiryDate || null;
+                    const sameBatch = existing.batches.find(b => 
+                        (!b.expiryDate && !newExp) || 
+                        (b.expiryDate && newExp && b.expiryDate.getTime() === newExp.getTime())
+                    );
+
+                    if (sameBatch) {
+                        sameBatch.quantity += pData.quantity;
+                        sameBatch.costPrice = pData.costPrice || sameBatch.costPrice;
+                    } else {
+                        existing.batches.push({
+                            quantity: pData.quantity,
+                            expiryDate: newExp,
+                            costPrice: pData.costPrice || 0
+                        });
                     }
+                    
+                    existing.price = pData.price || existing.price;
                     await existing.save();
                     updatedCount++;
                 } else {
@@ -263,7 +291,17 @@ router.post('/import', enforceLimits('products'), upload.single('file'), async (
                         continue;
                     }
                     
-                    await Product.create(pData);
+                    // Create new with initial batch
+                    const newP = new Product({
+                        ...pData,
+                        userId: req.user._id,
+                        batches: [{
+                            quantity: pData.quantity,
+                            expiryDate: pData.expiryDate || null,
+                            costPrice: pData.costPrice || 0
+                        }]
+                    });
+                    await newP.save();
                     importedCount++;
                 }
             } catch (err) {

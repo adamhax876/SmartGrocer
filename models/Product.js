@@ -63,9 +63,47 @@ const productSchema = new mongoose.Schema({
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
-    }
+    },
+    batches: [{
+        quantity: { type: Number, default: 0 },
+        expiryDate: { type: Date },
+        costPrice: { type: Number, default: 0 },
+        addedAt: { type: Date, default: Date.now }
+    }]
 }, {
     timestamps: true
+});
+
+// Pre-save hook to sync quantity and nearest expiryDate
+productSchema.pre('save', function (next) {
+    if (this.batches && this.batches.length > 0) {
+        // Remove empty batches
+        this.batches = this.batches.filter(b => b.quantity > 0);
+        
+        // Sum total quantity
+        this.quantity = this.batches.reduce((sum, b) => sum + b.quantity, 0);
+        
+        // Find nearest expiry date (only for batches that HAVE a date)
+        const dates = this.batches
+            .filter(b => b.expiryDate)
+            .map(b => b.expiryDate);
+        
+        if (dates.length > 0) {
+            this.expiryDate = new Date(Math.min(...dates.map(d => d.getTime())));
+        } else {
+            this.expiryDate = undefined;
+        }
+
+        // Set cost price to latest batch cost price if multiple exist
+        if (this.batches.length > 0) {
+            this.costPrice = this.batches[this.batches.length - 1].costPrice || this.costPrice;
+        }
+    } else {
+        // If no batches, ensure it's at least initialized if we are migrating
+        // But normally quantity should stay as is if batches is empty (for manual non-batch use)
+        // However, for this update, we want batches to be the source of truth.
+    }
+    next();
 });
 
 // Virtual: is low stock
