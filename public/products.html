@@ -537,6 +537,23 @@
         .hamburger {
             display: none;
         }
+
+        /* Desktop Notif Bell Fix */
+        #notif-wrapper {
+            order: 10; /* Move it towards the icons */
+            margin-inline-start: 0.5rem;
+        }
+
+        #theme-toggle { order: 11; }
+        #langToggle { order: 12; }
+        .topbar-actions > div:last-of-type { order: 13; } /* Excel */
+        .topbar-actions > button.btn-primary:last-child { order: 14; } /* Add */
+
+        .search-container {
+            order: 5;
+            flex: 1;
+            margin: 0 1rem;
+        }
     </style>
 </head>
 
