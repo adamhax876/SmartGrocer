@@ -123,10 +123,16 @@ router.post('/', enforceLimits('products'), async (req, res) => {
             existingProduct.quantity += parseInt(quantity || 0);
             existingProduct.price = price || existingProduct.price;
             existingProduct.costPrice = costPrice || existingProduct.costPrice;
-            // Update other fields if provided
+            // Expiry Date Logic: Keep the EARLIEST date to ensure alerts trigger for the first expiring batch
+            if (req.body.expiryDate) {
+                const newDate = new Date(req.body.expiryDate);
+                if (!existingProduct.expiryDate || newDate < existingProduct.expiryDate) {
+                    existingProduct.expiryDate = newDate;
+                }
+            }
+            
             if (req.body.category) existingProduct.category = req.body.category;
             if (req.body.unit) existingProduct.unit = req.body.unit;
-            if (req.body.expiryDate) existingProduct.expiryDate = req.body.expiryDate;
             
             await existingProduct.save();
             return res.json({ product: existingProduct, updated: true });
@@ -240,7 +246,12 @@ router.post('/import', enforceLimits('products'), upload.single('file'), async (
                     existing.quantity += pData.quantity;
                     existing.price = pData.price || existing.price;
                     existing.costPrice = pData.costPrice || existing.costPrice;
-                    if (pData.expiryDate) existing.expiryDate = pData.expiryDate;
+                    // Expiry Merge: Keep earliest
+                    if (pData.expiryDate) {
+                        if (!existing.expiryDate || pData.expiryDate < existing.expiryDate) {
+                            existing.expiryDate = pData.expiryDate;
+                        }
+                    }
                     await existing.save();
                     updatedCount++;
                 } else {

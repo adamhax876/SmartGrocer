@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>🔔</span>
                     <span id="notif-badge" style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; display: none;">0</span>
                 </button>
-                <div id="notif-dropdown" style="display: none; position: absolute; top: 100%; ${alignStyle} background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 320px; max-height: 400px; overflow-y: auto; box-shadow: var(--shadow-md); z-index: 100000; padding: 1.2rem; margin-top: 10px;">
+                <div id="notif-dropdown" style="display: none; position: absolute; top: 110%; ${document.documentElement.dir === 'rtl' ? 'left: 0' : 'right: 0'}; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 320px; max-height: 400px; overflow-y: auto; box-shadow: var(--shadow-lg); z-index: 100000; padding: 1.2rem;">
                     <h4 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; color: var(--text);">رسائل الإدارة 🔔</h4>
                     <div id="notif-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
                         <div style="text-align: center; color: var(--text-secondary); padding: 1rem; font-size: 0.9rem;">جاري التحميل...</div>

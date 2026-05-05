@@ -533,6 +533,7 @@
                             <tr>
                                 <th data-i18n="th_name">اسم المنتج</th>
                                 <th data-i18n="th_barcode">الباركود</th>
+                                <th data-i18n="th_expiry">تاريخ الانتهاء</th>
                                 <th data-i18n="th_cat">الفئة</th>
                                 <th data-i18n="th_qty">الكمية الحالية</th>
                                 <th data-i18n="th_val">قيمة المخزون</th>
@@ -559,7 +560,7 @@
                 btn_theme: "Theme", btn_logout: "Logout",
                 title_inv: "Inventory & Stock Count",
                 inv_kpi_total: "Total Stock Value", inv_kpi_items: "Available SKU Count", inv_kpi_alerts: "Low Stock Alerts (<10)",
-                th_name: "Item Name", th_barcode: "Barcode", th_cat: "Category", th_qty: "Current Stock", th_val: "Stock Value", th_action: "Adjust Stock",
+                th_name: "Item Name", th_barcode: "Barcode", th_cat: "Category", th_qty: "Current Stock", th_val: "Stock Value", th_action: "Adjust Stock", th_expiry: "Expiry Date",
                 ph_search_products: "Search by name or barcode..."
             },
             ar: {
@@ -567,7 +568,7 @@
                 btn_theme: "المظهر", btn_logout: "تسجيل الخروج",
                 title_inv: "إدارة وجرد المخزون",
                 inv_kpi_total: "إجمالي قيمة المخزون", inv_kpi_items: "عدد الأصناف المتوفرة", inv_kpi_alerts: "تنبيهات نواقص (أقل من 10)",
-                th_name: "اسم المنتج", th_barcode: "الباركود", th_cat: "الفئة", th_qty: "الكمية الحالية", th_val: "قيمة المخزون", th_action: "تعديل الجرد",
+                th_name: "اسم المنتج", th_barcode: "الباركود", th_cat: "الفئة", th_qty: "الكمية الحالية", th_val: "قيمة المخزون", th_action: "تعديل الجرد", th_expiry: "تاريخ الانتهاء",
                 ph_search_products: "ابحث بالاسم أو الباركود..."
             }
         };
@@ -634,6 +635,7 @@
                     <tr>
                         <td data-label="${translations[currentLang].th_name}"><strong>${p.name}</strong></td>
                         <td data-label="${translations[currentLang].th_barcode}" style="font-family: monospace; font-size: 0.85rem; color: var(--text-secondary);">${p.barcode || '—'}</td>
+                        <td data-label="${translations[currentLang].th_expiry}" style="color: var(--text-secondary);">${p.expiryDate ? new Date(p.expiryDate).toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US') : '—'}</td>
                         <td data-label="${translations[currentLang].th_cat}" style="color: var(--text-secondary);">${getTranslatedCategory(p.category)}</td>
                         <td data-label="${translations[currentLang].th_qty}">
                             <div style="display:flex; align-items:center; gap:0.5rem;">

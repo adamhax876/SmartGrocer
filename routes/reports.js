@@ -459,4 +459,34 @@ router.get('/monthly-comparison', async (req, res) => {
     }
 });
 
+// GET /api/reports/expiry-alerts — products expired or near expiry
+router.get('/expiry-alerts', async (req, res) => {
+    try {
+        const products = await Product.find({ userId: req.user._id })
+            .sort('expiryDate')
+            .limit(50);
+
+        const now = new Date();
+        const thirtyDaysFromNow = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000));
+
+        const alerts = products
+            .filter(p => p.expiryDate && p.expiryDate <= thirtyDaysFromNow)
+            .slice(0, 10)
+            .map(p => ({
+                _id: p._id,
+                name: p.name,
+                expiryDate: p.expiryDate,
+                isExpired: p.expiryDate < now,
+                daysLeft: Math.ceil((p.expiryDate - now) / (1000 * 60 * 60 * 24))
+            }));
+
+        res.json({
+            success: true,
+            items: alerts
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'حدث خطأ', error: error.message });
+    }
+});
+
 module.exports = router;
