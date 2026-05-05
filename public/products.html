@@ -890,9 +890,9 @@
                         <td data-label="${translations[currentLang].th_expiry}">${expiryStr}</td>
                         <td data-label="${translations[currentLang].th_status}">${statusHtml}</td>
                         <td data-label="${translations[currentLang].th_actions}">
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button onclick="showBatches('${p._id}')" class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.8rem; flex: 1;">📋 الدفعات</button>
-                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.8rem; flex: 1;">🗑️ حذف</button>
+                            <div style="display: flex; flex-direction: column; gap: 4px; align-items: stretch; min-width: 80px;">
+                                <button onclick="showBatches('${p._id}')" class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.75rem; white-space: nowrap;">📋 الدفعات</button>
+                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.75rem; white-space: nowrap;">🗑️ حذف</button>
                             </div>
                         </td>
                     </tr>
