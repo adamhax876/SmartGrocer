@@ -255,11 +255,12 @@
 
             .topbar-actions {
                 display: grid !important;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: auto 1fr 1fr;
                 grid-template-areas: 
-                    "search search"
-                    "theme lang";
+                    "search search search"
+                    "notif theme lang";
                 gap: 0.8rem !important;
+                width: 100%;
             }
 
             .search-container {
@@ -269,6 +270,7 @@
                 max-width: none !important;
             }
 
+            #notif-wrapper { grid-area: notif; width: 45px !important; height: 45px !important; }
             #theme-toggle { grid-area: theme; width: 100% !important; height: 45px !important; border-radius: 12px !important; }
             #langToggle { grid-area: lang; width: 100% !important; height: 45px !important; border-radius: 12px !important; }
 
