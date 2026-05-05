@@ -259,7 +259,7 @@
                 grid-template-areas: 
                     "search search"
                     "theme lang";
-                gap: 0.6rem !important;
+                gap: 0.8rem !important;
             }
 
             .search-container {
@@ -269,12 +269,14 @@
                 max-width: none !important;
             }
 
-            #theme-toggle { grid-area: theme; }
-            #langToggle { grid-area: lang; }
+            #theme-toggle { grid-area: theme; width: 100% !important; height: 45px !important; border-radius: 12px !important; }
+            #langToggle { grid-area: lang; width: 100% !important; height: 45px !important; border-radius: 12px !important; }
 
             .topbar-actions .btn {
                 width: 100%;
                 margin: 0 !important;
+                height: 45px !important;
+                font-size: 0.9rem !important;
             }
 
             .hamburger {

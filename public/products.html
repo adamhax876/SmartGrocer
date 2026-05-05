@@ -327,7 +327,7 @@
                     "search search"
                     "theme lang"
                     "import add";
-                gap: 0.6rem !important;
+                gap: 0.8rem !important;
             }
 
             .search-container {
@@ -337,14 +337,30 @@
                 max-width: none !important;
             }
 
-            #theme-toggle { grid-area: theme; }
-            #langToggle { grid-area: lang; }
-            .topbar-actions > div:nth-of-type(2) { grid-area: import; } /* Excel Import */
-            .topbar-actions > button:last-child { grid-area: add; } /* Add Button */
+            #theme-toggle { grid-area: theme; width: 100% !important; height: 45px !important; border-radius: 12px !important; }
+            #langToggle { grid-area: lang; width: 100% !important; height: 45px !important; border-radius: 12px !important; }
+            
+            /* Excel Import Container */
+            .topbar-actions > div:last-of-type { 
+                grid-area: import; 
+                display: flex !important;
+                width: 100% !important;
+            }
+            .topbar-actions > div:last-of-type .btn {
+                flex: 1;
+            }
+
+            /* Add Button */
+            .topbar-actions > button.btn-primary:last-child { 
+                grid-area: add; 
+                width: 100% !important;
+                height: 45px !important;
+            }
 
             .topbar-actions .btn {
-                width: 100%;
                 margin: 0 !important;
+                font-size: 0.9rem !important;
+                white-space: nowrap;
             }
 
             .hamburger {
