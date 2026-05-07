@@ -811,6 +811,8 @@
         document.body.className = localStorage.getItem('sg_theme') || 'light';
 
 
+        let lastDisplayedProducts = [];
+
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'ar' : 'en';
             localStorage.setItem('sg_lang', currentLang);
@@ -818,7 +820,10 @@
             document.documentElement.lang = currentLang;
             document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
             updateTexts();
-            renderCart(); // Re-render cart items to potentially update formatted strings
+            renderCart();
+            if (lastDisplayedProducts.length > 0) {
+                renderProducts(lastDisplayedProducts);
+            }
         }
 
         // Initialization
@@ -873,6 +878,7 @@
         }
 
         function renderProducts(products) {
+            lastDisplayedProducts = products;
             const grid = document.getElementById('productsGrid');
             if (products.length === 0) {
                 grid.innerHTML = `<div class="no-data">${translations[currentLang].lbl_no_products}</div>`;
