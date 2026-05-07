@@ -719,7 +719,10 @@
                     icon: 'success',
                     title: currentLang === 'ar' ? 'اكتمل التحليل ببراعة!' : 'Analysis Complete!',
                     html: res.reportHtml || (currentLang === 'ar' ? 'تم إنشاء التقرير.' : 'Report generated.'),
-                    width: '600px',
+                    width: '850px',
+                    customClass: {
+                        container: 'ai-report-modal'
+                    },
                     confirmButtonColor: '#10b981',
                     confirmButtonText: currentLang === 'ar' ? 'حسناً' : 'OK'
                 });

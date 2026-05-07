@@ -209,94 +209,95 @@ router.post('/ai-analysis', async (req, res) => {
         if (!apiKey) throw new Error("GROQ_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
-        const prompt = `You are a senior retail business consultant creating a detailed performance report for SmartGrocer SaaS platform.
+        const prompt = `You are a world-class retail business analyst. Create a professional, high-impact performance report for SmartGrocer SaaS.
 
 STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
 
-====== FINANCIAL PERFORMANCE (LAST 30 DAYS) ======
-- Total Revenue: ${totalRevenue.toFixed(2)} EGP
-- Total Transactions: ${recentSales.length}
-- Average Order Value: ${avgOrder.toFixed(2)} EGP
+====== DATA TO ANALYZE ======
+- Revenue (30d): ${totalRevenue.toFixed(2)} EGP
+- Orders (30d): ${recentSales.length}
+- Avg Order: ${avgOrder.toFixed(2)} EGP
 - Estimated Profit: ${estimatedProfit.toFixed(2)} EGP
-- Profit Margin: ${profitMargin}%
-- Payment Methods: ${paymentStr || 'N/A'}
+- Margin: ${profitMargin}%
+- Payments: ${paymentStr || 'N/A'}
 
-====== TOP 5 BEST-SELLING PRODUCTS (HIGH DEMAND) ======
-${topProducts.length ? topProducts.join('\n') : 'No sales data available'}
+- Top Products: ${topProducts.join(', ') || 'N/A'}
+- Slow Products: ${slowProducts.join(', ') || 'N/A'}
 
-====== BOTTOM 5 SLOW-SELLING PRODUCTS (LOW DEMAND) ======
-${slowProducts.length ? slowProducts.join('\n') : 'No data available'}
-
-====== INVENTORY STATUS ======
-- Total Products: ${products.length}
-- Low Stock Items (need reorder): ${lowStockItems.length}${lowStockItems.length > 0 ? '\n  ⚠️ ' + lowStockItems.slice(0, 5).map(p => `${p.name}: only ${p.quantity} left`).join(', ') : ''}
-- Out of Stock: ${outOfStock.length}${outOfStock.length > 0 ? '\n  🔴 ' + outOfStock.slice(0, 3).map(p => p.name).join(', ') : ''}
-- Near Expiry (within 30 days): ${nearExpiry.length}${nearExpiry.length > 0 ? '\n  ⏰ ' + nearExpiry.slice(0, 3).map(p => p.name).join(', ') : ''}
-
-====== CATEGORY BREAKDOWN ======
-${categoryBreakdown || 'N/A'}
-
-====== DAILY REVENUE TREND (LAST 7 DAYS) ======
-${dailyRevenue.join('\n')}
-
-====== ALL-TIME CONTEXT ======
-- Total All-time Transactions: ${allSales.length}
-- All-time Revenue: ${allSales.reduce((s, x) => s + x.total, 0).toFixed(2)} EGP
+- Inventory: Total ${products.length}, Low Stock ${lowStockItems.length}, OOS ${outOfStock.length}, Near Expiry ${nearExpiry.length}
+- Categories: ${categoryBreakdown || 'N/A'}
+- Trend (7d): ${dailyRevenue.join(' | ')}
 
 ---
 
-Based on ALL the data above, write a comprehensive, professional, and DETAILED business analysis report in ${isAr ? 'Arabic' : 'English'}.
+Write a CONCISE and STUNNING report in ${isAr ? 'Arabic' : 'English'}.
+Structure it using these EXACT sections (use emojis):
 
-The report MUST include these sections:
-1. 📊 **Executive Summary** — Overall health of the business with specific numbers
-2. 💰 **Revenue & Profit Analysis** — Trends, margin commentary, revenue per transaction insights
-3. 🏆 **Top Products Deep Dive** — Analyze EACH top-selling product individually. For example: "Product X was purchased ${topProducts.length > 0 ? 'in large quantities' : ''} — this means it is in high demand and you should ensure it stays well-stocked." Also analyze the slow-selling products and suggest actions (promotions, bundling, price adjustments).
-4. ⚠️ **Inventory Alerts** — Detailed low stock, out of stock, and expiry warnings with product names
-5. 📈 **Daily Trend Insights** — Identify peak days, slow days, patterns in the 7-day data
-6. 🎯 **5 Actionable Recommendations** — Each recommendation MUST reference a specific product or metric. Examples:
-   - "Product X has been selling fast — increase your order quantity by 20%"
-   - "Product Y has high stock but low sales — consider a 15% discount promotion"
-   - "Your peak day is Saturday — schedule staff and inventory deliveries accordingly"
-   - "Your profit margin is X% — consider renegotiating supplier costs for Product Z"
+1. 📊 Executive Summary: Quick overview of the store's health.
+2. 💰 Financial Insights: Deep dive into revenue, profit, and margins.
+3. 🏆 Inventory & Product Strategy: Analysis of top vs slow items and inventory alerts.
+4. 📈 Trend Analysis: Insights from the 7-day revenue trend.
+5. 🎯 Actionable Roadmap: 5 specific, data-backed steps to grow the business.
 
-IMPORTANT RULES:
-- Use SPECIFIC numbers and PRODUCT NAMES from the data in every section
-- Do NOT give generic advice like "improve marketing" — every tip must reference actual products or numbers
-- Analyze WHY certain products sell well and others don't
-- Use HTML tags: <h3>, <h4>, <p>, <strong>, <ul>, <li>, <span style="color:..."> for colored highlights
-- Use emojis to make it visually engaging
-- The report should be 500-800 words
-- Start directly with <h3>`;
+RULES:
+- DO NOT REPEAT TEXT. Be concise.
+- Use the provided numbers and product names.
+- Do NOT use markdown. Use clean HTML with <h3>, <h4>, <ul>, <li>, and <strong>.
+- Use <div> tags with a class "ai-card" for sections (I will provide the CSS).
+- Keep the total length around 350 words. Focus on QUALITY over quantity.
+- Start directly with the first header.`;
+`;
 
         let aiRes = null;
         try {
             aiRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
                 model: 'llama-3.3-70b-versatile',
                 messages: [
-                    { role: 'system', content: 'You are a premium retail business analyst. Respond ONLY with clean, styled HTML. No markdown. No code fences. No explanations outside the HTML. Make the report rich, data-driven, and actionable.' },
+                    { 
+                        role: 'system', 
+                        content: `You are a premium retail business analyst. Respond ONLY with clean HTML.
+                        Wrap each section in <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        Use <h3> for titles with color #1e293b. Use <strong> for numbers and product names.
+                        Ensure the tone is professional and the Arabic is perfect.`
+                    },
                     { role: 'user', content: prompt }
                 ],
-                max_tokens: 1500,
-                temperature: 0.7
+                max_tokens: 1200,
+                temperature: 0.5
             }, {
                 headers: {
                     'Authorization': 'Bearer ' + apiKey,
                     'Content-Type': 'application/json'
                 },
-                timeout: 15000
+                timeout: 20000
             });
+
         } catch (err) {
             console.error('Groq AI Model failed:', err.response?.data?.error?.message || err.message);
             throw new Error("Groq AI failed to generate the report.");
         }
 
-        if (!aiRes || !aiRes.data || !aiRes.data.choices) {
-            throw new Error("Invalid response from Groq AI.");
-        }
-
         const aiData = aiRes.data;
         let analysisHtml = (aiData.choices && aiData.choices[0] && aiData.choices[0].message && aiData.choices[0].message.content) ? aiData.choices[0].message.content : "";
         analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '').trim();
+
+        // Inject global styling for the report (email and display)
+        const reportStyle = `
+        <style>
+            .ai-report { font-family: 'Cairo', sans-serif; color: #334155; line-height: 1.6; }
+            .ai-report h3 { color: #1e293b; margin-top: 0; font-size: 1.25rem; border-bottom: 2px solid #10b981; display: inline-block; padding-bottom: 5px; margin-bottom: 15px; }
+            .ai-report h4 { color: #475569; margin-bottom: 10px; }
+            .ai-report ul { padding-inline-start: 20px; margin-bottom: 15px; }
+            .ai-report li { margin-bottom: 8px; }
+            .ai-report strong { color: #10b981; }
+            .ai-report-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        </style>
+        <div class="ai-report">
+            ${analysisHtml}
+        </div>
+        `;
+        analysisHtml = reportStyle;
+
 
         const { sendAIReportEmail } = require('../utils/email');
         const subject = isAr ? '📊 تقريرك التحليلي من SmartGrocer' : '📊 Your SmartGrocer AI Report';
