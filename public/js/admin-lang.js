@@ -12,6 +12,7 @@ const adminDict = {
         statusActive: 'نشط', statusSuspended: 'موقوف',
         saveBtn: 'حفظ التعديلات', saveAllBtn: 'حفظ جميع التعديلات',
         cancelBtn: 'إلغاء', addBtn: 'إضافة طريقة جديدة',
+        loading: 'جاري التحميل...', tk_send: 'إرسال',
 
         // Dashboard specific
         statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statTickets: 'تذاكر الدعم المفتوحة',
@@ -57,6 +58,7 @@ const adminDict = {
         statusActive: 'Active', statusSuspended: 'Suspended',
         saveBtn: 'Save Changes', saveAllBtn: 'Save All Changes',
         cancelBtn: 'Cancel', addBtn: 'Add New Method',
+        loading: 'Loading...', tk_send: 'Send',
 
         // Dashboard specific
         statStores: 'Active Stores', statSubs: 'Active Subscriptions', statTickets: 'Open Support Tickets',
