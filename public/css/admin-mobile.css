@@ -20,9 +20,12 @@
     main {
         padding-bottom: 70px !important;
         height: auto !important;
+        min-height: 100vh !important;
         overflow-x: hidden !important;
+        overflow-y: visible !important;
         width: 100vw !important;
         max-width: 100% !important;
+        display: block !important; /* Reset flex column which might trap height */
     }
 
     body {

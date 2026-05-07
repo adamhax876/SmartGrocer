@@ -45,7 +45,26 @@ const adminDict = {
         title_tickets: 'تذاكر الدعم', th_subj: 'الموضوع', th_date: 'التاريخ',
         tk_conversations: 'المحادثات', tk_all: 'الكل', tk_open: 'تنتظر الرد', tk_answered: 'مجابة',
         tk_no_chats: 'لا توجد محادثات', tk_select: 'اختر محادثة', tk_reply_hint: 'للرد على العميل',
-        tk_placeholder: 'اكتب ردك هنا...'
+        tk_placeholder: 'اكتب ردك هنا...',
+        
+        // Additional missing translations
+        lbl_logo: 'لوجو المنصة (Website Logo)',
+        lbl_logo_hint: 'يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين.',
+        lbl_basicSettings: 'الإعدادات الأساسية',
+        lbl_websiteLogo: 'لوجو المنصة (Website Logo)',
+        lbl_logoHint: 'يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين.',
+        lbl_lightLogo: '☀️ لوجو الوضع النهاري (Light Mode)',
+        lbl_darkLogo: '🌙 لوجو الوضع الليلي (Dark Mode)',
+        btn_deleteLightLogo: 'حذف لوجو الوضع النهاري (استخدام لوجو واحد للوضعين)',
+        btn_uploadLogo: 'رفع اللوجو',
+        lbl_socialTitle: 'روابط التواصل الاجتماعي (Social Media)',
+        lbl_socialHint: 'أضف روابط صفحات التواصل الاجتماعي. ستظهر تلقائياً في ذيل الصفحة الرئيسية للموقع.',
+        lbl_platformName: 'اسم المنصة (مثال: Facebook)',
+        lbl_pageUrl: 'رابط الصفحة (https://...)',
+        btn_add: 'إضافة',
+        btn_saveSocial: 'حفظ روابط التواصل',
+        lbl_expiry: 'ينتهي:',
+        th_stores_shared: 'المتاجر المشتركة'
     },
     en: {
         // General Navigation
@@ -91,7 +110,26 @@ const adminDict = {
         title_tickets: 'Support Tickets', th_subj: 'Subject', th_date: 'Date',
         tk_conversations: 'Conversations', tk_all: 'All', tk_open: 'Pending', tk_answered: 'Answered',
         tk_no_chats: 'No Conversations', tk_select: 'Select Chat', tk_reply_hint: 'To reply to customer',
-        tk_placeholder: 'Type your reply here...'
+        tk_placeholder: 'Type your reply here...',
+
+        // Additional missing translations
+        lbl_logo: 'Website Logo',
+        lbl_logo_hint: 'You can upload a different logo for each mode. If you upload only one, it will be used for both.',
+        lbl_basicSettings: 'Basic Settings',
+        lbl_websiteLogo: 'Website Logo',
+        lbl_logoHint: 'You can upload a different logo for each mode. If you upload only one, it will be used for both.',
+        lbl_lightLogo: '☀️ Light Mode Logo',
+        lbl_darkLogo: '🌙 Dark Mode Logo',
+        btn_deleteLightLogo: 'Delete Light Logo (Use one logo for both)',
+        btn_uploadLogo: 'Upload Logo',
+        lbl_socialTitle: 'Social Media Links',
+        lbl_socialHint: 'Add your social media links. They will automatically appear in the website footer.',
+        lbl_platformName: 'Platform Name (e.g., Facebook)',
+        lbl_pageUrl: 'Page URL (https://...)',
+        btn_add: 'Add',
+        btn_saveSocial: 'Save Social Links',
+        lbl_expiry: 'Expires:',
+        th_stores_shared: 'Shared Stores'
     }
 };
 
