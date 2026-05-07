@@ -884,13 +884,16 @@
                 grid.innerHTML = `<div class="no-data">${translations[currentLang].lbl_no_products}</div>`;
                 return;
             }
-            grid.innerHTML = products.map(p => `
-                <div class="product-card" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
-                    <div class="product-name">${p.name}</div>
-                    <div class="product-price">${formatMoney(p.price)}</div>
-                    <div class="product-stock">${translations[currentLang].lbl_remaining} ${p.quantity}</div>
-                </div>
-            `).join('');
+            grid.innerHTML = products.map(p => {
+                const displayName = (currentLang === 'en' && p.nameEn) ? p.nameEn : p.name;
+                return `
+                    <div class="product-card" onclick='addToCart(${JSON.stringify(p).replace(/'/g, "&#39;")})'>
+                        <div class="product-name">${displayName}</div>
+                        <div class="product-price">${formatMoney(p.price)}</div>
+                        <div class="product-stock">${translations[currentLang].lbl_remaining} ${p.quantity}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function addToCart(product) {
@@ -1006,20 +1009,23 @@
                 return;
             }
 
-            list.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${formatMoney(item.price)}</div>
+            list.innerHTML = cart.map(item => {
+                const displayName = (currentLang === 'en' && item.nameEn) ? item.nameEn : item.name;
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${displayName}</div>
+                            <div class="cart-item-price">${formatMoney(item.price)}</div>
+                        </div>
+                        <div class="cart-item-qty">
+                            <button class="qty-btn" onclick="updateItemQty('${item._id}', -1)">-</button>
+                            <input type="text" class="qty-input" value="${item.cartQty}" onchange="setItemQty('${item._id}', this.value)">
+                            <button class="qty-btn" onclick="updateItemQty('${item._id}', 1)">+</button>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeItem('${item._id}')"><i class="fas fa-trash"></i></button>
                     </div>
-                    <div class="cart-item-qty">
-                        <button class="qty-btn" onclick="updateItemQty('${item._id}', -1)">-</button>
-                        <input type="text" class="qty-input" value="${item.cartQty}" onchange="setItemQty('${item._id}', this.value)">
-                        <button class="qty-btn" onclick="updateItemQty('${item._id}', 1)">+</button>
-                    </div>
-                    <button class="cart-item-remove" onclick="removeItem('${item._id}')"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             const sub = cart.reduce((acc, i) => acc + (i.price * i.cartQty), 0);
             const tax = sub * TAX_RATE;

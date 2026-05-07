@@ -120,7 +120,7 @@
                         <span class="text-4xl md:text-5xl font-black text-white" id="basicPriceEgp">...</span>
                         <span class="text-base md:text-lg text-gray-400 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
                     </div>
-                    <div class="text-green-400 font-semibold text-sm bg-green-400/10 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 25$ / month</div>
+                    <div class="usd-price-label text-green-400 font-semibold text-sm bg-green-400/10 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 25$ / month</div>
                 </div>
                 <div class="p-6 md:p-10 flex-1 flex flex-col bg-gray-800/30">
                     <ul class="space-y-5 mb-10 flex-1">
@@ -157,7 +157,7 @@
                             <span class="text-4xl md:text-5xl font-black text-white" id="proPriceEgp">...</span>
                             <span class="text-base md:text-lg text-blue-100 font-semibold" data-i18n="bil_month">ج.م /شهرياً</span>
                         </div>
-                        <div class="text-white font-semibold text-sm bg-black/20 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 40$ / month</div>
+                        <div class="usd-price-label text-white font-semibold text-sm bg-black/20 inline-block px-3 py-1 rounded-lg" dir="ltr">~ 40$ / month</div>
                     </div>
                 </div>
                 <div class="p-6 md:p-10 flex-1 flex flex-col bg-gray-900/60">
@@ -219,25 +219,31 @@
 
         // 1. Fetch Real-time USD/EGP Exchange Rate
         async function updateExchangeRates() {
-            const basicPriceUsd = 25;
-            const proPriceUsd = 40;
             const rateDisplay = document.getElementById('liveRateDisplay');
             const pBasic = document.getElementById('basicPriceEgp');
             const pPro = document.getElementById('proPriceEgp');
 
             try {
-                // Fetch rate from our own backend to avoid AdBlockers/CORS on client side
                 const res = await fetch('/api/settings/public');
                 const data = await res.json();
                 
-                if(data && data.success && data.usdEgpRate) {
+                if(data && data.success) {
                     const egpRate = parseFloat(data.usdEgpRate);
+                    const basicUsd = data.basicPriceUsd || 25;
+                    const proUsd = data.proPriceUsd || 40;
+
                     rateDisplay.textContent = `1$ = ${egpRate.toFixed(2)} ج.م`;
                     
+                    // Update the "~ $X / month" labels too
+                    document.querySelectorAll('.usd-price-label').forEach((el, idx) => {
+                        if (idx === 0) el.textContent = `~ ${basicUsd}$ / month`;
+                        if (idx === 1) el.textContent = `~ ${proUsd}$ / month`;
+                    });
+
                     // Dynamic calculation
                     const loc = (typeof currentUserLang !== 'undefined' ? currentUserLang : (localStorage.getItem('sg_lang') || 'ar')) === 'ar' ? 'ar-EG' : 'en-US';
-                    pBasic.textContent = Math.ceil(basicPriceUsd * egpRate).toLocaleString(loc);
-                    pPro.textContent = Math.ceil(proPriceUsd * egpRate).toLocaleString(loc);
+                    pBasic.textContent = Math.ceil(basicUsd * egpRate).toLocaleString(loc);
+                    pPro.textContent = Math.ceil(proUsd * egpRate).toLocaleString(loc);
                 } else {
                     throw new Error('Invalid rate data from backend');
                 }

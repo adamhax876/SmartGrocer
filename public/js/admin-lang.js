@@ -37,6 +37,8 @@ const adminDict = {
         lbl_siteName: 'اسم المنصة (Site Name)', lbl_supportEmail: 'البريد الإلكتروني للدعم (Support Email)',
         lbl_currency: 'العملة الافتراضية للنظام (Currency)', lbl_maintenance: 'وضع الصيانة (Maintenance Mode)',
         lbl_maintenance_hint: 'سوف يمنع المتاجر من تسجيل الدخول لحين إيقافه.',
+        lbl_planPricing: 'أسعار الباقات (USD)', lbl_basicPrice: 'سعر الباقة الأساسية', lbl_proPrice: 'سعر الباقة الاحترافية',
+        lbl_priceHint: 'سيتم تحويل هذا السعر تلقائياً بناءً على سعر الصرف اللحظي.',
         
         // Tickets specific
         title_tickets: 'تذاكر الدعم', th_subj: 'الموضوع', th_date: 'التاريخ',
@@ -80,6 +82,8 @@ const adminDict = {
         lbl_siteName: 'Site Name', lbl_supportEmail: 'Support Email',
         lbl_currency: 'System Currency', lbl_maintenance: 'Maintenance Mode',
         lbl_maintenance_hint: 'Prevents stores from logging in until disabled.',
+        lbl_planPricing: 'Plan Pricing (USD)', lbl_basicPrice: 'Basic Plan Price', lbl_proPrice: 'Pro Plan Price',
+        lbl_priceHint: 'This price will be automatically converted based on live exchange rates.',
         
         // Tickets specific
         title_tickets: 'Support Tickets', th_subj: 'Subject', th_date: 'Date',

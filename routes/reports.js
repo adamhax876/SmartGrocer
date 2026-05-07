@@ -19,9 +19,9 @@ router.get('/overview', async (req, res) => {
         const totalInventoryValue = products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
         const lowStock = products.filter(p => p.quantity <= p.lowStockThreshold).length;
         const nearExpiry = products.filter(p => {
-            if (!p.expiryDate) return false;
+            if (!p.expiryDate || p.quantity <= 0) return false;
             const days = (p.expiryDate - new Date()) / (1000 * 60 * 60 * 24);
-            return days <= 30 && days > 0;
+            return days <= 30; // Included expired items too (days <= 0)
         }).length;
 
         // Sales & Profit estimate
@@ -462,20 +462,18 @@ router.get('/monthly-comparison', async (req, res) => {
 // GET /api/reports/expiry-alerts — products expired or near expiry
 router.get('/expiry-alerts', async (req, res) => {
     try {
-        const products = await Product.find({ 
-                userId: req.user._id, 
-                expiryDate: { $ne: null } 
-            })
-            .sort('expiryDate')
-            .limit(50);
-
         const now = new Date();
         const thirtyDaysFromNow = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000));
 
-        const alerts = products
-            .filter(p => p.expiryDate && p.expiryDate <= thirtyDaysFromNow)
-            .slice(0, 10)
-            .map(p => ({
+        const products = await Product.find({ 
+                userId: req.user._id, 
+                quantity: { $gt: 0 },
+                expiryDate: { $lte: thirtyDaysFromNow, $ne: null } 
+            })
+            .sort('expiryDate')
+            .limit(20);
+
+        const alerts = products.map(p => ({
                 _id: p._id,
                 name: p.name,
                 expiryDate: p.expiryDate,

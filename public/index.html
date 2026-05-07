@@ -310,7 +310,7 @@
           (Startups)</h3>
         <p style="color: var(--text-secondary); margin-bottom: 1.5rem; height: 50px;" data-i18n="plan_basic_desc">مثالية
           للمحلات الصغيرة أو المتوسطة لفرع واحد.</p>
-        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$15<span
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$<span id="basic-price-val">15</span><span
             style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;" data-i18n="plan_duration_month"> /
             شهرياً</span></div>
         <ul
@@ -338,7 +338,7 @@
           (Enterprise)</h3>
         <p style="color: var(--text-secondary); margin-bottom: 1.5rem; height: 50px;" data-i18n="plan_pro_desc">للمتاجر
           الجادة التي تبحث عن أقصى تحكم ونمو مبيعات بالذكاء التكنولوجي.</p>
-        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$25<span
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">$<span id="pro-price-val">25</span><span
             style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;" data-i18n="plan_duration_month"> /
             شهرياً</span></div>
         <ul
@@ -499,6 +499,16 @@
 
     // Handle authenticated state & pricing buttons
     document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Fetch pricing first to update display immediately
+      try {
+          const sRes = await fetch('/api/settings/public');
+          const sData = await sRes.json();
+          if (sData.success) {
+              if (document.getElementById('basic-price-val')) document.getElementById('basic-price-val').textContent = sData.basicPriceUsd || 15;
+              if (document.getElementById('pro-price-val')) document.getElementById('pro-price-val').textContent = sData.proPriceUsd || 25;
+          }
+      } catch (e) { console.warn("Could not fetch pricing", e); }
+
       const freeBtn = document.querySelector('a[data-i18n="btn_start_free"]');
       const basicBtn = document.querySelector('a[data-i18n="btn_sub_basic"]');
       const proBtn = document.querySelector('a[data-i18n="btn_sub_pro"]');
