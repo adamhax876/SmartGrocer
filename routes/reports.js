@@ -246,7 +246,6 @@ RULES:
 - Use <div> tags with a class "ai-card" for sections (I will provide the CSS).
 - Keep the total length around 350 words. Focus on QUALITY over quantity.
 - Start directly with the first header.`;
-`;
 
         let aiRes = null;
         try {
