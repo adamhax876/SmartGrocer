@@ -137,12 +137,13 @@ router.post('/ai-analysis', async (req, res) => {
         const productSalesMap = {};
         recentSales.forEach(sale => {
             sale.items.forEach(item => {
-                const key = item.name || item.productId?.toString() || 'Unknown';
+                const key = item.productName || item.name || 'Unknown';
                 if (!productSalesMap[key]) productSalesMap[key] = { qty: 0, revenue: 0 };
                 productSalesMap[key].qty += item.quantity;
                 productSalesMap[key].revenue += (item.unitPrice || item.price || 0) * item.quantity;
             });
         });
+
         const topProducts = Object.entries(productSalesMap)
             .sort((a, b) => b[1].qty - a[1].qty)
             .slice(0, 5)
@@ -209,7 +210,7 @@ router.post('/ai-analysis', async (req, res) => {
         if (!apiKey) throw new Error("GROQ_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
-        const prompt = `You are a world-class retail business analyst. Create a professional, high-impact performance report for SmartGrocer SaaS.
+        const prompt = `You are a world-class retail business analyst. Create a high-impact, professional performance report for SmartGrocer SaaS.
 
 STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
 
@@ -221,31 +222,36 @@ STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
 - Margin: ${profitMargin}%
 - Payments: ${paymentStr || 'N/A'}
 
-- Top Products: ${topProducts.join(', ') || 'N/A'}
-- Slow Products: ${slowProducts.join(', ') || 'N/A'}
+- Top Products (High Demand): ${topProducts.join(' | ') || 'N/A'}
+- Slow Products (Low Demand): ${slowProducts.join(' | ') || 'N/A'}
 
-- Inventory: Total ${products.length}, Low Stock ${lowStockItems.length}, OOS ${outOfStock.length}, Near Expiry ${nearExpiry.length}
-- Categories: ${categoryBreakdown || 'N/A'}
-- Trend (7d): ${dailyRevenue.join(' | ')}
+- Inventory: Total ${products.length} types.
+- Low Stock: ${lowStockItems.length} items (⚠️ ${lowStockItems.slice(0, 5).map(p => `${p.name}: ${p.quantity} left`).join(', ')})
+- Out of Stock: ${outOfStock.length} items (🔴 ${outOfStock.slice(0, 3).map(p => p.name).join(', ')})
+- Near Expiry: ${nearExpiry.length} items (⏰ ${nearExpiry.slice(0, 5).map(p => `${p.name} expires on ${p.expiryDate?.toLocaleDateString()}`).join(', ')})
+
+- Trend (7d Revenue): ${dailyRevenue.join(' -> ')}
 
 ---
 
 Write a CONCISE and STUNNING report in ${isAr ? 'Arabic' : 'English'}.
 Structure it using these EXACT sections (use emojis):
 
-1. 📊 Executive Summary: Quick overview of the store's health.
-2. 💰 Financial Insights: Deep dive into revenue, profit, and margins.
-3. 🏆 Inventory & Product Strategy: Analysis of top vs slow items and inventory alerts.
-4. 📈 Trend Analysis: Insights from the 7-day revenue trend.
-5. 🎯 Actionable Roadmap: 5 specific, data-backed steps to grow the business.
+1. 📊 Executive Summary: Quick overview of store health.
+2. 💰 Financial Performance: Insights on revenue vs profit.
+3. 🏆 Winning Products: Analyze why the top items sell and what to do with slow ones.
+4. ⏰ Critical Alerts: List products about to expire or out of stock with DATES.
+5. 🎯 Smart Recommendations: 5 AGGRESSIVE, data-backed steps to increase profit.
 
 RULES:
-- DO NOT REPEAT TEXT. Be concise.
-- Use the provided numbers and product names.
-- Do NOT use markdown. Use clean HTML with <h3>, <h4>, <ul>, <li>, and <strong>.
-- Use <div> tags with a class "ai-card" for sections (I will provide the CSS).
-- Keep the total length around 350 words. Focus on QUALITY over quantity.
-- Start directly with the first header.`;
+- DO NOT USE IDs (like 69e29a...). Use names ONLY.
+- DO NOT USE FOREIGN LANGUAGES. Use ${isAr ? 'Arabic' : 'English'} ONLY.
+- BE SPECIFIC. Mention product names and numbers in every insight.
+- DO NOT REPEAT TEXT.
+- Use <h3> for titles and <strong> for numbers.
+- Wrap the response directly in <div> tags as instructed in system message.
+- Keep the total length around 400 words.`;
+
 
         let aiRes = null;
         try {
@@ -255,9 +261,10 @@ RULES:
                     { 
                         role: 'system', 
                         content: `You are a premium retail business analyst. Respond ONLY with clean HTML.
-                        Wrap each section in <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                        Use <h3> for titles with color #1e293b. Use <strong> for numbers and product names.
-                        Ensure the tone is professional and the Arabic is perfect.`
+                        Wrap each section in <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+                        Use <h3> for titles with color var(--primary). Use <strong> for highlights.
+                        Strictly use ${isAr ? 'Arabic' : 'English'}. NO mixed languages.`
+
                     },
                     { role: 'user', content: prompt }
                 ],
@@ -283,18 +290,25 @@ RULES:
         // Inject global styling for the report (email and display)
         const reportStyle = `
         <style>
-            .ai-report { font-family: 'Cairo', sans-serif; color: #334155; line-height: 1.6; }
-            .ai-report h3 { color: #1e293b; margin-top: 0; font-size: 1.25rem; border-bottom: 2px solid #10b981; display: inline-block; padding-bottom: 5px; margin-bottom: 15px; }
-            .ai-report h4 { color: #475569; margin-bottom: 10px; }
-            .ai-report ul { padding-inline-start: 20px; margin-bottom: 15px; }
-            .ai-report li { margin-bottom: 8px; }
-            .ai-report strong { color: #10b981; }
-            .ai-report-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+            .ai-report { font-family: 'Cairo', sans-serif; color: var(--text); line-height: 1.8; text-align: right; }
+            [dir="ltr"] .ai-report { text-align: left; }
+            .ai-report h3 { color: var(--primary); margin-top: 0; font-size: 1.4rem; font-weight: 800; border-bottom: 3px solid var(--primary-light); display: inline-block; padding-bottom: 8px; margin-bottom: 20px; }
+            .ai-report p { margin-bottom: 15px; font-size: 1.05rem; color: var(--text-secondary); }
+            .ai-report ul { padding-inline-start: 25px; margin-bottom: 20px; list-style-type: none; }
+            .ai-report li { margin-bottom: 12px; position: relative; padding-inline-start: 15px; color: var(--text-secondary); }
+            .ai-report li::before { content: "•"; color: var(--primary); font-weight: bold; position: absolute; inset-inline-start: 0; }
+            .ai-report strong { color: var(--primary); font-weight: 700; }
+            
+            @media (max-width: 768px) {
+                .ai-report h3 { font-size: 1.2rem; }
+                .ai-report p, .ai-report li { font-size: 0.95rem; }
+            }
         </style>
         <div class="ai-report">
             ${analysisHtml}
         </div>
         `;
+
         analysisHtml = reportStyle;
 
 

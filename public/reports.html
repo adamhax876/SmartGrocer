@@ -720,7 +720,10 @@
                     title: currentLang === 'ar' ? 'اكتمل التحليل ببراعة!' : 'Analysis Complete!',
                     html: res.reportHtml || (currentLang === 'ar' ? 'تم إنشاء التقرير.' : 'Report generated.'),
                     width: '850px',
+                    background: 'var(--bg-card)',
+                    color: 'var(--text)',
                     customClass: {
+                        popup: 'ai-report-popup',
                         container: 'ai-report-modal'
                     },
                     confirmButtonColor: '#10b981',
