@@ -207,9 +207,9 @@
                 <div id="socialLinksContainer" class="space-y-3 mb-4"></div>
 
                 <div class="flex flex-col sm:flex-row gap-2 p-4 bg-gray-50 rounded-lg border">
-                    <select id="newSocialIcon" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500 flex-shrink-0">
+                    <select id="newSocialIcon" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500 flex-shrink-0" onchange="updateSocialPlaceholder()">
                         <option value="fab fa-facebook-f">Facebook</option>
-                        <option value="fab fa-twitter">Twitter / X</option>
+                        <option value="fab fa-x-twitter">X (Twitter)</option>
                         <option value="fab fa-instagram">Instagram</option>
                         <option value="fab fa-whatsapp">WhatsApp</option>
                         <option value="fab fa-youtube">YouTube</option>
@@ -220,7 +220,7 @@
                         <option value="fas fa-globe">Website</option>
                     </select>
                     <input type="text" id="newSocialName" placeholder="اسم المنصة (مثال: Facebook)" data-translate="lbl_platformName" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500">
-                    <input type="url" id="newSocialUrl" placeholder="رابط الصفحة (https://...)" data-translate="lbl_pageUrl" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500">
+                    <input type="text" id="newSocialUrl" placeholder="رابط الصفحة (https://...)" data-translate="lbl_pageUrl" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500">
                     <button type="button" onclick="addSocialLink()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm whitespace-nowrap transition flex items-center justify-center gap-1">
                         <i class="fas fa-plus"></i> <span data-translate="btn_add">إضافة</span>
                     </button>
@@ -429,25 +429,107 @@
                         <div class="font-semibold text-sm text-gray-800">${link.name}</div>
                         <a href="${link.url}" target="_blank" class="text-xs text-blue-500 truncate block">${link.url}</a>
                     </div>
-                    <button onclick="removeSocialLink(${i})" class="text-red-500 hover:text-red-700 transition p-1" title="حذف">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="editSocialLink(${i})" class="text-blue-500 hover:text-blue-700 transition p-1" title="تعديل">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="removeSocialLink(${i})" class="text-red-500 hover:text-red-700 transition p-1" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function updateSocialPlaceholder() {
+            const icon = document.getElementById('newSocialIcon').value;
+            const urlInput = document.getElementById('newSocialUrl');
+            const nameInput = document.getElementById('newSocialName');
+            
+            if (icon === 'fab fa-whatsapp') {
+                urlInput.placeholder = 'رقم الهاتف بكود الدولة (مثال: 201012345678)';
+                urlInput.type = 'text';
+                nameInput.value = 'WhatsApp';
+            } else if (icon === 'fab fa-x-twitter') {
+                urlInput.placeholder = 'رابط الصفحة (https://x.com/...)';
+                urlInput.type = 'text';
+                nameInput.value = 'X (Twitter)';
+            } else {
+                urlInput.placeholder = 'رابط الصفحة (https://...)';
+                urlInput.type = 'text';
+                const selectedText = document.getElementById('newSocialIcon').options[document.getElementById('newSocialIcon').selectedIndex].text;
+                nameInput.value = selectedText;
+            }
         }
 
         function addSocialLink() {
             const icon = document.getElementById('newSocialIcon').value;
             const name = document.getElementById('newSocialName').value.trim();
-            const url = document.getElementById('newSocialUrl').value.trim();
+            let url = document.getElementById('newSocialUrl').value.trim();
+            
             if (!name || !url) {
                 Swal.fire('تنبيه', 'يرجى إدخال اسم المنصة والرابط', 'warning');
                 return;
             }
+
+            // WhatsApp formatting: convert number to wa.me link
+            if (icon === 'fab fa-whatsapp' && !url.startsWith('http')) {
+                // Remove spaces, plus, and dashes
+                const cleanPhone = url.replace(/[\s\+\-\(\)]/g, '');
+                url = `https://wa.me/${cleanPhone}`;
+            }
+
             socialLinks.push({ icon, name, url });
             renderSocialLinks();
             document.getElementById('newSocialName').value = '';
             document.getElementById('newSocialUrl').value = '';
+        }
+
+        async function editSocialLink(index) {
+            const link = socialLinks[index];
+            let displayUrl = link.url;
+            
+            // If it's a wa.me link, show only the number to user for editing ease
+            if (link.icon === 'fab fa-whatsapp' && link.url.includes('wa.me/')) {
+                displayUrl = link.url.split('wa.me/')[1];
+            }
+
+            const { value: formValues } = await Swal.fire({
+                title: 'تعديل الرابط',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 text-right mb-1">اسم المنصة</label>
+                            <input id="swal-name" class="swal2-input w-full" value="${link.name}">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 text-right mb-1">${link.icon === 'fab fa-whatsapp' ? 'رقم الهاتف' : 'الرابط'}</label>
+                            <input id="swal-url" class="swal2-input w-full" value="${displayUrl}">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'حفظ',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-name').value.trim(),
+                        url: document.getElementById('swal-url').value.trim()
+                    }
+                }
+            });
+
+            if (formValues && formValues.name && formValues.url) {
+                let finalUrl = formValues.url;
+                if (link.icon === 'fab fa-whatsapp' && !finalUrl.startsWith('http')) {
+                    const cleanPhone = finalUrl.replace(/[\s\+\-\(\)]/g, '');
+                    finalUrl = `https://wa.me/${cleanPhone}`;
+                }
+                
+                socialLinks[index] = { ...link, name: formValues.name, url: finalUrl };
+                renderSocialLinks();
+            }
         }
 
         function removeSocialLink(index) {
