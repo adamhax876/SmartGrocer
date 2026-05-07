@@ -129,12 +129,12 @@
             <!-- Charts + Table -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Plan Distribution Chart -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col w-full overflow-hidden">
                     <div class="flex items-center justify-between mb-4">
                         <h4 class="font-semibold text-gray-800" data-translate="chartTitle">توزيع باقات المشتركين</h4>
                         <span class="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-semibold" data-translate="chartBadge">📊 حسب الباقات النشطة</span>
                     </div>
-                    <div class="relative flex-1 w-full" style="min-height: 280px;">
+                    <div class="relative flex-1 w-full" style="min-height: 250px; max-height: 400px;">
                         <canvas id="growthChart"></canvas>
                     </div>
                 </div>

@@ -135,6 +135,47 @@ window.toggleAdminLang = function() {
 document.addEventListener('DOMContentLoaded', () => {
     applyAdminLang();
     
+    // Inject CSS for mobile
+    if (!document.getElementById('adminMobileStyle')) {
+        const link = document.createElement('link');
+        link.id = 'adminMobileStyle';
+        link.rel = 'stylesheet';
+        link.href = '/css/admin-mobile.css?v=' + Date.now();
+        document.head.appendChild(link);
+    }
+
+    // Global Mobile Bottom Nav
+    const currentPage = window.location.pathname.split('/').pop().split('.')[0] || 'dashboard';
+    let bottomNav = document.getElementById('adminBottomNav');
+    if (!bottomNav) {
+        bottomNav = document.createElement('div');
+        bottomNav.id = 'adminBottomNav';
+        bottomNav.className = 'admin-bottom-nav md:hidden';
+        bottomNav.innerHTML = `
+            <a href="/admin/dashboard.html" class="admin-nav-item ${currentPage === 'dashboard' ? 'active' : ''}">
+                <i class="fas fa-home"></i>
+                <span data-translate="nav_dashboard">${adminDict[adminLang].nav_dashboard}</span>
+            </a>
+            <a href="/admin/stores.html" class="admin-nav-item ${currentPage === 'stores' ? 'active' : ''}">
+                <i class="fas fa-store"></i>
+                <span data-translate="nav_stores">${adminDict[adminLang].nav_stores}</span>
+            </a>
+            <a href="/admin/payments.html" class="admin-nav-item ${currentPage === 'payments' ? 'active' : ''}">
+                <i class="fas fa-credit-card"></i>
+                <span data-translate="nav_payments">${adminDict[adminLang].nav_payments}</span>
+            </a>
+            <a href="/admin/settings.html" class="admin-nav-item ${currentPage === 'settings' ? 'active' : ''}">
+                <i class="fas fa-cog"></i>
+                <span data-translate="nav_settings">${adminDict[adminLang].nav_settings}</span>
+            </a>
+            <a href="/admin/tickets.html" class="admin-nav-item ${currentPage === 'tickets' ? 'active' : ''}">
+                <i class="fas fa-comment-dots"></i>
+                <span data-translate="nav_tickets">${adminDict[adminLang].nav_tickets}</span>
+            </a>
+        `;
+        document.body.appendChild(bottomNav);
+    }
+
     // Global Mobile Menu Logic
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.querySelector('.sidebar');
