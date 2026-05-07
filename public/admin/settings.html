@@ -209,7 +209,7 @@
                 <div class="flex flex-col sm:flex-row gap-2 p-4 bg-gray-50 rounded-lg border">
                     <select id="newSocialIcon" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-blue-500 flex-shrink-0" onchange="updateSocialPlaceholder()">
                         <option value="fab fa-facebook-f">Facebook</option>
-                        <option value="fab fa-x-twitter">X (Twitter)</option>
+                        <option value="fab fa-x-twitter">X</option>
                         <option value="fab fa-instagram">Instagram</option>
                         <option value="fab fa-whatsapp">WhatsApp</option>
                         <option value="fab fa-youtube">YouTube</option>
@@ -489,7 +489,6 @@
             const link = socialLinks[index];
             let displayUrl = link.url;
             
-            // If it's a wa.me link, show only the number to user for editing ease
             if (link.icon === 'fab fa-whatsapp' && link.url.includes('wa.me/')) {
                 displayUrl = link.url.split('wa.me/')[1];
             }
@@ -497,21 +496,22 @@
             const { value: formValues } = await Swal.fire({
                 title: 'تعديل الرابط',
                 html: `
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm text-gray-600 text-right mb-1">اسم المنصة</label>
-                            <input id="swal-name" class="swal2-input w-full" value="${link.name}">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 text-right mb-1">${link.icon === 'fab fa-whatsapp' ? 'رقم الهاتف' : 'الرابط'}</label>
-                            <input id="swal-url" class="swal2-input w-full" value="${displayUrl}">
-                        </div>
+                    <div style="text-align: right; direction: rtl;">
+                        <label style="display: block; font-size: 14px; color: #4b5563; margin-bottom: 5px;">اسم المنصة</label>
+                        <input id="swal-name" class="swal2-input" style="width: 100%; margin: 0 0 15px 0;" value="${link.name}">
+                        
+                        <label style="display: block; font-size: 14px; color: #4b5563; margin-bottom: 5px;">${link.icon === 'fab fa-whatsapp' ? 'رقم الهاتف' : 'الرابط'}</label>
+                        <input id="swal-url" class="swal2-input" style="width: 100%; margin: 0;" value="${displayUrl}">
                     </div>
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
                 confirmButtonText: 'حفظ',
                 cancelButtonText: 'إلغاء',
+                customClass: {
+                    container: 'admin-swal-container',
+                    popup: 'rounded-xl'
+                },
                 preConfirm: () => {
                     return {
                         name: document.getElementById('swal-name').value.trim(),
