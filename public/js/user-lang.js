@@ -3,8 +3,9 @@ const userTranslations = {
         nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports", nav_support: "Support",
         btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home", btn_delete_account: "Delete Account",
         title_dashboard: "Dashboard Overview",
-        kpi_revenue: "Total Revenue", kpi_orders: "Orders Count", kpi_low_stock: "Low Stock Alerts", kpi_products: "Total Products",
+        kpi_revenue: "Total Revenue", kpi_orders: "Orders Count", kpi_low_stock: "Low Stock Alerts", kpi_expiry: "Expiry Alerts", kpi_products: "Total Products",
         chart_sales: "Monthly Sales", chart_categories: "Category Distribution", btn_upgrade: "Upgrade Plan 🚀", btn_renew: "Renew Plan 🚀",
+        expiry_alerts: "Expiry Alerts",
 
         // Sales / Reports / Products
         title_products: "Products Inventory", btn_add_product: "Add Product +", btn_import_excel: "Import Excel 📊",
@@ -97,8 +98,9 @@ const userTranslations = {
         nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
         btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية", btn_delete_account: "حذف حساب المتجر",
         title_dashboard: "نظرة عامة",
-        kpi_revenue: "إجمالي المبيعات", kpi_orders: "الطلبات", kpi_low_stock: "تنبيهات المخزون", kpi_products: "إجمالي المنتجات",
+        kpi_revenue: "إجمالي المبيعات", kpi_orders: "الطلبات", kpi_low_stock: "تنبيهات المخزون", kpi_expiry: "تنبيهات الصلاحية", kpi_products: "إجمالي المنتجات",
         chart_sales: "المبيعات الشهرية", chart_categories: "توزيع الفئات", btn_upgrade: "ترقية الباقة 🚀", btn_renew: "تجديد الباقة 🚀",
+        expiry_alerts: "تنبيهات الصلاحية",
 
         title_products: "قائمة المنتجات", btn_add_product: "إضافة منتج +", btn_import_excel: "استيراد من إكسيل 📊",
         title_sales: "سجل المبيعات والفواتير", btn_refresh: "تحديث السجل 🔄",

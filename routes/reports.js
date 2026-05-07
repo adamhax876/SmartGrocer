@@ -21,7 +21,7 @@ router.get('/overview', async (req, res) => {
         const nearExpiry = products.filter(p => {
             if (!p.expiryDate) return false;
             const days = (p.expiryDate - new Date()) / (1000 * 60 * 60 * 24);
-            return days <= 7 && days > 0;
+            return days <= 30 && days > 0;
         }).length;
 
         // Sales & Profit estimate
@@ -130,7 +130,7 @@ router.post('/ai-analysis', async (req, res) => {
         const nearExpiry = products.filter(p => {
             if (!p.expiryDate) return false;
             const days = (p.expiryDate - now) / (1000 * 60 * 60 * 24);
-            return days <= 7 && days > 0;
+            return days <= 30 && days > 0;
         });
 
         // Top 5 best-selling products (by sales count)
@@ -231,7 +231,7 @@ ${slowProducts.length ? slowProducts.join('\n') : 'No data available'}
 - Total Products: ${products.length}
 - Low Stock Items (need reorder): ${lowStockItems.length}${lowStockItems.length > 0 ? '\n  ⚠️ ' + lowStockItems.slice(0, 5).map(p => `${p.name}: only ${p.quantity} left`).join(', ') : ''}
 - Out of Stock: ${outOfStock.length}${outOfStock.length > 0 ? '\n  🔴 ' + outOfStock.slice(0, 3).map(p => p.name).join(', ') : ''}
-- Near Expiry (within 7 days): ${nearExpiry.length}${nearExpiry.length > 0 ? '\n  ⏰ ' + nearExpiry.slice(0, 3).map(p => p.name).join(', ') : ''}
+- Near Expiry (within 30 days): ${nearExpiry.length}${nearExpiry.length > 0 ? '\n  ⏰ ' + nearExpiry.slice(0, 3).map(p => p.name).join(', ') : ''}
 
 ====== CATEGORY BREAKDOWN ======
 ${categoryBreakdown || 'N/A'}
@@ -462,7 +462,10 @@ router.get('/monthly-comparison', async (req, res) => {
 // GET /api/reports/expiry-alerts — products expired or near expiry
 router.get('/expiry-alerts', async (req, res) => {
     try {
-        const products = await Product.find({ userId: req.user._id })
+        const products = await Product.find({ 
+                userId: req.user._id, 
+                expiryDate: { $ne: null } 
+            })
             .sort('expiryDate')
             .limit(50);
 
