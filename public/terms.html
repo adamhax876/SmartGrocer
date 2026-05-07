@@ -25,7 +25,7 @@
       top: 0;
       z-index: 999;
     }
-    .brand img { max-height: 50px; object-fit: contain; }
+    .brand img { max-height: 100px; width: auto; object-fit: contain; }
     .nav-links { display: flex; gap: 1rem; align-items: center; }
     
     footer {
@@ -38,7 +38,9 @@
 
     @media (max-width: 768px) {
       .navbar { flex-direction: column; gap: 1rem; padding: 1rem; position: relative; }
-      .nav-links { flex-wrap: wrap; justify-content: center; width: 100%; }
+      .nav-links { flex-wrap: wrap; justify-content: center; width: 100%; gap: 0.5rem; }
+      .brand img { max-height: 70px; }
+      .content-page { padding: 2rem 1.5rem; }
       .content-page h1 { font-size: 1.8rem; }
     }
   </style>
@@ -50,8 +52,8 @@
       <a href="/"><img src="/images/logo.png" alt="Logo"></a>
     </div>
     <div class="nav-links">
-      <button onclick="toggleTheme()" class="btn btn-outline" style="padding: 0.5rem; border-radius: 50%;">🌓</button>
-      <button onclick="toggleLanguage()" class="btn btn-outline" id="lang-text">English</button>
+      <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle" style="padding: 0.5rem; border-radius: 50%; min-width: 44px; height: 44px;">🌙</button>
+      <button onclick="toggleLanguage()" class="btn btn-outline" id="lang-text" style="min-width: 80px;">English</button>
       <a href="/login.html" class="btn btn-outline" data-i18n="nav_login">تسجيل الدخول</a>
       <a href="/signup.html" class="btn btn-primary" data-i18n="nav_signup">حساب جديد</a>
     </div>
@@ -150,16 +152,12 @@
       updateTexts();
     }
     
-    function toggleTheme() {
-      const body = document.body;
-      const newTheme = body.classList.contains('light') ? 'dark' : 'light';
-      body.className = newTheme;
-      localStorage.setItem('sg_theme', newTheme);
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('sg_theme') || 'light';
-      document.body.className = savedTheme;
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (typeof updateThemeIcon === 'function') updateThemeIcon(savedTheme);
+      if (typeof updateLogos === 'function') updateLogos(savedTheme);
+      
       updateTexts();
       
       const user = JSON.parse(localStorage.getItem('sg_user') || 'null');
