@@ -4,7 +4,7 @@
 
 // Theme Management
 function getTheme() {
-    return localStorage.getItem('sg_theme') || 'light';
+    return localStorage.getItem('sg_theme') || 'dark';
 }
 
 function setTheme(theme) {
