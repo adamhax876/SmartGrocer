@@ -208,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Active Sidebar Link Logic
-    const currentPage = window.location.pathname.split('/').pop().split('.')[0];
     const activeLinks = document.querySelectorAll(`[data-page="${currentPage}"]`);
     activeLinks.forEach(link => {
         link.classList.remove('text-gray-300', 'hover:bg-gray-800', 'hover:text-white');
