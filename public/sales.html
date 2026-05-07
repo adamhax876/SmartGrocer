@@ -50,10 +50,130 @@
             .no-print { display: none !important; }
             .items-list-modal.active { background: transparent; backdrop-filter: none; position: static; }
         }
+        .hamburger {
+            display: none;
+            width: 38px; height: 38px;
+            align-items: center; justify-content: center;
+            border: 1px solid var(--border); border-radius: 10px;
+            background: var(--bg-secondary);
+            cursor: pointer; font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                right: -280px;
+                bottom: 0;
+                width: 280px;
+                z-index: 9999;
+                display: flex !important;
+                transform: none !important;
+                transition: right 0.3s ease-in-out !important;
+                box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+            }
+            body[dir="ltr"] .sidebar {
+                left: -280px;
+                right: auto;
+                transition: left 0.3s ease-in-out !important;
+            }
+            .sidebar.open {
+                right: 0 !important;
+                display: flex !important;
+            }
+            body[dir="ltr"] .sidebar.open {
+                left: 0 !important;
+                right: auto !important;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 9998;
+                backdrop-filter: blur(2px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .main {
+                margin-inline-start: 0 !important;
+            }
+            .hamburger {
+                display: flex !important;
+            }
+            .topbar {
+                padding: 0.8rem 1rem !important;
+            }
+            .content {
+                padding: 1rem !important;
+            }
+            .filters {
+                flex-direction: column;
+            }
+
+            /* Responsive Table (Cards) */
+            .table-wrapper { border: none; background: transparent; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { 
+                background: var(--bg-card); 
+                margin-bottom: 1rem; 
+                border-radius: var(--radius-lg); 
+                border: 1px solid var(--border); 
+                padding: 0.5rem;
+                box-shadow: var(--shadow-sm);
+            }
+            td { 
+                border: none; 
+                border-bottom: 1px solid var(--border); 
+                position: relative; 
+                padding: 0.8rem 0.8rem 0.8rem 50% !important; 
+                text-align: left !important;
+                font-size: 0.85rem !important;
+            }
+            body[dir="rtl"] td {
+                padding: 0.8rem 50% 0.8rem 0.8rem !important;
+                text-align: right !important;
+            }
+            td:last-child { border-bottom: 0; }
+            td::before { 
+                position: absolute; 
+                top: 50%; 
+                left: 1rem; 
+                width: 45%; 
+                padding-right: 10px; 
+                white-space: nowrap; 
+                font-weight: bold; 
+                color: var(--text-secondary);
+                transform: translateY(-50%);
+            }
+            body[dir="rtl"] td::before {
+                left: auto;
+                right: 1rem;
+                padding-right: 0;
+                padding-left: 10px;
+                text-align: right;
+            }
+            
+            td:nth-of-type(1)::before { content: attr(data-label); }
+            td:nth-of-type(2)::before { content: attr(data-label); }
+            td:nth-of-type(3)::before { content: attr(data-label); }
+            td:nth-of-type(4)::before { content: attr(data-label); }
+            td:nth-of-type(5)::before { content: attr(data-label); }
+            td:nth-of-type(6)::before { content: attr(data-label); }
+
+            td .view-sale-btn {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
     </style>
 </head>
 
 <body class="light">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="app">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -77,12 +197,15 @@
 
         <main class="main">
             <header class="topbar">
-                <h1 class="topbar-title" data-i18n="title_sales">سجل المبيعات والفواتير</h1>
-                <div class="topbar-actions" style="display: flex; gap: 1rem; align-items: center;">
+                <div style="display:flex;align-items:center;gap:0.5rem">
+                    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                    <h1 class="topbar-title" data-i18n="title_sales">سجل المبيعات والفواتير</h1>
+                </div>
+                <div class="topbar-actions" style="display: flex; gap: 0.5rem; align-items: center;">
                     <button class="btn btn-outline" id="theme-toggle"
                         style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌓</button>
                     <button class="btn btn-outline" id="langToggle"
-                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">English</button>
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 12px;">English</button>
                 </div>
             </header>
 
@@ -229,12 +352,12 @@
 
                 return `
                     <tr>
-                        <td style="font-family: monospace; color: var(--text-secondary);">#${sale._id.substring(18)}</td>
-                        <td>${d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')} - ${d.toLocaleTimeString()}</td>
-                        <td>${itemsCount}</td>
-                        <td style="color: var(--primary); font-weight: bold;">${sale.total.toFixed(2)}</td>
-                        <td><span class="badge badge-success">${payLabel}</span></td>
-                        <td><button class="btn btn-outline view-sale-btn" data-sale-id="${sale._id}" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">${t('btn_view')}</button></td>
+                        <td data-label="${t('th_invoice')}" style="font-family: monospace; color: var(--text-secondary);">#${sale._id.substring(18)}</td>
+                        <td data-label="${t('th_date')}">${d.toLocaleDateString(currentLang === 'ar' ? 'ar-EG' : 'en-US')} - ${d.toLocaleTimeString()}</td>
+                        <td data-label="${t('th_items')}">${itemsCount}</td>
+                        <td data-label="${t('th_total')}" style="color: var(--primary); font-weight: bold;">${sale.total.toFixed(2)}</td>
+                        <td data-label="${t('th_method')}"><span class="badge badge-success">${payLabel}</span></td>
+                        <td data-label="${t('th_details')}"><button class="btn btn-outline view-sale-btn" data-sale-id="${sale._id}" style="padding: 0.3rem 0.8rem; font-size: 0.85rem;">${t('btn_view')}</button></td>
                     </tr>
                 `;
             }).join('');
