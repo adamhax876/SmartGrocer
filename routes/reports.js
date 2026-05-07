@@ -206,13 +206,43 @@ router.post('/ai-analysis', async (req, res) => {
         const estimatedProfit = totalRevenue - totalCost;
         const profitMargin = totalRevenue > 0 ? ((estimatedProfit / totalRevenue) * 100).toFixed(1) : 0;
 
+        // --- NEW: Advanced AI Insights Data ---
+        // 1. Peak Hours (Hourly distribution)
+        const hourlyStats = Array(24).fill(0);
+        recentSales.forEach(s => {
+            const hr = new Date(s.createdAt).getHours();
+            hourlyStats[hr]++;
+        });
+        const peakHour = hourlyStats.indexOf(Math.max(...hourlyStats));
+        
+        // 2. Basket Analysis (Commonly bought together)
+        const pairs = {};
+        recentSales.forEach(s => {
+            if (s.items.length > 1) {
+                const names = s.items.map(i => i.productName || i.name).filter(n => n && n !== 'Unknown').sort();
+                for (let i = 0; i < names.length; i++) {
+                    for (let j = i + 1; j < names.length; j++) {
+                        const p = `${names[i]} & ${names[j]}`;
+                        pairs[p] = (pairs[p] || 0) + 1;
+                    }
+                }
+            }
+        });
+        const commonPairs = Object.entries(pairs).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]);
+
+        // 3. Customer Loyalty
+        const uniqueCustomers = new Set(recentSales.map(s => s.customerName).filter(c => c && c !== 'عميل')).size;
+        const repeatRate = recentSales.length > 0 ? ((uniqueCustomers / recentSales.length) * 100).toFixed(0) : 0;
+
+
         const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) throw new Error("GROQ_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
-        const prompt = `You are a world-class retail business analyst. Create a high-impact, professional performance report for SmartGrocer SaaS.
+        const prompt = `You are a world-class retail business analyst. Create a high-impact, professional performance report for the store "${user.storeName || 'N/A'}".
 
-STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
+STORE OWNER: "${user.fullName}"
+STORE NAME: "${user.storeName || 'N/A'}" (IMPORTANT: ALWAYS use this name, NEVER call it "SmartGrocer" in the report).
 
 ====== DATA TO ANALYZE ======
 - Revenue (30d): ${totalRevenue.toFixed(2)} EGP
@@ -222,8 +252,8 @@ STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
 - Margin: ${profitMargin}%
 - Payments: ${paymentStr || 'N/A'}
 
-- Top Products (High Demand): ${topProducts.join(' | ') || 'N/A'}
-- Slow Products (Low Demand): ${slowProducts.join(' | ') || 'N/A'}
+- Top Products: ${topProducts.join(' | ') || 'N/A'}
+- Slow Products: ${slowProducts.join(' | ') || 'N/A'}
 
 - Inventory: Total ${products.length} types.
 - Low Stock: ${lowStockItems.length} items (⚠️ ${lowStockItems.slice(0, 5).map(p => `${p.name}: ${p.quantity} left`).join(', ')})
@@ -232,25 +262,30 @@ STORE OWNER: "${user.fullName}" (${user.storeName || 'N/A'})
 
 - Trend (7d Revenue): ${dailyRevenue.join(' -> ')}
 
+--- UNIQUE AI INSIGHTS (NOT VISIBLE ON DASHBOARD) ---
+- Peak Hour: Busiest time is around ${peakHour}:00 (24h format).
+- Cross-Selling: Customers frequently buy these together: ${commonPairs.join(' | ') || 'No pairs detected'}.
+- Loyalty: Unique known customers: ${uniqueCustomers} out of ${recentSales.length} total orders.
+
 ---
 
 Write a CONCISE and STUNNING report in ${isAr ? 'Arabic' : 'English'}.
 Structure it using these EXACT sections (use emojis):
 
-1. 📊 Executive Summary: Quick overview of store health.
-2. 💰 Financial Performance: Insights on revenue vs profit.
-3. 🏆 Winning Products: Analyze why the top items sell and what to do with slow ones.
-4. ⏰ Critical Alerts: List products about to expire or out of stock with DATES.
-5. 🎯 Smart Recommendations: 5 AGGRESSIVE, data-backed steps to increase profit.
+1. 📊 Executive Summary: Start by mentioning "${user.storeName || 'the store'}" health.
+2. 💰 Financial & Growth: Insights on profit and how to improve the ${avgOrder.toFixed(0)} EGP average order.
+3. 🏆 Winning Products & Bundles: Use the "Cross-Selling" data to suggest specific bundles (e.g., "Sell Product A with Product B at a discount").
+4. ⏰ Critical Inventory & Expiry: Focus on products about to expire with their dates.
+5. 🎯 Strategic Action Plan: 5 BOLD steps to grow the store.
 
 RULES:
-- DO NOT USE IDs (like 69e29a...). Use names ONLY.
-- DO NOT USE FOREIGN LANGUAGES. Use ${isAr ? 'Arabic' : 'English'} ONLY.
-- BE SPECIFIC. Mention product names and numbers in every insight.
-- DO NOT REPEAT TEXT.
-- Use <h3> for titles and <strong> for numbers.
-- Wrap the response directly in <div> tags as instructed in system message.
-- Keep the total length around 400 words.`;
+- NEVER use the word "SmartGrocer" for the store name. Use "${user.storeName || 'المتجر'}".
+- BE SPECIFIC with numbers and product names.
+- USE the Cross-selling and Peak Hour data to give "Expert" advice.
+- DO NOT USE IDs. DO NOT USE FOREIGN LANGUAGES.
+- Wrap response in <div> tags as instructed.
+- Total length: ~450 words. Focus on being an "AI Consultant".`;
+
 
 
         let aiRes = null;
@@ -292,22 +327,26 @@ RULES:
         <style>
             .ai-report { font-family: 'Cairo', sans-serif; color: var(--text); line-height: 1.8; text-align: right; }
             [dir="ltr"] .ai-report { text-align: left; }
-            .ai-report h3 { color: var(--primary); margin-top: 0; font-size: 1.4rem; font-weight: 800; border-bottom: 3px solid var(--primary-light); display: inline-block; padding-bottom: 8px; margin-bottom: 20px; }
-            .ai-report p { margin-bottom: 15px; font-size: 1.05rem; color: var(--text-secondary); }
-            .ai-report ul { padding-inline-start: 25px; margin-bottom: 20px; list-style-type: none; }
-            .ai-report li { margin-bottom: 12px; position: relative; padding-inline-start: 15px; color: var(--text-secondary); }
+            .ai-report h3 { color: var(--primary); margin-top: 0; font-size: 1.4rem; font-weight: 800; border-bottom: 3px solid var(--primary-light); display: block; padding-bottom: 12px; margin-bottom: 20px; width: 100%; clear: both; }
+            .ai-report p { margin-bottom: 20px; font-size: 1.1rem; color: var(--text-secondary); display: block; line-height: 1.8; }
+            .ai-report ul { padding-inline-start: 25px; margin-bottom: 20px; list-style-type: none; display: block; }
+            .ai-report li { margin-bottom: 15px; position: relative; padding-inline-start: 20px; color: var(--text-secondary); font-size: 1.05rem; }
             .ai-report li::before { content: "•"; color: var(--primary); font-weight: bold; position: absolute; inset-inline-start: 0; }
-            .ai-report strong { color: var(--primary); font-weight: 700; }
+            .ai-report strong { color: var(--primary); font-weight: 700; background: rgba(16, 185, 129, 0.05); padding: 2px 6px; border-radius: 4px; }
             
+            .ai-report-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow-sm); overflow: hidden; }
+
             @media (max-width: 768px) {
-                .ai-report h3 { font-size: 1.2rem; }
-                .ai-report p, .ai-report li { font-size: 0.95rem; }
+                .ai-report h3 { font-size: 1.25rem; padding-bottom: 8px; }
+                .ai-report p, .ai-report li { font-size: 1rem; }
+                .ai-report-card { padding: 15px; margin-bottom: 15px; }
             }
         </style>
         <div class="ai-report">
             ${analysisHtml}
         </div>
         `;
+
 
         analysisHtml = reportStyle;
 
