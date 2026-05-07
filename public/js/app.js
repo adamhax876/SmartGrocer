@@ -14,6 +14,15 @@ function setTheme(theme) {
     updateLogos(theme);
 }
 
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay') || document.getElementById('globalSidebarOverlay');
+    if (sidebar) {
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('active');
+    }
+}
+
 function toggleTheme() {
     const current = getTheme();
     setTheme(current === 'light' ? 'dark' : 'light');

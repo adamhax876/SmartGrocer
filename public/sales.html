@@ -122,48 +122,26 @@
                 margin-bottom: 1rem; 
                 border-radius: var(--radius-lg); 
                 border: 1px solid var(--border); 
-                padding: 0.5rem;
+                padding: 1rem;
                 box-shadow: var(--shadow-sm);
             }
             td { 
                 border: none; 
                 border-bottom: 1px solid var(--border); 
-                position: relative; 
-                padding: 0.8rem 0.8rem 0.8rem 50% !important; 
-                text-align: left !important;
-                font-size: 0.85rem !important;
-            }
-            body[dir="rtl"] td {
-                padding: 0.8rem 50% 0.8rem 0.8rem !important;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.8rem 0 !important;
                 text-align: right !important;
             }
-            td:last-child { border-bottom: 0; }
+            td:last-child { border-bottom: 0; padding-top: 1.5rem !important; }
             td::before { 
-                position: absolute; 
-                top: 50%; 
-                left: 1rem; 
-                width: 45%; 
-                padding-right: 10px; 
-                white-space: nowrap; 
-                font-weight: bold; 
+                content: attr(data-label);
+                font-weight: bold;
                 color: var(--text-secondary);
-                transform: translateY(-50%);
-            }
-            body[dir="rtl"] td::before {
-                left: auto;
-                right: 1rem;
-                padding-right: 0;
-                padding-left: 10px;
-                text-align: right;
+                font-size: 0.85rem;
             }
             
-            td:nth-of-type(1)::before { content: attr(data-label); }
-            td:nth-of-type(2)::before { content: attr(data-label); }
-            td:nth-of-type(3)::before { content: attr(data-label); }
-            td:nth-of-type(4)::before { content: attr(data-label); }
-            td:nth-of-type(5)::before { content: attr(data-label); }
-            td:nth-of-type(6)::before { content: attr(data-label); }
-
             td .view-sale-btn {
                 width: 100%;
                 margin-top: 5px;
@@ -298,6 +276,15 @@
             });
         }
         updateTexts();
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay') || document.getElementById('globalSidebarOverlay');
+            if (sidebar) {
+                sidebar.classList.toggle('open');
+                if (overlay) overlay.classList.toggle('active');
+            }
+        }
 
         // Event listeners (no inline onclick — CSP safe)
         document.getElementById('langToggle').addEventListener('click', () => {
