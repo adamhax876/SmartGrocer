@@ -124,6 +124,7 @@ const userTranslations = {
         label_store_address: "Full Store Address",
         ph_store_address: "Cairo, Nasr St...",
         btn_save_settings: "Save Changes",
+        btn_download_backup: "Download Local Backup (JSON)",
         
         // Store Types
         type_supermarket: "Supermarket",
@@ -263,6 +264,7 @@ const userTranslations = {
         label_store_address: "عنوان المتجر الكامل",
         ph_store_address: "القاهرة، شارع النصر...",
         btn_save_settings: "حفظ التغييرات",
+        btn_download_backup: "تحميل نسخة احتياطية (JSON)",
         
         // Store Types
         type_supermarket: "سوبر ماركت",

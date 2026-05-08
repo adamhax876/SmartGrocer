@@ -674,7 +674,7 @@
                     <span id="finalTotal"></span>
                 </div>
 
-                <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4);">
+                <div id="loyaltySection" style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border: 1px dashed rgba(59, 130, 246, 0.4); display: none;">
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <input type="tel" id="customerPhone" data-i18n-ph="ph_customer_phone" placeholder="رقم هاتف العميل (نظام الولاء)"
                             style="flex: 1; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);">
@@ -844,8 +844,10 @@
             document.getElementById('langToggle').textContent = currentLang === 'ar' ? 'English' : 'عربي';
             updateTexts();
             renderCart();
-            if (lastDisplayedProducts.length > 0) {
-                renderProducts(lastDisplayedProducts);
+            // Hide Loyalty section for Basic Plan
+            const plan = (posUser && posUser.subscriptionPlan) || 'Free Trial';
+            if (plan === 'Pro Plan' || plan === 'Free Trial') {
+                document.getElementById('loyaltySection').style.display = 'block';
             }
         }
 
@@ -855,9 +857,13 @@
             updateTexts();
             // Wait for app.js settings to load before rendering UI with currency
             await new Promise(r => setTimeout(r, 200)); 
-            document.getElementById('finalTotal').innerHTML = formatMoney(0);
-            
             await fetchProducts();
+            
+            // Hide Loyalty section for Basic Plan
+            const plan = (posUser && posUser.subscriptionPlan) || 'Free Trial';
+            if (plan === 'Pro Plan' || plan === 'Free Trial') {
+                document.getElementById('loyaltySection').style.display = 'block';
+            }
 
             // Global Hotkeys
             document.addEventListener('keydown', (e) => {

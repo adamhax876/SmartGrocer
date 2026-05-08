@@ -402,6 +402,15 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div class="form-group full-width" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                    <h4 style="margin-bottom: 0.5rem; color: var(--text);">نظام النسخ الاحتياطي (Backup)</h4>
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                                        يتم عمل نسخة احتياطية سحابية تلقائياً يومياً الساعة 2 صباحاً. يمكنك أيضاً تحميل نسخة يدوية لبياناتك الآن.
+                                    </p>
+                                    <button type="button" class="btn btn-outline" onclick="downloadBackup()" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        📥 <span data-i18n="btn_download_backup">تحميل نسخة احتياطية (JSON)</span>
+                                    </button>
+                                </div>
                                 <div class="form-group full-width">
                                     <label class="form-label" data-i18n="label_store_address">عنوان المتجر الكامل</label>
                                     <input type="text" class="form-input" id="storeAddress" data-i18n="ph_store_address" placeholder="القاهرة، شارع النصر...">
@@ -591,6 +600,49 @@
                     }
                 }
             });
+        }
+        async function downloadBackup() {
+            try {
+                Swal.fire({
+                    title: getLang() === 'ar' ? 'جاري تجهيز النسخة...' : 'Preparing Backup...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                // Fetch Products and Sales
+                const pRes = await api('/api/products');
+                const sRes = await api('/api/sales');
+
+                const backupData = {
+                    metadata: {
+                        store: getUser().storeName,
+                        date: new Date().toISOString(),
+                        version: '1.0'
+                    },
+                    products: pRes.products || [],
+                    sales: sRes.sales || []
+                };
+
+                const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SmartGrocer_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: getLang() === 'ar' ? 'تم التحميل بنجاح' : 'Backup Downloaded',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                console.error('Backup Error:', error);
+                Swal.fire('Error', 'Failed to generate backup', 'error');
+            }
         }
     </script>
 </body>
