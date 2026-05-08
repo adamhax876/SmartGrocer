@@ -265,6 +265,9 @@
                     ? `<button onclick="toggleUserStatus('${user._id}', 'suspend')" class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 text-xs" title="إيقاف"><i class="fas fa-ban"></i></button>`
                     : `<button onclick="toggleUserStatus('${user._id}', 'activate')" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-xs" title="تفعيل"><i class="fas fa-check"></i></button>`
                 }
+                        <button onclick="openBackupsModal('${user._id}', '${user.storeName}')" class="px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 text-xs" title="النسخ الاحتياطية">
+                            <i class="fas fa-history"></i>
+                        </button>
                         <button onclick="openEditModal('${user._id}')" class="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-xs" title="تعديل">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -608,6 +611,77 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال';
+            }
+        }
+
+        async function openBackupsModal(userId, storeName) {
+            const { value: backupId } = await Swal.fire({
+                title: `سجل النسخ الاحتياطية - ${storeName}`,
+                width: '600px',
+                html: `
+                    <div id="backupsList" class="text-right" style="direction: rtl;">
+                        <p class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> جاري جلب النسخ...</p>
+                    </div>
+                `,
+                didOpen: async () => {
+                    try {
+                        const res = await fetch(`/api/admin/users/${userId}/backups`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const data = await res.json();
+                        const list = document.getElementById('backupsList');
+                        
+                        if (data.success && data.data.length > 0) {
+                            list.innerHTML = data.data.map(b => `
+                                <div class="flex items-center justify-between p-3 border-b hover:bg-gray-50">
+                                    <div>
+                                        <p class="font-bold text-gray-800">${new Date(b.createdAt).toLocaleString('ar-EG')}</p>
+                                        <p class="text-xs text-gray-500">${b.counts.products} منتج | ${b.counts.sales} مبيعة</p>
+                                    </div>
+                                    <button onclick="restoreBackup('${b._id}', '${storeName}')" class="px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition">
+                                        استعادة <i class="fas fa-undo"></i>
+                                    </button>
+                                </div>
+                            `).join('');
+                        } else {
+                            list.innerHTML = '<p class="text-center py-4 text-gray-500">لا توجد نسخ احتياطية مسجلة لهذا المتجر حتى الآن.</p>';
+                        }
+                    } catch (e) {
+                        document.getElementById('backupsList').innerHTML = '<p class="text-center text-red-500">فشل تحميل البيانات</p>';
+                    }
+                },
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        }
+
+        async function restoreBackup(backupId, storeName) {
+            const confirmed = await Swal.fire({
+                title: 'تأكيد الاستعادة',
+                text: `هل أنت متأكد من استعادة بيانات متجر ${storeName}؟ سيتم مسح البيانات الحالية تماماً!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'نعم، استعد الآن',
+                cancelButtonText: 'إلغاء'
+            });
+
+            if (confirmed.isConfirmed) {
+                Swal.fire({ title: 'جاري الاستعادة...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                try {
+                    const res = await fetch(`/api/admin/backups/${backupId}/restore`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        Swal.fire('تم!', 'تم استعادة البيانات بنجاح.', 'success');
+                    } else {
+                        Swal.fire('خطأ', data.message, 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('خطأ', 'حدث خطأ في الاتصال بالسيرفر', 'error');
+                }
             }
         }
 
