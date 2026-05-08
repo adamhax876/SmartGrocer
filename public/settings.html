@@ -441,7 +441,8 @@
             const user = getUser();
             if (user) {
                 document.getElementById('userNameHeader').textContent = user.fullName;
-                document.getElementById('userAvatar').textContent = user.fullName.charAt(0);
+                const avatarEl = document.getElementById('userAvatar');
+                if (avatarEl) avatarEl.textContent = user.fullName.charAt(0);
                 
                 // Fill form
                 document.getElementById('fullName').value = user.fullName || '';
