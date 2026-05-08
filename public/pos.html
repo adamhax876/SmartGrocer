@@ -717,6 +717,8 @@
                 <img id="receiptLogo" src="" style="width: 80px; height: 80px; object-fit: contain; margin: 0 auto 10px; display: none;">
                 <h2 id="rStoreName">Smart Grocer POS</h2>
                 <div style="font-size: 0.8rem; color: #555;">
+                    <p id="rStoreAddress" style="margin: 0; font-weight: 500;"></p>
+                    <p id="rStorePhone" style="margin: 0; margin-bottom: 0.5rem;"></p>
                     <span data-i18n="receipt_title">مبيعات تجزئة - فاتورة ضريبية مبسطة</span><br>
                     <span data-i18n="receipt_date">التاريخ:</span> <span id="rDate"></span>
                 </div>
@@ -1109,6 +1111,8 @@
             }
 
             document.getElementById('rStoreName').textContent = (posUser && posUser.storeName) || 'Smart Grocer POS';
+            document.getElementById('rStoreAddress').textContent = (posUser && posUser.storeAddress) || '';
+            document.getElementById('rStorePhone').textContent = (posUser && posUser.storePhone) || '';
             document.getElementById('rDate').textContent = new Date(order.createdAt).toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
 
             const list = document.getElementById('rItemsList');
