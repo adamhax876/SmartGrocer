@@ -493,11 +493,11 @@
                         showConfirmButton: false
                     });
                 } else {
-                    Swal.fire('Error', data.message, 'error');
+                    Swal.fire('Error', data.message || 'Unknown error from server', 'error');
                 }
             } catch (error) {
                 console.error('Upload Error:', error);
-                Swal.fire('Error', 'Failed to upload logo', 'error');
+                Swal.fire('Error', `Upload failed: ${error.message}`, 'error');
             }
         }
 
