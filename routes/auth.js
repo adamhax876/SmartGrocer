@@ -11,21 +11,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Logo Upload Configuration
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const dir = path.join(__dirname, '../public/uploads/logos');
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'logo-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
+// Logo Upload Configuration (Using memoryStorage for persistent Base64 storage)
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
@@ -410,14 +397,19 @@ router.delete('/account', auth, async (req, res) => {
     }
 });
 
-// POST /api/auth/upload-logo - upload store logo
+// POST /api/auth/upload-logo - upload store logo (Converts to Persistent Base64)
 router.post('/upload-logo', auth, upload.single('logo'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'No file uploaded' });
         }
-        const url = `/uploads/logos/${req.file.filename}`;
-        res.json({ success: true, url });
+        
+        // Convert to Base64 to store in DB (Permanent & Free on Render)
+        const b64 = req.file.buffer.toString('base64');
+        const mimeType = req.file.mimetype;
+        const dataUri = `data:${mimeType};base64,${b64}`;
+        
+        res.json({ success: true, url: dataUri });
     } catch (error) {
         console.error('Logo Upload Error:', error);
         res.status(500).json({ success: false, message: 'Server Error' });
