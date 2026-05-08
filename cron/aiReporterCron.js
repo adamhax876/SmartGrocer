@@ -67,7 +67,7 @@ async function generateAndSendAIReport(user) {
 
         const { generateAIReport } = require('../utils/ai');
 
-        // Build storeData object for Gemini
+        // Build storeData object for Groq AI
         const storeData = {
             totalSales: totalRevenue.toFixed(2),
             topProduct: bestProduct,
@@ -75,7 +75,7 @@ async function generateAndSendAIReport(user) {
             lowStock: lowStock.length > 0 ? lowStock.map(p => p.name).join('، ') : 'لا يوجد'
         };
 
-        // Fetch AI Insight
+        // Fetch AI Insight using Groq (Llama 3)
         const aiInsightText = await generateAIReport(storeData);
 
         const html = `

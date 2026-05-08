@@ -23,7 +23,7 @@ async function sendEmailViaAPI(toEmail, toName, subject, htmlContent, textConten
       body: JSON.stringify({
         sender: {
           name: process.env.EMAIL_FROM_NAME || 'SmartGrocer',
-          email: process.env.EMAIL_USER
+          email: 'support@smartgrocer.me'
         },
         to: [{ email: toEmail, name: toName || '' }],
         subject,
