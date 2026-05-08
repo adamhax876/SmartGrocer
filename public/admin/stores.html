@@ -236,7 +236,7 @@
                 <tr class="border-b hover:bg-gray-50 transition">
                     <td class="px-4 py-4" data-label="${adminDict[adminLang].th_store}">
                         <p class="font-bold text-gray-900">${user.storeName}</p>
-                        <p class="text-xs text-gray-500">${user.fullName} | ${user.country || 'N/A'}</p>
+                        <p class="text-xs text-gray-500">${user.fullName} | ${user.country || 'N/A'} | <span class="text-blue-600">${user.storeAddress || 'لا يوجد عنوان'}</span></p>
                     </td>
                     <td class="px-4 py-4" data-label="${adminDict[adminLang].th_email}">${user.email}</td>
                     <td class="px-4 py-4" data-label="${adminDict[adminLang].th_type}">
