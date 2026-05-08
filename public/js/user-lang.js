@@ -106,7 +106,36 @@ const userTranslations = {
         del_acc_deleting: "Deleting Account...",
         del_acc_bye: "Goodbye",
         badge_monthly: "📊 MONTHLY",
-        badge_categories: "🏷️ CATEGORIES"
+        badge_categories: "🏷️ CATEGORIES",
+        
+        // Settings page translations
+        store_info_title: "Basic Store Information",
+        label_store_logo: "Store Logo (Logo URL)",
+        logo_hint: "Logo appears on top of invoices and reports.",
+        label_store_name: "Store Name",
+        label_store_type: "Activity Type",
+        label_store_phone: "Store Phone",
+        label_currency: "Currency",
+        label_vat_rate: "VAT Rate (%)",
+        label_language: "Default Language",
+        label_store_address: "Full Store Address",
+        ph_store_address: "Cairo, Nasr St...",
+        btn_save_settings: "Save Changes",
+        
+        // Store Types
+        type_supermarket: "Supermarket",
+        type_grocery: "Grocery",
+        type_minimarket: "Mini Market",
+        type_wholesale: "Wholesale",
+        type_other: "Other Activity",
+        
+        // Currencies
+        curr_egp: "Egyptian Pound (EGP)",
+        curr_sar: "Saudi Riyal (SAR)",
+        curr_aed: "UAE Dirham (AED)",
+        curr_kwd: "Kuwaiti Dinar (KWD)",
+        curr_usd: "US Dollar (USD)",
+        curr_eur: "Euro (EUR)"
 
     },
     ar: {
@@ -213,7 +242,36 @@ const userTranslations = {
         del_acc_deleting: "جاري الحذف...",
         del_acc_bye: "وداعاً",
         badge_monthly: "📊 شهري",
-        badge_categories: "🏷️ الفئات"
+        badge_categories: "🏷️ الفئات",
+        
+        // Settings page translations
+        store_info_title: "معلومات المتجر الأساسية",
+        label_store_logo: "رابط شعار المتجر (Logo URL)",
+        logo_hint: "يظهر الشعار في أعلى الفواتير والتقارير.",
+        label_store_name: "اسم المتجر",
+        label_store_type: "نوع النشاط",
+        label_store_phone: "رقم هاتف المتجر",
+        label_currency: "العملة",
+        label_vat_rate: "نسبة ضريبة القيمة المضافة (%)",
+        label_language: "اللغة الافتراضية",
+        label_store_address: "عنوان المتجر الكامل",
+        ph_store_address: "القاهرة، شارع النصر...",
+        btn_save_settings: "حفظ التغييرات",
+        
+        // Store Types
+        type_supermarket: "سوبر ماركت",
+        type_grocery: "بقالة",
+        type_minimarket: "ميني ماركت",
+        type_wholesale: "جملة",
+        type_other: "نشاط آخر",
+        
+        // Currencies
+        curr_egp: "جنيه مصري (EGP)",
+        curr_sar: "ريال سعودي (SAR)",
+        curr_aed: "درهم إماراتي (AED)",
+        curr_kwd: "دينار كويتي (KWD)",
+        curr_usd: "دولار أمريكي (USD)",
+        curr_eur: "يورو (EUR)"
 
     }
 };
