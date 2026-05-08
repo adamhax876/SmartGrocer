@@ -113,7 +113,7 @@ const userTranslations = {
         label_store_logo: "Store Logo (Logo URL)",
         logo_hint: "Logo appears on top of invoices and reports.",
         label_store_name: "Store Name",
-        label_store_type: "Activity Type",
+        label_store_type: "Business Type",
         label_store_phone: "Store Phone",
         label_currency: "Currency",
         label_vat_rate: "VAT Rate (%)",
@@ -127,7 +127,7 @@ const userTranslations = {
         type_grocery: "Grocery",
         type_minimarket: "Mini Market",
         type_wholesale: "Wholesale",
-        type_other: "Other Activity",
+        type_other: "Other Business",
         
         // Currencies
         curr_egp: "Egyptian Pound (EGP)",
