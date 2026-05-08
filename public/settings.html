@@ -300,6 +300,10 @@
 
                             <div class="form-grid">
                                 <div class="form-group">
+                                    <label class="form-label" data-i18n="label_full_name">اسم المالك</label>
+                                    <input type="text" class="form-input" id="fullName" required>
+                                </div>
+                                <div class="form-group">
                                     <label class="form-label" data-i18n="label_store_name">اسم المتجر</label>
                                     <input type="text" class="form-input" id="storeName" required>
                                 </div>
@@ -381,6 +385,7 @@
                 document.getElementById('userAvatar').textContent = user.fullName.charAt(0);
                 
                 // Fill form
+                document.getElementById('fullName').value = user.fullName || '';
                 document.getElementById('storeName').value = user.storeName || '';
                 document.getElementById('storeType').value = user.storeType || 'supermarket';
                 document.getElementById('storeLogo').value = user.storeLogo || '';
@@ -416,6 +421,7 @@
             const originalText = btnText.textContent;
             
             const payload = {
+                fullName: document.getElementById('fullName').value,
                 storeName: document.getElementById('storeName').value,
                 storeType: document.getElementById('storeType').value,
                 storeLogo: document.getElementById('storeLogo').value,

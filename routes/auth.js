@@ -332,7 +332,7 @@ router.get('/me', auth, async (req, res) => {
 router.put('/settings', auth, async (req, res) => {
     try {
         const { 
-            language, theme, 
+            language, theme, fullName,
             storeName, storeType, storeLogo, 
             vatRate, currency, storePhone, storeAddress 
         } = req.body;
@@ -340,6 +340,7 @@ router.put('/settings', auth, async (req, res) => {
         const updates = {};
         if (language) updates.language = language;
         if (theme) updates.theme = theme;
+        if (fullName) updates.fullName = fullName;
         if (storeName) updates.storeName = storeName;
         if (storeType) updates.storeType = storeType;
         if (storeLogo !== undefined) updates.storeLogo = storeLogo;
