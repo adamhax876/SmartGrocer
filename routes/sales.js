@@ -51,25 +51,32 @@ router.post('/', enforceLimits('sales'), async (req, res) => {
             // Decrease stock using FIFO (First In First Out) for Batches
             let qtyToDeduct = item.quantity;
             
-            // Sort batches by expiry date (earliest first), items without date at the end
-            product.batches.sort((a, b) => {
-                if (!a.expiryDate) return 1;
-                if (!b.expiryDate) return -1;
-                return a.expiryDate - b.expiryDate;
-            });
+            if (product.batches && product.batches.length > 0) {
+                // Sort batches by expiry date (earliest first), items without date at the end
+                product.batches.sort((a, b) => {
+                    if (!a.expiryDate) return 1;
+                    if (!b.expiryDate) return -1;
+                    return a.expiryDate - b.expiryDate;
+                });
 
-            for (let i = 0; i < product.batches.length && qtyToDeduct > 0; i++) {
-                const batch = product.batches[i];
-                if (batch.quantity >= qtyToDeduct) {
-                    batch.quantity -= qtyToDeduct;
-                    qtyToDeduct = 0;
-                } else {
-                    qtyToDeduct -= batch.quantity;
-                    batch.quantity = 0;
+                for (let i = 0; i < product.batches.length && qtyToDeduct > 0; i++) {
+                    const batch = product.batches[i];
+                    if (batch.quantity >= qtyToDeduct) {
+                        batch.quantity -= qtyToDeduct;
+                        qtyToDeduct = 0;
+                    } else {
+                        qtyToDeduct -= batch.quantity;
+                        batch.quantity = 0;
+                    }
                 }
+                // Filter out empty batches
+                product.batches = product.batches.filter(b => b.quantity > 0);
+            } else {
+                // Fallback for products without batches
+                product.quantity = Math.max(0, product.quantity - qtyToDeduct);
             }
 
-            // The pre-save hook in Product.js will handle summing total qty and removing empty batches
+            // The pre-save hook in Product.js will handle summing total qty for batch-based products
             await product.save();
         }
 

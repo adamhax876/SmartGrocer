@@ -83,7 +83,7 @@ productSchema.pre('save', function (next) {
         // Sum total quantity
         this.quantity = this.batches.reduce((sum, b) => sum + b.quantity, 0);
         
-        // Find nearest expiry date (only for batches that HAVE a date)
+        // Find nearest expiry date
         const dates = this.batches
             .filter(b => b.expiryDate)
             .map(b => b.expiryDate);
@@ -94,14 +94,13 @@ productSchema.pre('save', function (next) {
             this.expiryDate = undefined;
         }
 
-        // Set cost price to latest batch cost price if multiple exist
+        // Set cost price to latest batch cost price
         if (this.batches.length > 0) {
             this.costPrice = this.batches[this.batches.length - 1].costPrice || this.costPrice;
         }
     } else {
-        // If no batches, ensure it's at least initialized if we are migrating
-        // But normally quantity should stay as is if batches is empty (for manual non-batch use)
-        // However, for this update, we want batches to be the source of truth.
+        // If it was batch-based but now empty, quantity should be 0
+        // (Unless manually set, but we assume batches are the source of truth if present)
     }
     next();
 });
