@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Sale = require('../models/Sale');
+const Customer = require('../models/Customer');
 const Backup = require('../models/Backup');
 
 // Run every night at 2:00 AM
@@ -20,10 +21,12 @@ cron.schedule('0 2 * * *', async () => {
             // Gather all user data
             const products = await Product.find({ userId });
             const sales = await Sale.find({ userId });
+            const customers = await Customer.find({ userId });
 
             const backupData = {
                 products,
-                sales
+                sales,
+                customers
             };
 
             // Save to MongoDB collection (Atlas) - Permanent & Free
@@ -32,7 +35,8 @@ cron.schedule('0 2 * * *', async () => {
                 data: backupData,
                 counts: {
                     products: products.length,
-                    sales: sales.length
+                    sales: sales.length,
+                    customers: customers.length
                 }
             });
 
@@ -43,7 +47,7 @@ cron.schedule('0 2 * * *', async () => {
                 await Backup.deleteMany({ _id: { $in: toDelete.map(b => b._id) } });
             }
 
-            console.log(`✅ MongoDB Backup created for ${user.storeName}`);
+            console.log(`✅ MongoDB Backup created for ${user.storeName} (${customers.length} customers)`);
         }
 
         console.log(`✅ Backup process finished. Saved snapshots for ${proUsers.length} Pro accounts in Atlas.`);

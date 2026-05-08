@@ -517,6 +517,7 @@ router.post('/backups/:id/restore', isAdmin, async (req, res) => {
         const Backup = require('../models/Backup');
         const Product = require('../models/Product');
         const Sale = require('../models/Sale');
+        const Customer = require('../models/Customer');
         
         const backup = await Backup.findById(req.params.id);
         if (!backup) return res.status(404).json({ success: false, message: 'Backup not found' });
@@ -526,6 +527,7 @@ router.post('/backups/:id/restore', isAdmin, async (req, res) => {
         // 1. Delete current data
         await Product.deleteMany({ userId });
         await Sale.deleteMany({ userId });
+        await Customer.deleteMany({ userId });
 
         // 2. Restore from backup data
         if (backup.data.products && backup.data.products.length > 0) {
@@ -533,6 +535,9 @@ router.post('/backups/:id/restore', isAdmin, async (req, res) => {
         }
         if (backup.data.sales && backup.data.sales.length > 0) {
             await Sale.insertMany(backup.data.sales);
+        }
+        if (backup.data.customers && backup.data.customers.length > 0) {
+            await Customer.insertMany(backup.data.customers);
         }
 
         res.json({ success: true, message: 'تم استعادة البيانات بنجاح' });
