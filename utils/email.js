@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 // Tries Brevo HTTP API first (5s timeout), then SMTP (5s timeout)
 // If both fail, logs fallback code to console
 
-async function sendEmailViaAPI(toEmail, toName, subject, htmlContent, textContent) {
+async function sendEmailViaAPI(toEmail, toName, subject, htmlContent, textContent, attachments = []) {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) return false;
 
@@ -28,7 +28,11 @@ async function sendEmailViaAPI(toEmail, toName, subject, htmlContent, textConten
         to: [{ email: toEmail, name: toName || '' }],
         subject,
         htmlContent,
-        textContent
+        textContent,
+        attachment: attachments.map(a => ({
+          name: a.filename,
+          content: Buffer.isBuffer(a.content) ? a.content.toString('base64') : Buffer.from(a.content).toString('base64')
+        }))
       })
     });
     clearTimeout(timeout);
@@ -44,7 +48,7 @@ async function sendEmailViaAPI(toEmail, toName, subject, htmlContent, textConten
 }
 
 // ─── Gmail Nodemailer Fallback ─────────────────────────────────────────────
-async function sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent) {
+async function sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent, attachments = []) {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
   if (!user || !pass) return false;
@@ -57,8 +61,8 @@ async function sendEmailViaGmail(toEmail, toName, subject, htmlContent, textCont
     from: `"${process.env.EMAIL_FROM_NAME || 'SmartGrocer'}" <${user}>`,
     to: toName ? `"${toName}" <${toEmail}>` : toEmail,
     subject,
-    text: textContent,
-    html: htmlContent
+    text: textContent, attachments,
+    html: htmlContent, attachments
   };
 
   try {
@@ -71,7 +75,7 @@ async function sendEmailViaGmail(toEmail, toName, subject, htmlContent, textCont
 }
 
 // ─── Resend API Fallback ───────────────────────────────────────────────────
-async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent) {
+async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent, attachments = []) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return false;
 
@@ -91,7 +95,11 @@ async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textCon
         to: [toEmail],
         subject,
         html: htmlContent,
-        text: textContent
+        text: textContent,
+        attachments: attachments.map(a => ({
+          filename: a.filename,
+          content: Buffer.isBuffer(a.content) ? a.content.toString('base64') : Buffer.from(a.content).toString('base64')
+        }))
       })
     });
     clearTimeout(timeout);
@@ -105,10 +113,10 @@ async function sendEmailViaResend(toEmail, toName, subject, htmlContent, textCon
 }
 
 // ─── Master Fallback Router ────────────────────────────────────────────────
-async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, textContent) {
+async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, textContent, attachments = []) {
   // 1. Try Resend FIRST (sends from custom domain: support@smartgrocer.me)
   if (process.env.RESEND_API_KEY) {
-    const rSuccess = await sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent);
+    const rSuccess = await sendEmailViaResend(toEmail, toName, subject, htmlContent, textContent, attachments);
     if (rSuccess) {
       console.log(`✅ [Resend/Domain] Email sent → ${toEmail}`);
       return true;
@@ -118,7 +126,7 @@ async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, text
   // 2. Try Brevo as second option (also supports custom domain)
   if (process.env.BREVO_API_KEY) {
     try {
-      const bSuccess = await sendEmailViaAPI(toEmail, toName, subject, htmlContent, textContent);
+      const bSuccess = await sendEmailViaAPI(toEmail, toName, subject, htmlContent, textContent, attachments);
       if (bSuccess) {
         console.log(`✅ [Brevo] Email sent → ${toEmail}`);
         return true;
@@ -130,7 +138,7 @@ async function sendEmailWithFallback(toEmail, toName, subject, htmlContent, text
 
   // 3. Gmail as LAST RESORT fallback only
   if (process.env.EMAIL_PASS) {
-    const gSuccess = await sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent);
+    const gSuccess = await sendEmailViaGmail(toEmail, toName, subject, htmlContent, textContent, attachments);
     if (gSuccess) {
       console.log(`⚠️ [Gmail Fallback] Email sent → ${toEmail}`);
       return true;
