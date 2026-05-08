@@ -1119,6 +1119,7 @@
                 showReceipt(res.sale, res.customerPoints);
                 cart = [];
                 renderCart();
+                await fetchProducts(); // Refresh grid to show new stock levels
                 document.getElementById('customerPhone').value = '';
                 document.getElementById('pointsDisplay').style.display = 'none';
                 document.getElementById('usePoints').checked = false;

@@ -469,7 +469,7 @@
             
             try {
                 Swal.fire({
-                    title: currentLang === 'ar' ? 'جاري الرفع...' : 'Uploading...',
+                    title: getLang() === 'ar' ? 'جاري الرفع...' : 'Uploading...',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -488,7 +488,7 @@
                     updateLogoPreview(data.url);
                     Swal.fire({
                         icon: 'success',
-                        title: currentLang === 'ar' ? 'تم الرفع!' : 'Uploaded!',
+                        title: getLang() === 'ar' ? 'تم الرفع!' : 'Uploaded!',
                         timer: 1500,
                         showConfirmButton: false
                     });
