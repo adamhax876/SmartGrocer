@@ -509,32 +509,48 @@
         }
 
         @media print {
+            @page {
+                margin: 0;
+            }
+            body {
+                background: white;
+                color: black;
+                margin: 0;
+                padding: 0;
+                width: 80mm;
+            }
             body * {
                 visibility: hidden;
             }
-
             .receipt-card,
             .receipt-card * {
                 visibility: visible;
+                color: black !important;
             }
-
             .receipt-card {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
-                max-height: none; /* Allow it to span multiple pages */
-                box-shadow: none;
-                padding: 0;
-                display: block; /* Remove flex constraint */
+                width: 80mm !important;
+                padding: 4mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                display: block !important;
+                max-height: none !important;
             }
-
             .receipt-items {
-                overflow: visible; /* Print all items */
+                overflow: visible !important;
             }
-
             .no-print {
                 display: none !important;
+            }
+            .receipt-header h2 {
+                font-size: 1.4rem !important;
+                margin-bottom: 2mm !important;
+            }
+            .receipt-footer {
+                margin-top: 5mm !important;
+                padding-bottom: 10mm !important; /* Extra space for tear off */
             }
         }
 
@@ -859,15 +875,28 @@
                 }
             });
 
-            // Search Barcode Listener
+            // Search/Barcode Listener (Fast Scan Mode)
             document.getElementById('barcodeInput').addEventListener('keyup', (e) => {
-                const term = e.target.value.toLowerCase();
-                if (e.key === 'Enter' && term.trim() !== '') {
-                    // Try exact match first for barcode scanner emulation
-                    const exact = allProducts.find(p => p.name.toLowerCase() === term || (p._id && p._id.endsWith(term)));
-                    if (exact) { addToCart(exact); e.target.value = ''; return; }
+                const term = e.target.value.trim().toLowerCase();
+                if (e.key === 'Enter' && term !== '') {
+                    // Fast Scan Priority: 1. Barcode 2. Name
+                    const byBarcode = allProducts.find(p => (p.barcode && p.barcode.toLowerCase() === term));
+                    if (byBarcode) {
+                        addToCart(byBarcode);
+                        e.target.value = '';
+                        return;
+                    }
+                    const byName = allProducts.find(p => p.name.toLowerCase() === term);
+                    if (byName) {
+                        addToCart(byName);
+                        e.target.value = '';
+                        return;
+                    }
                 }
-                renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(term)));
+                renderProducts(allProducts.filter(p => 
+                    p.name.toLowerCase().includes(term) || 
+                    (p.barcode && p.barcode.toLowerCase().includes(term))
+                ));
             });
         });
 
@@ -1102,6 +1131,9 @@
         }
 
         function showReceipt(order, points) {
+            const modal = document.getElementById('receiptModal');
+            modal.classList.add('active');
+            
             const receiptImg = document.getElementById('receiptLogo');
             if (posUser && posUser.storeLogo) {
                 receiptImg.src = posUser.storeLogo;
@@ -1164,6 +1196,11 @@
 
             document.getElementById('receiptModal').classList.add('active');
             window.activeOrder = order; // For PDF/WhatsApp
+
+            // Auto-trigger print for fast workflow
+            setTimeout(() => {
+                window.print();
+            }, 500);
         }
 
         function closeReceipt() {
