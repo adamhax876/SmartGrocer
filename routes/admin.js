@@ -500,4 +500,46 @@ router.post('/invite-support', isAdmin, async (req, res) => {
     }
 });
 
+// 17. Get Backups for a User
+router.get('/users/:id/backups', isAdmin, async (req, res) => {
+    try {
+        const Backup = require('../models/Backup');
+        const backups = await Backup.find({ userId: req.params.id }).sort({ createdAt: -1 });
+        res.json({ success: true, data: backups });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
+
+// 18. Restore from Backup
+router.post('/backups/:id/restore', isAdmin, async (req, res) => {
+    try {
+        const Backup = require('../models/Backup');
+        const Product = require('../models/Product');
+        const Sale = require('../models/Sale');
+        
+        const backup = await Backup.findById(req.params.id);
+        if (!backup) return res.status(404).json({ success: false, message: 'Backup not found' });
+
+        const userId = backup.userId;
+
+        // 1. Delete current data
+        await Product.deleteMany({ userId });
+        await Sale.deleteMany({ userId });
+
+        // 2. Restore from backup data
+        if (backup.data.products && backup.data.products.length > 0) {
+            await Product.insertMany(backup.data.products);
+        }
+        if (backup.data.sales && backup.data.sales.length > 0) {
+            await Sale.insertMany(backup.data.sales);
+        }
+
+        res.json({ success: true, message: 'تم استعادة البيانات بنجاح' });
+    } catch (error) {
+        console.error('Restore Error:', error);
+        res.status(500).json({ success: false, message: 'فشل استعادة البيانات', error: error.message });
+    }
+});
+
 module.exports = router;
