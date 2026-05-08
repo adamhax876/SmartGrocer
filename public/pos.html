@@ -714,6 +714,7 @@
                 style="position: absolute; right: 10px; top: 10px; background: #ef4444; color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;">&times;</button>
 
             <div class="receipt-header">
+                <img id="receiptLogo" src="" style="width: 80px; height: 80px; object-fit: contain; margin: 0 auto 10px; display: none;">
                 <h2 id="rStoreName">Smart Grocer POS</h2>
                 <div style="font-size: 0.8rem; color: #555;">
                     <span data-i18n="receipt_title">مبيعات تجزئة - فاتورة ضريبية مبسطة</span><br>
@@ -749,8 +750,9 @@
         // Core POS Logic
         let allProducts = [];
         let cart = [];
-        let currentCustomerPoints = 0;
-        const TAX_RATE = 0.14;
+        const posUser = getUser();
+        const TAX_PERCENT = (posUser && posUser.vatRate !== undefined) ? posUser.vatRate : 14;
+        const TAX_RATE = TAX_PERCENT / 100;
 
         // I18n Setup
         const translations = {
@@ -803,6 +805,11 @@
             });
             document.getElementById('barcodeInput').placeholder = translations[currentLang].search_placeholder;
             document.title = translations[currentLang].pos_title;
+
+            // Update UI VAT labels
+            document.querySelectorAll('[data-i18n="sum_tax"]').forEach(el => {
+                el.textContent = currentLang === 'ar' ? `الضريبة (${TAX_PERCENT}%)` : `Tax (${TAX_PERCENT}%)`;
+            });
         }
 
         document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
@@ -1093,7 +1100,15 @@
         }
 
         function showReceipt(order, points) {
-            document.getElementById('rStoreName').textContent = getStoreName();
+            const receiptImg = document.getElementById('receiptLogo');
+            if (posUser && posUser.storeLogo) {
+                receiptImg.src = posUser.storeLogo;
+                receiptImg.style.display = 'block';
+            } else {
+                receiptImg.style.display = 'none';
+            }
+
+            document.getElementById('rStoreName').textContent = (posUser && posUser.storeName) || 'Smart Grocer POS';
             document.getElementById('rDate').textContent = new Date(order.createdAt).toLocaleString(currentLang === 'ar' ? 'ar-EG' : 'en-US');
 
             const list = document.getElementById('rItemsList');

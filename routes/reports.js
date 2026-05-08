@@ -239,7 +239,8 @@ router.post('/ai-analysis', async (req, res) => {
         if (!apiKey) throw new Error("GROQ_API_KEY is missing in server environment");
 
         const isAr = lang === 'ar';
-        const prompt = `You are a world-class retail business analyst. Create a high-impact, professional performance report for the store "${user.storeName || 'N/A'}".
+        const prompt = `You are a world-class retail business analyst and CEO consultant. 
+        Create a high-impact, professional performance report for the store "${user.storeName || 'N/A'}".
 
 STORE OWNER: "${user.fullName}"
 STORE NAME: "${user.storeName || 'N/A'}" (IMPORTANT: ALWAYS use this name, NEVER call it "SmartGrocer" in the report).

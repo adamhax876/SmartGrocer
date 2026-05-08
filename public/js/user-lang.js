@@ -1,6 +1,7 @@
 const userTranslations = {
     en: {
-        nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports", nav_support: "Support",
+        nav_dashboard: "Dashboard", nav_products: "Products", nav_inventory: "Inventory", nav_pos: "POS System", nav_sales: "Sales History", nav_reports: "Reports", nav_settings: "Store Settings", nav_support: "Support",
+
         btn_theme: "Theme", btn_logout: "Logout", btn_home: "🏠 Home", btn_delete_account: "Delete Account",
         title_dashboard: "Dashboard Overview",
         kpi_revenue: "Total Revenue", kpi_orders: "Orders Count", kpi_low_stock: "Low Stock Alerts", kpi_expiry: "Expiry Alerts", kpi_products: "Total Products",
@@ -20,6 +21,20 @@ const userTranslations = {
         
         // Settings / General
         settings_title: "Store Settings",
+        store_info_title: "Store Basic Information",
+        label_store_logo: "Store Logo (URL)",
+        label_store_name: "Store Name",
+        label_store_type: "Business Type",
+        label_store_phone: "Store Phone",
+        label_currency: "Currency",
+        label_vat_rate: "VAT Rate (%)",
+        label_language: "Default Language",
+        label_store_address: "Full Store Address",
+        btn_save_settings: "Save Changes",
+        logo_hint: "Logo appears on receipts and reports.",
+        account_security_title: "Account Management",
+        delete_account_desc: "Deleting the account will permanently erase all data.",
+
         
         // Billing
         bil_title: "Pricing & Subscriptions",
@@ -95,7 +110,8 @@ const userTranslations = {
 
     },
     ar: {
-        nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_support: "الدعم الفني",
+        nav_dashboard: "لوحة التحكم", nav_products: "المنتجات", nav_inventory: "المخزون", nav_pos: "نقطة البيع (POS)", nav_sales: "المبيعات", nav_reports: "التقارير", nav_settings: "إعدادات المتجر", nav_support: "الدعم الفني",
+
         btn_theme: "المظهر", btn_logout: "تسجيل الخروج", btn_home: "🏠 الرئيسية", btn_delete_account: "حذف حساب المتجر",
         title_dashboard: "نظرة عامة",
         kpi_revenue: "إجمالي المبيعات", kpi_orders: "الطلبات", kpi_low_stock: "تنبيهات المخزون", kpi_expiry: "تنبيهات الصلاحية", kpi_products: "إجمالي المنتجات",
@@ -112,6 +128,20 @@ const userTranslations = {
         label_punit: "الوحدة", unit_piece: "قطعة", unit_kg: "كيلو", unit_liter: "لتر", unit_box: "كرتونة", unit_pack: "عبوة", label_pbarcode: "الباركود (اختياري)",
         
         settings_title: "إعدادات المتجر",
+        store_info_title: "معلومات المتجر الأساسية",
+        label_store_logo: "رابط شعار المتجر (Logo URL)",
+        label_store_name: "اسم المتجر",
+        label_store_type: "نوع النشاط",
+        label_store_phone: "رقم هاتف المتجر",
+        label_currency: "العملة",
+        label_vat_rate: "نسبة ضريبة القيمة المضافة (%)",
+        label_language: "اللغة الافتراضية",
+        label_store_address: "عنوان المتجر الكامل",
+        btn_save_settings: "حفظ التغييرات",
+        logo_hint: "يظهر الشعار في أعلى الفواتير والتقارير.",
+        account_security_title: "إدارة الحساب",
+        delete_account_desc: "حذف الحساب سيؤدي إلى مسح كافة البيانات بشكل نهائي.",
+
         
         // Billing
         bil_title: "الباقات والاشتراكات",

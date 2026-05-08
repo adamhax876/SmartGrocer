@@ -331,10 +331,22 @@ router.get('/me', auth, async (req, res) => {
 // PUT /api/auth/settings — update user settings
 router.put('/settings', auth, async (req, res) => {
     try {
-        const { language, theme } = req.body;
+        const { 
+            language, theme, 
+            storeName, storeType, storeLogo, 
+            vatRate, currency, storePhone, storeAddress 
+        } = req.body;
+        
         const updates = {};
         if (language) updates.language = language;
         if (theme) updates.theme = theme;
+        if (storeName) updates.storeName = storeName;
+        if (storeType) updates.storeType = storeType;
+        if (storeLogo !== undefined) updates.storeLogo = storeLogo;
+        if (vatRate !== undefined) updates.vatRate = vatRate;
+        if (currency) updates.currency = currency;
+        if (storePhone !== undefined) updates.storePhone = storePhone;
+        if (storeAddress !== undefined) updates.storeAddress = storeAddress;
 
         const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password');
         res.json({ user });

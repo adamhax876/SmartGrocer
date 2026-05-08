@@ -100,7 +100,29 @@ const userSchema = new mongoose.Schema({
     lastIpAddress: {
         type: String,
         default: ''
+    },
+    // Store customization
+    vatRate: {
+        type: Number,
+        default: 14
+    },
+    currency: {
+        type: String,
+        default: 'EGP'
+    },
+    storeLogo: {
+        type: String,
+        default: ''
+    },
+    storePhone: {
+        type: String,
+        default: ''
+    },
+    storeAddress: {
+        type: String,
+        default: ''
     }
+
 }, {
     timestamps: true
 });

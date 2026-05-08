@@ -235,7 +235,8 @@ document.addEventListener('click', (e) => {
     }
 });
 
-window.CURRENCY = localStorage.getItem('sg_currency') || '$';
+const currentUser = getUser();
+window.CURRENCY = (currentUser && currentUser.currency) || localStorage.getItem('sg_currency') || 'EGP';
 
 async function fetchPublicSettings() {
     try {
