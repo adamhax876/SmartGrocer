@@ -267,7 +267,10 @@
                     <h1 class="topbar-title" data-i18n="nav_settings">إعدادات المتجر</h1>
                 </div>
                 <div class="topbar-actions">
-                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">🌙</button>
+                    <button onclick="toggleTheme()" class="btn btn-outline" id="theme-toggle"
+                        style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0;">🌙</button>
+                    <button onclick="toggleLanguage()" class="btn btn-outline" id="langToggle"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 12px; min-height: 40px;">English</button>
                     <div class="user-profile">
                         <span id="userNameHeader">جاري التحميل...</span>
                         <div class="user-avatar" id="userAvatar">S</div>
@@ -366,6 +369,7 @@
         </main>
     </div>
 
+    <script src="/js/user-lang.js?v=1777887222587"></script>
     <script src="/js/app.js?v=1777887222587"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
