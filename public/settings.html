@@ -292,9 +292,15 @@
                                     <img id="logoImg" src="" style="display:none;">
                                 </div>
                                 <div style="flex: 1;">
-                                    <label class="form-label" data-i18n="label_store_logo">رابط شعار المتجر (Logo URL)</label>
-                                    <input type="text" class="form-input" id="storeLogo" placeholder="https://example.com/logo.png" oninput="updateLogoPreview(this.value)">
-                                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;" data-i18n="logo_hint">يظهر الشعار في أعلى الفواتير والتقارير.</p>
+                                    <label class="form-label" data-i18n="label_store_logo">شعار المتجر</label>
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <button type="button" class="btn btn-outline" onclick="document.getElementById('logoFile').click()" style="border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                            <i class="fas fa-upload"></i> &nbsp; <span data-i18n="btn_upload_logo">رفع صورة الشعار</span>
+                                        </button>
+                                        <input type="file" id="logoFile" style="display:none;" accept="image/*" onchange="handleLogoUpload(this)">
+                                        <input type="hidden" id="storeLogo">
+                                    </div>
+                                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;" data-i18n="logo_hint">يظهر الشعار في أعلى الفواتير والتقارير. المقاس الموصى به: 300x300 بكسل.</p>
                                 </div>
                             </div>
 
@@ -398,6 +404,47 @@
                 updateLogoPreview(user.storeLogo);
             }
         });
+
+        async function handleLogoUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('logo', file);
+            
+            try {
+                Swal.fire({
+                    title: currentLang === 'ar' ? 'جاري الرفع...' : 'Uploading...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+                
+                const res = await fetch('/api/auth/upload-logo', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                    body: formData
+                });
+                
+                const data = await res.json();
+                Swal.close();
+                
+                if (data.success) {
+                    document.getElementById('storeLogo').value = data.url;
+                    updateLogoPreview(data.url);
+                    Swal.fire({
+                        icon: 'success',
+                        title: currentLang === 'ar' ? 'تم الرفع!' : 'Uploaded!',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Upload Error:', error);
+                Swal.fire('Error', 'Failed to upload logo', 'error');
+            }
+        }
 
         function updateLogoPreview(url) {
             const container = document.getElementById('logoPreviewContainer');

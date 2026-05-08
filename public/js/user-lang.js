@@ -110,8 +110,9 @@ const userTranslations = {
         
         // Settings page translations
         store_info_title: "Basic Store Information",
-        label_store_logo: "Store Logo (Logo URL)",
-        logo_hint: "Logo appears on top of invoices and reports.",
+        label_store_logo: "Store Logo",
+        logo_hint: "Appears on invoices and reports. Recommended: 300x300px (PNG/JPG).",
+        btn_upload_logo: "Upload Logo Image",
         label_store_name: "Store Name",
         label_full_name: "Full Name (Owner)",
         label_store_type: "Business Type",
@@ -247,8 +248,9 @@ const userTranslations = {
         
         // Settings page translations
         store_info_title: "معلومات المتجر الأساسية",
-        label_store_logo: "رابط شعار المتجر (Logo URL)",
-        logo_hint: "يظهر الشعار في أعلى الفواتير والتقارير.",
+        label_store_logo: "شعار المتجر",
+        logo_hint: "يظهر الشعار في الفواتير والتقارير. المقاس الموصى به: 300x300 بكسل.",
+        btn_upload_logo: "رفع صورة الشعار",
         label_store_name: "اسم المتجر",
         label_full_name: "اسم المالك الكامل",
         label_store_type: "نوع النشاط",

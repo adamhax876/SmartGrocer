@@ -7,6 +7,36 @@ const auth = require('../middleware/auth');
 const crypto = require('crypto');
 const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendGoodbyeEmail } = require('../utils/email');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Logo Upload Configuration
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = path.join(__dirname, '../public/uploads/logos');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'logo-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not an image!'), false);
+        }
+    }
+});
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -376,6 +406,20 @@ router.delete('/account', auth, async (req, res) => {
     } catch (error) {
         console.error('Account Deletion Error:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// POST /api/auth/upload-logo - upload store logo
+router.post('/upload-logo', auth, upload.single('logo'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+        const url = `/uploads/logos/${req.file.filename}`;
+        res.json({ success: true, url });
+    } catch (error) {
+        console.error('Logo Upload Error:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 });
 
