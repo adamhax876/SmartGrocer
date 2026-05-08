@@ -1197,10 +1197,12 @@
             document.getElementById('receiptModal').classList.add('active');
             window.activeOrder = order; // For PDF/WhatsApp
 
-            // Auto-trigger print for fast workflow
-            setTimeout(() => {
-                window.print();
-            }, 500);
+            // Auto-trigger print if enabled in settings
+            if (posUser && posUser.autoPrint !== false) {
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            }
         }
 
         function closeReceipt() {

@@ -121,6 +121,10 @@ const userSchema = new mongoose.Schema({
     storeAddress: {
         type: String,
         default: ''
+    },
+    autoPrint: {
+        type: Boolean,
+        default: true
     }
 
 }, {

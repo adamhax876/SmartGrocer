@@ -364,7 +364,7 @@ router.put('/settings', auth, async (req, res) => {
         const { 
             language, theme, fullName,
             storeName, storeType, storeLogo, 
-            vatRate, currency, storePhone, storeAddress 
+            vatRate, currency, storePhone, storeAddress, autoPrint
         } = req.body;
         
         const updates = {};
@@ -378,6 +378,7 @@ router.put('/settings', auth, async (req, res) => {
         if (currency) updates.currency = currency;
         if (storePhone !== undefined) updates.storePhone = storePhone;
         if (storeAddress !== undefined) updates.storeAddress = storeAddress;
+        if (autoPrint !== undefined) updates.autoPrint = autoPrint;
 
         const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password');
         res.json({ user });
