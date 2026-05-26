@@ -93,8 +93,8 @@
         <!-- Content -->
         <div class="flex-1 overflow-y-auto p-6">
 
-            <!-- Stats Cards — 3 cards with icons -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Stats Cards — 4 cards with icons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="stat-card bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center gap-4" style="border-right: 4px solid #4F46E5;">
                     <div class="h-14 w-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl">
                         <i class="fas fa-store"></i>
@@ -112,6 +112,16 @@
                     <div>
                         <p class="text-sm text-gray-500 mb-0.5" data-translate="statSubs">الاشتراكات الفعالة</p>
                         <h3 class="text-3xl font-bold text-gray-800" id="stat-subs">—</h3>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center gap-4" style="border-right: 4px solid #06b6d4;">
+                    <div class="h-14 w-14 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600 text-2xl">
+                        <i class="far fa-eye"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 mb-0.5" data-translate="statVisits">زيارات الموقع</p>
+                        <h3 class="text-3xl font-bold text-gray-800" id="stat-visits">—</h3>
                     </div>
                 </div>
 
@@ -193,6 +203,7 @@
                 if (data.success) {
                     document.getElementById('stat-stores').textContent = data.data.totalUsers || 0;
                     document.getElementById('stat-subs').textContent = data.data.activeSubscriptions || 0;
+                    document.getElementById('stat-visits').textContent = data.data.websiteVisits || 0;
                     document.getElementById('stat-tickets').textContent = data.data.openTickets || 0;
                     renderPlanDistribution(data.data.planDistribution);
                 }

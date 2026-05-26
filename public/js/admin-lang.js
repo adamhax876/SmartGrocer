@@ -15,7 +15,7 @@ const adminDict = {
         loading: 'جاري التحميل...', tk_send: 'إرسال',
 
         // Dashboard specific
-        statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statTickets: 'تذاكر الدعم المفتوحة',
+        statStores: 'المتاجر النشطة', statSubs: 'الاشتراكات الفعالة', statTickets: 'تذاكر الدعم المفتوحة', statVisits: 'زيارات الموقع',
         chartTitle: 'نمو المشتركين', chartBadge: '📊 حسب الباقات النشطة',
         latest: 'أحدث المتاجر', viewAll: 'عرض الكل →', 
         noStores: 'لا توجد متاجر مسجلة بعد', noGrowth: 'لا توجد بيانات نمو بعد',
@@ -80,7 +80,7 @@ const adminDict = {
         loading: 'Loading...', tk_send: 'Send',
 
         // Dashboard specific
-        statStores: 'Active Stores', statSubs: 'Active Subscriptions', statTickets: 'Open Support Tickets',
+        statStores: 'Active Stores', statSubs: 'Active Subscriptions', statTickets: 'Open Support Tickets', statVisits: 'Website Visits',
         chartTitle: 'Subscriber Growth', chartBadge: '📊 Active Plans',
         latest: 'Latest Stores', viewAll: 'View All →', 
         noStores: 'No stores registered yet', noGrowth: 'No growth data yet',

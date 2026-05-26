@@ -57,6 +57,10 @@ router.get('/stats', isAdmin, async (req, res) => {
         // Count open support tickets (only 'open' status exists in Ticket model)
         const openTickets = await Ticket.countDocuments({ status: 'open' });
 
+        // Fetch website visits count
+        const visitsSetting = await Setting.findOne({ key: 'website_visits' });
+        const websiteVisits = visitsSetting ? parseInt(visitsSetting.value) || 0 : 0;
+
         // Calculate subscription plan distribution
         const planDistribution = await User.aggregate([
             { $match: { role: 'store_owner' } },
@@ -75,6 +79,7 @@ router.get('/stats', isAdmin, async (req, res) => {
                 totalPlans,
                 activeSubscriptions,
                 openTickets,
+                websiteVisits,
                 planDistribution
             }
         });
