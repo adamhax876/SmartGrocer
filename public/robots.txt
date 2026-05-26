@@ -1,0 +1,37 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+
+# Allow crawling of public promotional pages
+Allow: /$
+Allow: /index.html
+Allow: /home.html
+Allow: /billing.html
+Allow: /login.html
+Allow: /signup.html
+Allow: /forgot-password.html
+Allow: /reset-password.html
+Allow: /privacy.html
+Allow: /terms.html
+Allow: /css/
+Allow: /js/
+Allow: /images/
+
+# Block crawling of secure back-office and customer dashboards
+Disallow: /dashboard.html
+Disallow: /inventory.html
+Disallow: /products.html
+Disallow: /pos.html
+Disallow: /sales.html
+Disallow: /reports.html
+Disallow: /support.html
+Disallow: /support-signup.html
+Disallow: /admin/
+Disallow: /api/
+Disallow: /middleware/
+Disallow: /models/
+Disallow: /routes/
+Disallow: /utils/
+Disallow: /cron/
+
+# Sitemap Link
+Sitemap: https://smartgrocer.me/sitemap.xml
