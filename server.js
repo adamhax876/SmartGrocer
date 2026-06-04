@@ -82,6 +82,26 @@ app.use((req, res, next) => {
 const maintenance = require('./middleware/maintenance');
 app.use(maintenance);
 
+// Traffic Tracker Middleware: Track unique visits to the landing page
+app.get(['/', '/index.html'], async (req, res, next) => {
+    try {
+        const Setting = require('./models/Setting');
+        const cookies = req.headers.cookie || '';
+        if (!cookies.includes('sg_visited=true')) {
+            // Set 30-minute session cookie to avoid refresh spamming
+            res.setHeader('Set-Cookie', 'sg_visited=true; Max-Age=1800; Path=/; HttpOnly');
+            await Setting.findOneAndUpdate(
+                { key: 'website_visits' },
+                { $inc: { value: 1 } },
+                { upsert: true }
+            );
+        }
+    } catch (e) {
+        console.error("Traffic tracker error:", e.message);
+    }
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public'), {
     setHeaders: (res, path) => {
         if (path.endsWith('.html')) {
