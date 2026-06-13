@@ -247,6 +247,13 @@ img { max-width: 100%; }
 @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ==============================
+   GLOBAL DESKTOP FIXES
+   ============================== */
+.main {
+    max-width: calc(100% - 260px) !important;
+}
+
+/* ==============================
    GLOBAL MOBILE RESPONSIVE
    ============================== */
 
