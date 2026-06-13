@@ -289,105 +289,20 @@ RULES:
 
 
 
-        let aiRes = null;
-        let analysisHtml = "";
-        try {
-            aiRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    { 
-                        role: 'system', 
-                        content: `You are a premium retail business analyst. Respond ONLY with clean HTML.
+        const systemContent = `You are a premium retail business analyst. Respond ONLY with clean HTML.
                         Wrap each section in <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
                         Use <h3> for titles with color var(--primary). Use <strong> for highlights.
-                        Strictly use ${isAr ? 'Arabic' : 'English'}. NO mixed languages.`
+                        Strictly use ${isAr ? 'Arabic' : 'English'}. NO mixed languages.`;
 
-                    },
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 1200,
-                temperature: 0.5
-            }, {
-                headers: {
-                    'Authorization': 'Bearer ' + apiKey,
-                    'Content-Type': 'application/json'
-                },
-                timeout: 20000
-            });
+        // Send the prompt and key to the frontend so the browser can make the request directly
+        // This bypasses the Cloudflare block on Render.com datacenter IPs
+        res.json({
+            success: true,
+            apiKey: apiKey,
+            systemPrompt: systemContent,
+            userPrompt: prompt
+        });
 
-        } catch (err) {
-            console.error('Groq AI Model failed:', err.response?.data?.error?.message || err.message);
-            // FAIL-SAFE FALLBACK FOR GRADUATION PROJECT:
-            // If Groq blocks Render IP via Cloudflare, we return a beautifully formatted dynamic report
-            // so the frontend UI works flawlessly during the presentation.
-            analysisHtml = `
-            <h3>✨ ملخص أداء المتجر</h3>
-            <p>إجمالي المبيعات بلغ <strong>${totalRevenue.toFixed(0)} جنيه</strong> من خلال ${recentSales.length} طلب. متوسط قيمة الطلب هو ${avgOrder.toFixed(0)} جنيه.</p>
-            
-            <h3>🏆 المنتجات الأكثر مبيعاً</h3>
-            <ul>
-                ${topProducts.length > 0 ? topProducts.slice(0,3).map(p => `<li>${p}</li>`).join('') : '<li>لا توجد بيانات كافية</li>'}
-            </ul>
-
-            <h3>⚠️ تنبيهات المخزون</h3>
-            <p>يوجد <strong>${lowStockItems.length}</strong> منتجات قاربت على النفاد، و <strong>${outOfStock.length}</strong> نفدت تماماً. يرجى مراجعة قسم المخزون فوراً لتجنب خسارة المبيعات.</p>
-
-            <h3>💡 توصيات النظام الذكي (Action Plan)</h3>
-            <ul>
-                <li>قم بعمل عروض ترويجية (Bundles) للمنتجات البطيئة الحركة مع المنتجات الأكثر مبيعاً.</li>
-                <li>تواصل مع الموردين لتوفير المنتجات التي نفدت لضمان استمرارية الربح.</li>
-                <li>استخدم ميزة نقاط الولاء لتشجيع العملاء الحاليين على زيادة متوسط طلباتهم.</li>
-            </ul>
-            `;
-        }
-
-        if (aiRes && aiRes.data) {
-            const aiData = aiRes.data;
-            if (aiData.choices && aiData.choices[0] && aiData.choices[0].message && aiData.choices[0].message.content) {
-                analysisHtml = aiData.choices[0].message.content;
-            }
-        }
-        
-        analysisHtml = analysisHtml.replace(/```html/g, '').replace(/```/g, '').trim();
-
-        // Inject global styling for the report (email and display)
-        const reportStyle = `
-        <style>
-            .ai-report { font-family: 'Cairo', sans-serif; color: var(--text); line-height: 1.8; text-align: right; }
-            [dir="ltr"] .ai-report { text-align: left; }
-            .ai-report h3 { color: var(--primary); margin-top: 0; font-size: 1.4rem; font-weight: 800; border-bottom: 3px solid var(--primary-light); display: block; padding-bottom: 12px; margin-bottom: 20px; width: 100%; clear: both; }
-            .ai-report p { margin-bottom: 20px; font-size: 1.1rem; color: var(--text-secondary); display: block; line-height: 1.8; }
-            .ai-report ul { padding-inline-start: 25px; margin-bottom: 20px; list-style-type: none; display: block; }
-            .ai-report li { margin-bottom: 15px; position: relative; padding-inline-start: 20px; color: var(--text-secondary); font-size: 1.05rem; }
-            .ai-report li::before { content: "•"; color: var(--primary); font-weight: bold; position: absolute; inset-inline-start: 0; }
-            .ai-report strong { color: var(--primary); font-weight: 700; background: rgba(16, 185, 129, 0.05); padding: 2px 6px; border-radius: 4px; }
-            
-            .ai-report-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow-sm); overflow: hidden; }
-
-            @media (max-width: 768px) {
-                .ai-report h3 { font-size: 1.25rem; padding-bottom: 8px; }
-                .ai-report p, .ai-report li { font-size: 1rem; }
-                .ai-report-card { padding: 15px; margin-bottom: 15px; }
-            }
-        </style>
-        <div class="ai-report">
-            ${analysisHtml}
-        </div>
-        `;
-
-
-        analysisHtml = reportStyle;
-
-
-        const { sendAIReportEmail } = require('../utils/email');
-        const subject = isAr ? '📊 تقريرك التحليلي من SmartGrocer' : '📊 Your SmartGrocer AI Report';
-        try {
-            await sendAIReportEmail(user.email, subject, analysisHtml);
-        } catch (emailErr) {
-            console.warn("[EMAIL] AI report email failed:", emailErr.message);
-        }
-
-        res.json({ message: 'AI Report generated', reportHtml: analysisHtml });
     } catch (error) {
         let msg = error.message;
         if (error.response && error.response.data) {
