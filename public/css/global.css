@@ -250,7 +250,29 @@ img { max-width: 100%; }
    GLOBAL DESKTOP FIXES
    ============================== */
 .main {
-    max-width: calc(100% - 260px) !important;
+    flex: 1;
+    min-width: 0 !important; /* Prevents flex item from expanding beyond container bounds */
+    width: calc(100% - 260px) !important;
+}
+
+.table-wrapper {
+    overflow-x: auto !important;
+    width: 100%;
+}
+
+.topbar {
+    flex-wrap: wrap;
+}
+
+.topbar-actions {
+    flex-wrap: wrap;
+}
+
+.badge {
+    white-space: nowrap !important;
+    width: max-content;
+    text-align: center;
+    justify-content: center;
 }
 
 /* ==============================
