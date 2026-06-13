@@ -28,7 +28,7 @@ app.use(helmet({
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
             imgSrc: ["'self'", "data:", "blob:", "https:"],
-            connectSrc: ["'self'", "https://api.resend.com", "https://generativelanguage.googleapis.com"],
+            connectSrc: ["'self'", "https://api.resend.com", "https://generativelanguage.googleapis.com", "https://api.groq.com"],
             workerSrc: ["'self'", "blob:"],
             frameSrc: ["'self'"]
         }
