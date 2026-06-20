@@ -130,7 +130,7 @@
             background: var(--bg-card);
             border-radius: var(--radius-lg);
             border: 1px solid var(--border);
-            overflow: hidden;
+            overflow-x: auto;
             box-shadow: var(--shadow-sm);
         }
 
@@ -138,6 +138,7 @@
             width: 100%;
             border-collapse: collapse;
             text-align: right;
+            table-layout: auto;
         }
 
         [dir="ltr"] table {
@@ -145,22 +146,23 @@
         }
 
         th {
-            padding: 1.2rem 1.5rem;
+            padding: 0.8rem 0.6rem;
             background: var(--bg-secondary);
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
+            font-size: 0.82rem;
+            letter-spacing: 0.3px;
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
 
         td {
-            padding: 1rem 1.5rem;
+            padding: 0.7rem 0.6rem;
             border-bottom: 1px solid var(--border);
             color: var(--text);
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
+            white-space: nowrap;
         }
 
         tr:hover td {
@@ -891,8 +893,8 @@
                         <td data-label="${translations[currentLang].th_status}">${statusHtml}</td>
                         <td data-label="${translations[currentLang].th_actions}">
                             <div style="display: flex; flex-direction: column; gap: 4px; align-items: stretch; min-width: 80px;">
-                                <button onclick="showBatches('${p._id}')" class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.75rem; white-space: nowrap;">📋 الدفعات</button>
-                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.75rem; white-space: nowrap;">🗑️ حذف</button>
+                                <button onclick="showBatches('${p._id}')" class="btn btn-outline" style="padding: 0.3rem 0.5rem; font-size: 0.75rem; white-space: nowrap;">📋 ${currentLang === 'ar' ? 'الدفعات' : 'Batches'}</button>
+                                <button onclick="deleteProduct('${p._id}')" class="btn btn-outline" style="border-color: var(--error); color: var(--error); padding: 0.3rem 0.5rem; font-size: 0.75rem; white-space: nowrap;">🗑️ ${currentLang === 'ar' ? 'حذف' : 'Delete'}</button>
                             </div>
                         </td>
                     </tr>

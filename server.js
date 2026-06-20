@@ -28,7 +28,7 @@ app.use(helmet({
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
             imgSrc: ["'self'", "data:", "blob:", "https:"],
-            connectSrc: ["'self'", "https://api.resend.com", "https://generativelanguage.googleapis.com"],
+            connectSrc: ["'self'", "https://api.resend.com", "https://generativelanguage.googleapis.com", "https://api.groq.com"],
             workerSrc: ["'self'", "blob:"],
             frameSrc: ["'self'"]
         }
@@ -197,10 +197,18 @@ app.use('/api/support', require('./routes/support'));
 
 // Serve frontend for any non-API route
 app.get('*', (req, res) => {
-  // If requesting a specific HTML file, serve it
-  const htmlFile = path.join(__dirname, 'public', req.path);
+  // If requesting a specific HTML file, serve it if it exists
   if (req.path.endsWith('.html')) {
-    return res.sendFile(htmlFile);
+    const htmlFile = path.join(__dirname, 'public', req.path);
+    return res.sendFile(htmlFile, err => {
+        if (err && err.code === 'ENOENT') {
+            // Silently handle bots scanning for random HTML files
+            res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+        } else if (err) {
+            console.error('File send error:', err.message);
+            if (!res.headersSent) res.status(500).end();
+        }
+    });
   }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
