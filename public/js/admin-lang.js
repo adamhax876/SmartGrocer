@@ -49,10 +49,10 @@ const adminDict = {
         
         // Additional missing translations
         lbl_logo: 'لوجو المنصة (Website Logo)',
-        lbl_logo_hint: 'يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين.',
+        lbl_logo_hint: 'يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين. (أقصى حجم: 5 ميجابايت)',
         lbl_basicSettings: 'الإعدادات الأساسية',
         lbl_websiteLogo: 'لوجو المنصة (Website Logo)',
-        lbl_logoHint: 'يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين.',
+        lbl_logoHint: 'يمكنك رفع لوجو مختلف لكل وضع. إذا رفعت لوجو واحد فقط سيُستخدم في الوضعين. (أقصى حجم: 5 ميجابايت)',
         lbl_lightLogo: '☀️ لوجو الوضع النهاري (Light Mode)',
         lbl_darkLogo: '🌙 لوجو الوضع الليلي (Dark Mode)',
         btn_deleteLightLogo: 'حذف لوجو الوضع النهاري (استخدام لوجو واحد للوضعين)',
@@ -114,10 +114,10 @@ const adminDict = {
 
         // Additional missing translations
         lbl_logo: 'Website Logo',
-        lbl_logo_hint: 'You can upload a different logo for each mode. If you upload only one, it will be used for both.',
+        lbl_logo_hint: 'You can upload a different logo for each mode. If you upload only one, it will be used for both. (Max Size: 5MB)',
         lbl_basicSettings: 'Basic Settings',
         lbl_websiteLogo: 'Website Logo',
-        lbl_logoHint: 'You can upload a different logo for each mode. If you upload only one, it will be used for both.',
+        lbl_logoHint: 'You can upload a different logo for each mode. If you upload only one, it will be used for both. (Max Size: 5MB)',
         lbl_lightLogo: '☀️ Light Mode Logo',
         lbl_darkLogo: '🌙 Dark Mode Logo',
         btn_deleteLightLogo: 'Delete Light Logo (Use one logo for both)',
