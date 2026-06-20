@@ -487,15 +487,19 @@
                 content.innerHTML = `
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-gray-50 p-3 rounded-lg border">
-                            <span class="block text-xs text-gray-500 mb-1">الاسم الكامل</span>
-                            <span class="font-semibold">${user.fullName}</span>
+                            <span class="block text-xs text-gray-500 mb-1">البريد الإلكتروني</span>
+                            <span class="font-semibold text-sm">${user.email}</span>
                         </div>
                         <div class="bg-gray-50 p-3 rounded-lg border">
                             <span class="block text-xs text-gray-500 mb-1">تاريخ التسجيل</span>
-                            <span class="font-semibold">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</span>
+                            <span class="font-semibold text-sm">${new Date(user.createdAt).toLocaleDateString('ar-EG')}</span>
                         </div>
                     </div>
                     <div class="mt-4 border-t pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">الاسم الكامل للمالك</label>
+                        <input type="text" id="editFullName" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border outline-none focus:border-blue-500" value="${user.fullName}">
+                    </div>
+                    <div class="mt-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">اسم المتجر</label>
                         <input type="text" id="editStoreName" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border outline-none focus:border-blue-500" value="${user.storeName}">
                     </div>
@@ -514,10 +518,11 @@
 
         async function saveStoreChanges() {
             const storeName = document.getElementById('editStoreName').value;
+            const fullName = document.getElementById('editFullName').value;
             const password = document.getElementById('editPassword').value;
 
-            if (!storeName) {
-                Swal.fire('خطأ', 'اسم المتجر مطلوب', 'error');
+            if (!storeName || !fullName) {
+                Swal.fire('خطأ', 'اسم المتجر والاسم الكامل مطلوبان', 'error');
                 return;
             }
 
@@ -532,7 +537,7 @@
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ storeName, password })
+                    body: JSON.stringify({ storeName, fullName, password })
                 });
                 const data = await res.json();
 

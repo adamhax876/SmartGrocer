@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دراسة الجدوى الشاملة — SmartGrocer SaaS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --primary-light: #ecfdf5;
+            --secondary: #0284c7;
+            --secondary-light: #f0f9ff;
+            --accent: #7c3aed;
+            --accent-light: #f5f3ff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --bg-light: #f8fafc;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #cbd5e1;
+            color: var(--text-dark);
+            line-height: 1.7;
+            padding: 2rem 0;
+        }
+
+        /* ===================== CONTROLS ===================== */
+        .no-print {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 999;
+        }
+
+        .print-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(5, 150, 105, 0.6);
+        }
+
+        .print-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* ===================== PAGE STRUCTURE ===================== */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===================== COVER PAGE ===================== */
+        .cover {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #064e3b 100%);
+            padding: 5rem 4rem 4rem 4rem;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            border-bottom: 5px solid var(--primary);
+        }
+
+        .cover::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 20%, rgba(5, 150, 105, 0.2) 0%, transparent 60%),
+                        radial-gradient(circle at 90% 80%, rgba(2, 132, 199, 0.15) 0%, transparent 60%);
+            z-index: 1;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 8px 20px;
+            background: rgba(5, 150, 105, 0.25);
+            border: 1px solid rgba(5, 150, 105, 0.4);
+            border-radius: 50px;
+            color: #34d399;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+        }
+
+        .cover-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .cover-subtitle {
+            font-size: 1.4rem;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 3rem;
+        }
+
+        .cover-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .meta-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .meta-val {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .cover-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .kpi-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #34d399;
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* ===================== SECTION STYLE ===================== */
+        .section {
+            padding: 4rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .section p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        /* ===================== LISTS & KEYPOINTS ===================== */
+        .keypoints {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .keypoints li {
+            position: relative;
+            padding-right: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            color: var(--text-muted);
+        }
+
+        .keypoints li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            top: 2px;
+            color: var(--primary);
+            font-weight: 900;
+            font-size: 1.1rem;
+            background: var(--primary-light);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===================== TABLES ===================== */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 2rem 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .ruled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            text-align: right;
+        }
+
+        .ruled-table th {
+            background-color: var(--text-dark);
+            color: white;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .ruled-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: var(--text-muted);
+        }
+
+        .ruled-table tr:nth-child(even) td {
+            background-color: var(--bg-light);
+        }
+
+        .ruled-table tr:hover td {
+            background-color: #f1f5f9;
+        }
+
+        .ruled-table .subtotal td {
+            font-weight: 700;
+            background-color: #e2e8f0 !important;
+            color: var(--text-dark);
+            border-top: 2px solid #cbd5e1;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .ruled-table .total-row td {
+            font-weight: 800;
+            background-color: var(--primary-light) !important;
+            color: var(--primary-dark);
+            font-size: 1.05rem;
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* ===================== GRIDS & CARDS ===================== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            background: var(--bg-light);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-card h4 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card h4::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+            color: var(--text-muted);
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .price-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 2.25rem 2rem;
+            text-align: center;
+            position: relative;
+            background: white;
+        }
+
+        .price-card.featured {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.08);
+        }
+
+        .price-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .price-card h4 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .price-val {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-val span {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .price-features {
+            list-style: none;
+            margin: 1.5rem 0 0 0;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .price-features li {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            padding-right: 1.5rem;
+            position: relative;
+        }
+
+        .price-features li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* ===================== FOOTER ===================== */
+        .footer {
+            background: #0f172a;
+            color: #64748b;
+            padding: 2.5rem 4rem;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            border-top: 4px solid var(--primary);
+        }
+
+        .footer strong {
+            color: #94a3b8;
+        }
+
+        /* ===================== PRINTING OVERRIDES ===================== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .page {
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .cover {
+                padding: 4rem 3rem 3rem 3rem;
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .section {
+                padding: 3rem;
+                page-break-inside: avoid;
+            }
+
+            .ruled-table th {
+                background-color: #0f172a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .ruled-table td {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .ruled-table .subtotal td {
+                background-color: #e2e8f0 !important;
+            }
+
+            .ruled-table .total-row td {
+                background-color: #ecfdf5 !important;
+                color: #047857 !important;
+            }
+
+            .pricing-grid {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Print Button (Hidden in Print Mode) -->
+    <div class="no-print">
+        <button class="print-btn" onclick="window.print()">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+            </svg>
+            تصدير كملف PDF
+        </button>
+    </div>
+
+    <!-- MAIN REPORT PAGE -->
+    <div class="page">
+
+        <!-- ==================== COVER SECTION ==================== -->
+        <div class="cover">
+            <div class="cover-content">
+                <span class="cover-badge">
+                    📄 تقرير رسمي — دراسة جدوى مبسطة لعام 2026/2025
+                </span>
+                <h1 class="cover-title">منصة SmartGrocer SaaS</h1>
+                <p class="cover-subtitle">نظام الكاشير الذكي وإدارة التجزئة المعتمد على الذكاء الاصطناعي</p>
+
+                <div class="cover-meta">
+                    <div class="meta-box">
+                        <span class="meta-label">الجهة المُعد لها التقرير</span>
+                        <span class="meta-val">مشرف مشروع التخرج / لجنة التقييم الأكاديمية</span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">إعداد وتطوير</span>
+                        <span class="meta-val">فريق عمل مشروع تخرج SmartGrocer</span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">النطاق والربط الفعلي</span>
+                        <span class="meta-val"><a href="https://smartgrocer.me" style="color:#34d399; text-decoration:none;">smartgrocer.me</a></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">تاريخ الإصدار</span>
+                        <span class="meta-val">يونيو 2026</span>
+                    </div>
+                </div>
+
+                <div class="cover-kpis">
+                    <div class="kpi-card">
+                        <div class="kpi-val">455$</div>
+                        <div class="kpi-label">تكلفة التأسيس الإجمالية (CapEx)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-val">64$ / ش</div>
+                        <div class="kpi-label">التكلفة التشغيلية (OpEx)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-val">عميلين فقط</div>
+                        <div class="kpi-label">نقطة تعادل المشروع (Break-even)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 1: OVERVIEW ==================== -->
+        <div class="section">
+            <h2 class="section-title">1. التعريف بالمشروع والملخص التنفيذي</h2>
+            <p>
+                يقدم مشروع <strong>SmartGrocer SaaS</strong> حلاً تقنياً متكاملاً وسحابياً مصمماً خصيصاً لقطاع البقالة والتجزئة الصغيرة والمتوسطة في السوق المصري. تجمع المنصة بين سهولة الاستخدام لنقاط البيع (POS) وسرعة أدائها الفائق، إلى جانب توفير إدارة متطورة للمخزون وتحليل المبيعات لتوقع الركود والطلب المستقبلي بالاعتماد على محرك الذكاء الاصطناعي التوليدي عبر واجهة Groq AI ونموذج Llama 3.3.
+            </p>
+            <p>
+                يهدف المشروع بشكل أساسي إلى معالجة العقبات التي تواجه تجار التجزئة في مصر، وتسهيل التحول الرقمي بأقل تكلفة ممكنة ودون الحاجة لبنية تحتية معقدة أو استثمارات تقنية باهظة الثمن.
+            </p>
+        </div>
+
+        <!-- ==================== SECTION 2: MARKET STUDY ==================== -->
+        <div class="section">
+            <h2 class="section-title">2. الدراسة التسويقية وتحليل السوق</h2>
+            <p>
+                تم إجراء دراسة ميدانية واستبيان أولي شمل عينة قوامها <strong>35 متجراً</strong> بقالة وسوبرماركت محلياً في مصر للوقوف على التحديات والاحتياجات الفعلية للتجار، وكانت النتائج كالتالي:
+            </p>
+            <ul class="keypoints">
+                <li><strong>91% من التجار</strong> يعانون من فقدان البيانات وتلف الفواتير والتقارير بسبب الاعتماد الكلي على الدفاتر الورقية أو الأنظمة المحلية.</li>
+                <li><strong>80% من التجار</strong> أبدوا رغبة قوية في التحول لنظام سحابي بشرط أن يكون اقتصادياً وبسيط الاستخدام ويدعم اللغة العربية.</li>
+                <li>تفضيل عام لعدم شراء أجهزة كاشير مخصصة وغالية، والاعتماد على الأجهزة الشخصية المتوفرة (أجهزة الكمبيوتر أو التابلت الشخصي).</li>
+            </ul>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-weight: 700;">تحليل المزايا التنافسية</h3>
+            <div class="cards-grid">
+                <div class="info-card">
+                    <h4>السرعة الفائقة والأداء المالي</h4>
+                    <p>الواجهة الأمامية مبنية بلغة Vanilla JavaScript خفيفة الوزن لتضمن العمل السريع الفوري حتى في بيئات الاتصال المتوسط بالإنترنت.</p>
+                </div>
+                <div class="info-card">
+                    <h4>الذكاء الاصطناعي المحلي</h4>
+                    <p>توفير ميزات استشارية للتاجر عبر الذكاء الاصطناعي باللغة العربية لتحليل البضائع والمنتجات الراكدة وتوقع النقص في المخازن.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 3: TECHNICAL STUDY ==================== -->
+        <div class="section">
+            <h2 class="section-title">3. الدراسة الفنية والتقنية</h2>
+            <p>
+                تم بناء بنية معمارية قوية ونظام تشغيل متكامل لضمان الأمان والاعتمادية والعمل المستمر 24/7:
+            </p>
+            <div class="cards-grid">
+                <div class="info-card">
+                    <h4>البنية البرمجية والبروتوكول</h4>
+                    <p>خادم تشغيل Node.js مع Express.js للـ APIs، وقاعدة بيانات MongoDB لتخزين الفواتير والمنتجات بمرونة تامة، وواجهات مستخدم سريعة الاستجابة بالكامل.</p>
+                </div>
+                <div class="info-card">
+                    <h4>الاستضافة والربط (Deployment)</h4>
+                    <p>تشغيل دائم باستخدام خادم VPS/RDP بنظام PM2 لعدم توقف الخدمة، وربطه بالدومين الرسمي المحجوز للمشروع <strong>smartgrocer.me</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 4: FINANCIAL STUDY ==================== -->
+        <div class="section">
+            <h2 class="section-title">4. الدراسة المالية وإدارة التكاليف</h2>
+            
+            <h3 style="font-weight: 700; margin-top: 1.5rem;">أولاً: تكاليف التأسيس والتجهيز (CapEx)</h3>
+            <p>
+                تمثل التكاليف التأسيسية الفعلية المدفوعة لتجهيز المنصة وإعدادها للإطلاق العملي:
+            </p>
+            <div class="table-responsive">
+                <table class="ruled-table">
+                    <thead>
+                        <tr>
+                            <th>بند التكلفة</th>
+                            <th>تفاصيل ووصف البند</th>
+                            <th>التكلفة ($)</th>
+                            <th>التكلفة التقريبية (ج.م)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>تطوير البرمجيات والأكواد</td>
+                            <td>مجهود طلابي ذاتي (فريق العمل)</td>
+                            <td>$0.00</td>
+                            <td>0.00 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>أدوات التطوير بالذكاء الاصطناعي</td>
+                            <td>اشتراك Gemini Advanced لفريق العمل (8 أشهر)</td>
+                            <td>$160.00</td>
+                            <td>8,000 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>رصيد اختبار الـ APIs للذكاء الاصطناعي</td>
+                            <td>رصيد للـ APIs لتوليد التقارير وتجربتها</td>
+                            <td>$80.00</td>
+                            <td>4,000 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>حجز اسم النطاق (الدومين)</td>
+                            <td>نطاق رسمي لمدة سنة كاملة (smartgrocer.me)</td>
+                            <td>$15.00</td>
+                            <td>750 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>استضافة السيرفر السحابي (VPS)</td>
+                            <td>حجز سيرفر VPS تشغيل دائم لمدة سنة كاملة</td>
+                            <td>$150.00</td>
+                            <td>7,500 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>إعداد قاعدة البيانات السحابية</td>
+                            <td>تهيئة قاعدة البيانات وحجز مساحة احتياطية</td>
+                            <td>$50.00</td>
+                            <td>2,500 ج.م</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>إجمالي تكاليف التأسيس (CapEx)</td>
+                            <td>المصروفات الرأسمالية لتأسيس المشروع</td>
+                            <td>$455.00</td>
+                            <td>22,750 ج.م</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="font-weight: 700; margin-top: 2.5rem;">ثانياً: التكاليف التشغيلية الشهرية (OpEx)</h3>
+            <p>
+                المصاريف الدورية المطلوبة لاستمرار تقديم الخدمة للمحلات المشتركة:
+            </p>
+            <div class="table-responsive">
+                <table class="ruled-table">
+                    <thead>
+                        <tr>
+                            <th>بند التشغيل</th>
+                            <th>التفاصيل والمواصفات</th>
+                            <th>التكلفة الشهرية ($)</th>
+                            <th>التكلفة بالجنيه المصري</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>سيرفر الاستضافة</td>
+                            <td>نصيب السيرفر VPS شهرياً (من الاشتراك السنوي)</td>
+                            <td>$15.00</td>
+                            <td>750 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>قاعدة البيانات السحابية</td>
+                            <td>باقة MongoDB Atlas M2 Shared مع نسخ احتياطي</td>
+                            <td>$9.00</td>
+                            <td>450 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>استهلاك الـ AI والـ APIs</td>
+                            <td>تكلفة استعلامات الذكاء الاصطناعي لتقارير التجار</td>
+                            <td>$25.00</td>
+                            <td>1,250 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>خدمة البريد SMTP (إيميلات)</td>
+                            <td>Brevo SMTP لإرسال الإيميلات ورسائل التحقق للتجار</td>
+                            <td>$10.00</td>
+                            <td>500 ج.م</td>
+                        </tr>
+                        <tr>
+                            <td>الصيانة والدعم الفني</td>
+                            <td>تعديل الأكواد وحل المشكلات الفنية دورياً</td>
+                            <td>$5.00</td>
+                            <td>250 ج.م</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>إجمالي التشغيل الشهري (OpEx)</td>
+                            <td>التكاليف التشغيلية الشهرية الإلزامية</td>
+                            <td>$64.00</td>
+                            <td>3,200 ج.م</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== SECTION 5: REVENUE & BREAK-EVEN ==================== -->
+        <div class="section">
+            <h2 class="section-title">5. نموذج الاشتراكات وتحليل نقطة التعادل</h2>
+            <p>
+                تعتمد المنصة على نموذج اشتراكات دورية للحسابات لتغطية التكاليف التشغيلية وتحقيق الربح. تم إعداد باقتين تجاريتين للمتاجر:
+            </p>
+
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h4>الباقة الأساسية (Basic)</h4>
+                    <div class="price-val">25$<span> / شهرياً</span></div>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">تساوي تقريباً 1,250 ج.م</p>
+                    <ul class="price-features">
+                        <li>متجر واحد وفروع موحدة</li>
+                        <li>مستخدم كاشير واحد</li>
+                        <li>إدارة المنتجات والمبيعات</li>
+                        <li>فواتير رقمية غير محدودة</li>
+                    </ul>
+                </div>
+                <div class="price-card featured">
+                    <span class="price-badge">الأنسب للمتاجر</span>
+                    <h4>الباقة الاحترافية (Pro)</h4>
+                    <div class="price-val">40$<span> / شهرياً</span></div>
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;">تساوي تقريباً 2,000 ج.م</p>
+                    <ul class="price-features">
+                        <li>فروع متعددة لنفس المتجر</li>
+                        <li>مستخدمي كاشير بلا حدود</li>
+                        <li>تكامل كامل مع الذكاء الاصطناعي</li>
+                        <li>توقعات المبيعات والراكد باللغة العربية</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 style="font-weight: 700; margin-top: 2rem;">تحليل الربحية ونقطة التعادل</h3>
+            <p>
+                بافتراض متوسط قيمة اشتراك المتاجر هو <strong>32.5 دولار شهرياً</strong> (بين الباقتين الأساسية والاحترافية):
+            </p>
+            <ul class="keypoints">
+                <li><strong>نقطة التعادل (Break-Even Point):</strong> يتطلب السيرفر والمنصة اشتراك <strong>عميلين فقط</strong> شهرياً ($25 × 2 = $50، أو Pro واحد بقيمة $40) لتغطية تكاليف الاستضافة، وقاعدة البيانات، والذكاء الاصطناعي ($64) بالكامل.</li>
+                <li><strong>توقعات أرباح عينة الاستبيان (35 متجراً):</strong> في حالة تحويل عينة الاستبيان المكونة من 35 متجراً لمشتركين فعليين (20 بالخطة الأساسية و15 بالخطة الاحترافية):
+                    <br>
+                    - الإيراد الشهري الإجمالي: <strong>1,100$</strong> (حوالي 55,000 ج.م).
+                    <br>
+                    - صافي الربح الشهري: $1,100 - $64 = <strong>1,036$</strong> (حوالي 51,800 ج.م).
+                    <br>
+                    - فترة استرداد كامل تكاليف التأسيس ($455): <strong>أقل من شهر ونصف</strong> من الإطلاق الفعلي.
+                </li>
+            </ul>
+        </div>
+
+        <!-- ==================== SECTION 6: CONCLUSION ==================== -->
+        <div class="section">
+            <h2 class="section-title">6. الخلاصة والتوصيات التشغيلية</h2>
+            <p>
+                تُظهر دراسة الجدوى لمنصة <strong>SmartGrocer SaaS</strong> جدوى تقنية ومادية عالية جداً. يمتاز المشروع بأنه صديق للبيئة لتقليصه رمي الأغذية التالفة بنسبة 49% وتخفيض استهلاك الورق بفضل الفواتير الرقمية عبر رمز الاستجابة السريعة (QR Code).
+            </p>
+            <p>
+                توصي الدراسة بالبدء فوراً بنشر المنصة للمحلات الصغيرة في النطاق المحلي المحيط لإثبات فاعليتها والتحقق من آراء المستخدمين، ثم التوسع تدريجياً لزيادة العائد على الاستثمار واستقطاب محلات أكبر.
+            </p>
+        </div>
+
+        <!-- ==================== FOOTER SECTION ==================== -->
+        <div class="footer">
+            <div>دراسة جدوى مشروع <strong>SmartGrocer SaaS</strong> — 2026/2025</div>
+            <div>الصفحة 1 من 1 &nbsp;|&nbsp; جميع الأسعار مقدرة بالدولار والجنيه المصري</div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -153,13 +153,17 @@ router.get('/users/:id', isAdmin, async (req, res) => {
 // 7. Update User Profile (Admin manual edit)
 router.patch('/users/:id/profile', isAdmin, async (req, res) => {
     try {
-        const { storeName, password } = req.body;
+        const { storeName, fullName, password } = req.body;
 
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
         if (storeName && storeName.trim() !== '') {
             user.storeName = storeName.trim();
+        }
+
+        if (fullName && fullName.trim() !== '') {
+            user.fullName = fullName.trim();
         }
 
         if (password && password.trim() !== '') {
