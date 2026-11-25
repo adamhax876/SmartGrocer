@@ -355,7 +355,7 @@ router.post('/users/:id/assign-subscription', isAdmin, async (req, res) => {
         let exactEndDate = new Date(endDate);
         if (planName === 'Free Trial') {
             exactEndDate = new Date();
-            exactEndDate.setDate(exactEndDate.getDate() + 14);
+            exactEndDate.setDate(exactEndDate.getDate() + 30);
         }
         // Use exact date from picker, set to end of that day
         exactEndDate.setHours(23, 59, 59, 999);

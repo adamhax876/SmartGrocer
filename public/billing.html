@@ -9,7 +9,7 @@
     <meta name="description" content="اختر الباقة المناسبة لمتجرك مع SmartGrocer. باقات مرنة تبدأ من تجربة مجانية إلى الاحترافية بالذكاء الاصطناعي.">
     <meta name="keywords" content="أسعار SmartGrocer, باقات, اشتراكات, نقاط بيع, POS pricing">
     <meta property="og:title" content="الباقات والاشتراكات | SmartGrocer">
-    <meta property="og:description" content="اختر الباقة المناسبة لمتجرك. تجربة مجانية 14 يوماً بدون بطاقة ائتمان.">
+    <meta property="og:description" content="اختر الباقة المناسبة لمتجرك. تجربة مجانية 30 يوماً بدون بطاقة ائتمان.">
     <meta property="og:image" content="https://smartgrocer.me/images/logo.png">
     <meta property="og:url" content="https://smartgrocer.me/billing.html">
     <meta property="og:type" content="website">
@@ -265,7 +265,9 @@
 
                 if (data.user) {
                     const u = data.user;
-                    document.getElementById('currentPlanName').textContent = u.subscriptionPlan || 'باقة مجانية';
+                    const planEl = document.getElementById('currentPlanName');
+                    planEl.removeAttribute('data-i18n');
+                    planEl.textContent = u.subscriptionPlan || 'باقة مجانية';
                     
                     const statusBadge = document.getElementById('statusBadge');
                     if (u.subscriptionEndDate) {

@@ -83,7 +83,7 @@ const userSchema = new mongoose.Schema({
     subscriptionEndDate: {
         type: Date,
         // Default sets to 14 days from creation for new users
-        default: () => new Date(+new Date() + 14 * 24 * 60 * 60 * 1000)
+        default: () => new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
     },
     country: {
         type: String,

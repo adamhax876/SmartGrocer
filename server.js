@@ -195,22 +195,24 @@ app.use('/api/payments', require('./routes/payments'));
 app.use('/api/subscription', require('./routes/subscription'));
 app.use('/api/support', require('./routes/support'));
 
-// Serve frontend for any non-API route
+// Serve frontend: home page for "/", existing .html files, real 404 page for everything else
 app.get('*', (req, res) => {
-  // If requesting a specific HTML file, serve it if it exists
+  const notFound = () => res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+  if (req.path === '/' ) {
+    return res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
   if (req.path.endsWith('.html')) {
     const htmlFile = path.join(__dirname, 'public', req.path);
     return res.sendFile(htmlFile, err => {
         if (err && err.code === 'ENOENT') {
-            // Silently handle bots scanning for random HTML files
-            res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
+            if (!res.headersSent) notFound();
         } else if (err) {
             console.error('File send error:', err.message);
             if (!res.headersSent) res.status(500).end();
         }
     });
   }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  notFound();
 });
 // Global JSON Error Handler (Prevents returning HTML on API errors like CORS)
 app.use((err, req, res, next) => {
