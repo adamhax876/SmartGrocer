@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy'); // Dummy key for development if env is not set
 const auth = require('../middleware/auth');
 const Plan = require('../models/Plan');
 const Subscription = require('../models/Subscription');
